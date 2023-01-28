@@ -1,0 +1,3 @@
+enum EnumCompanyType {
+  falcons,
+}

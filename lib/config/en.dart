@@ -1,0 +1,17 @@
+const Map<String, String> en = {
+  "WELCOME TO\nFalcons Point Of Sale": "WELCOME TO\nFalcons Point Of Sale",
+  "Lorem ipsum dolor sit amet, consectetur adipiscing elit": "Lorem ipsum dolor sit amet, consectetur adipiscing elit",
+  "Get Started": "Get Started",
+  "Welcome to Falcons Pos": "Welcome to Falcons Pos",
+  "Sign In": "Sign In",
+  "Username": "Username",
+  "Password": "Password",
+  "Incorrect username or password": "Incorrect username or password",
+  "Login Failed": "Login Failed",
+  "Voucher No": "Voucher No",
+  "Date": "Date",
+  "Time": "Time",
+  "Search": "Search",
+  "Search for item": "Search for item",
+  "Add Item": "Add Item",
+};
