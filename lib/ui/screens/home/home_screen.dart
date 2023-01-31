@@ -47,11 +47,11 @@ class HomeScreen extends GetResponsiveView {
                   SizedBox(height: 40.h),
                   CustomIconText(
                     icon: kAssetDate,
-                    label: '${'Date'.tr} : ${DateFormat('dd/MM/yyyy').format(sharedPrefsClient.dailyClose)}',
+                    label: '${'Date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
                   ),
                   CustomIconText(
                     icon: kAssetTime,
-                    label: '${'Time'.tr} : ${DateFormat('HH:mm a').format(sharedPrefsClient.dailyClose)}',
+                    label: '${'Time'.tr} : ${DateFormat(timeFormat).format(sharedPrefsClient.dailyClose)}',
                   ),
                   SizedBox(height: 27.h),
                   Row(
@@ -90,8 +90,9 @@ class HomeScreen extends GetResponsiveView {
               ),
             ),
             Container(
+              height: 250.h,
               margin: EdgeInsets.symmetric(vertical: 16.h),
-              padding: EdgeInsets.all(8.2),
+              padding: EdgeInsets.all(8.w),
               decoration: BoxDecoration(
                 border: Border.all(color: AppColor.primaryColor),
                 borderRadius: BorderRadius.circular(10.r),
@@ -157,6 +158,243 @@ class HomeScreen extends GetResponsiveView {
                       Expanded(
                         flex: 4,
                         child: Container(),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 10.h),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: 1,
+                      itemBuilder: (context, index) => Row(
+                        children: [
+                          Expanded(
+                            flex: 6,
+                            child: Text(
+                              'Item Name'.tr,
+                              style: kStyleDataTable,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 5,
+                            child: Text(
+                              'Sold Unit'.tr,
+                              style: kStyleDataTable,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              'Qty'.tr,
+                              style: kStyleDataTable,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              'Price'.tr,
+                              style: kStyleDataTable,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              '20%',
+                              style: kStyleDataTable,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 4,
+                            child: Text(
+                              'Net Price'.tr,
+                              style: kStyleDataTable,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 4,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                Flexible(
+                                  child: IconButton(
+                                    onPressed: () {
+                                      _controller.deleteItem();
+                                    },
+                                    padding: EdgeInsets.zero,
+                                    icon: SvgPicture.asset(kAssetDelete),
+                                    splashRadius: 20.r,
+                                  ),
+                                ),
+                                Flexible(
+                                  child: IconButton(
+                                    onPressed: () {
+                                      _controller.editItem();
+                                    },
+                                    padding: EdgeInsets.zero,
+                                    icon: SvgPicture.asset(kAssetEdit),
+                                    splashRadius: 20.r,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: CustomButtonOutline(
+                      onPressed: () {},
+                      label: Text('Hold Items'.tr),
+                      icon: SvgPicture.asset(kAssetHoldItems),
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: CustomButtonOutline(
+                      onPressed: () {},
+                      label: Text('Void All'.tr),
+                      icon: SvgPicture.asset(kAssetVoidAll),
+                    ),
+                  ),
+                  SizedBox(width: 10.w),
+                  Expanded(
+                    child: CustomButtonOutline(
+                      onPressed: () {},
+                      label: Text('Speed Items'.tr),
+                      icon: SvgPicture.asset(kAssetSpeedItems),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Stack(
+              children: [
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 16.h),
+                  padding: EdgeInsets.only(top: 8.w, left: 14.w, right: 14.w, bottom: 16.w),
+                  decoration: BoxDecoration(
+                    color: AppColor.accentColor,
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '${'Current bill'.tr} : ',
+                        style:  kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomIconText(
+                              icon: kAssetArrow,
+                              label: '${'No of Items'.tr} : ',
+                            ),
+                          ),
+                          Expanded(
+                            child: CustomIconText(
+                              icon: kAssetArrow,
+                              label: '${'Line Disc'.tr} : ',
+                            ),
+                          ),
+                          Expanded(
+                            child: CustomIconText(
+                              icon: kAssetArrow,
+                              bold: true,
+                              label: '${'Total'.tr} : ',
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: CustomIconText(
+                              icon: kAssetArrow,
+                              label: '${'Disc'.tr} : ',
+                            ),
+                          ),
+                          Expanded(
+                            child: CustomIconText(
+                              icon: kAssetArrow,
+                              label: '${'Tax'.tr} : ',
+                            ),
+                          ),
+                          Expanded(
+                            child: CustomIconText(
+                              icon: kAssetArrow,
+                              bold: true,
+                              label: '${'Net Total'.tr} : ',
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: SvgPicture.asset(kAssetArrowBottom),
+                  ),
+                )
+              ],
+            ),
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 16.h),
+              padding: EdgeInsets.only(top: 8.w, left: 14.w, right: 14.w, bottom: 16.w),
+              decoration: BoxDecoration(
+                color: AppColor.accentColor,
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    '${'Payment Methods'.tr} : ',
+                    style:  kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10.h),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomButtonIcon(
+                          margin: EdgeInsets.symmetric(horizontal: 40.w),
+                          backgroundColor: Colors.white,
+                          icon: SvgPicture.asset(kAssetCreditCard),
+                          label: Text('Other Payment Methods'.tr, textAlign: TextAlign.center,),
+                          onPressed: () {
+
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: CustomButtonIcon(
+                          margin: EdgeInsets.symmetric(horizontal: 40.w),
+                          backgroundColor: Colors.white,
+                          icon: SvgPicture.asset(kAssetCash),
+                          label: Text('Cash'.tr),
+                          onPressed: () {
+
+                          },
+                        ),
                       ),
                     ],
                   ),

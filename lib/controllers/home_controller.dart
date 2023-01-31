@@ -6,7 +6,9 @@ class HomeController extends GetxController {
 
   final TextEditingController controllerSearch = TextEditingController();
 
-  addItem(){
+  addItem() {}
 
-  }
+  deleteItem() {}
+
+  editItem() {}
 }

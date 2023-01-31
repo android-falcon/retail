@@ -10,9 +10,9 @@ final kStyleTextDefault = TextStyle(fontWeight: FontWeight.normal, fontSize: 16.
 final kStyleTextTitle = TextStyle(fontWeight: FontWeight.normal, fontSize: 20.sp, color: AppColor.tertiaryColor);
 final kStyleTextLarge = TextStyle(fontWeight: FontWeight.bold, fontSize: 28.sp, color: AppColor.tertiaryColor);
 final kStyleHeaderTable = TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp, color: AppColor.red);
-final kStyleDataTable = TextStyle(fontWeight: FontWeight.bold, fontSize: 13.sp, color: Colors.black);
 final kStyleTextButton = TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: Colors.white);
-final kStyleTextTable = TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: AppColor.primaryColor);
+final kStyleTextTable = TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: AppColor.tertiaryColor);
+final kStyleDataTable = TextStyle( fontSize: 16.sp, color: AppColor.tertiaryColor);
 final kStyleButtonPayment = TextStyle(fontWeight: FontWeight.bold, fontSize: 17.sp);
 final kStyleLargePrinter = TextStyle(fontWeight: FontWeight.bold, fontSize: 34.sp);
 final kStyleTitlePrinter = TextStyle(fontWeight: FontWeight.bold, fontSize: 27.sp);
@@ -23,6 +23,11 @@ AllDataModel allDataModel = AllDataModel.fromJson({});
 final sharedPrefsClient = SharedPrefsClient();
 const companyType = EnumCompanyType.falcons;
 
+const fractionDigits = 3;
+const dateFormat = 'dd/MM/yyyy';
+const timeFormat = 'HH:mm a';
+
+
 String kAssetLogo = "";
 String kAssetSplash = "";
 String kAssetBackgroundLogin = "";
@@ -30,6 +35,7 @@ String kAssetMore = "";
 String kAssetArrow = "";
 String kAssetDate = "";
 String kAssetTime = "";
+String kAssetHoldItems = "";
 String kAssetVoidAll = "";
 String kAssetCreditCard = "";
 String kAssetSpeedItems = "";
@@ -68,6 +74,7 @@ loadAssets() {
       kAssetArrow = "assets/images/arrow.svg";
       kAssetDate = "assets/images/date.svg";
       kAssetTime = "assets/images/time.svg";
+      kAssetHoldItems = "assets/images/hold_items.svg";
       kAssetVoidAll = "assets/images/void_all.svg";
       kAssetCreditCard = "assets/images/credit_card.svg";
       kAssetSpeedItems = "assets/images/speed_items.svg";
