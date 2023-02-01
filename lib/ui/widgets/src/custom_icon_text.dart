@@ -23,7 +23,6 @@ class CustomIconText extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
-
       children: [
         Column(
           children: [

@@ -7,6 +7,7 @@ import 'package:retail_system/config/app_color.dart';
 import 'package:retail_system/config/constant.dart';
 import 'package:retail_system/controllers/home_controller.dart';
 import 'package:retail_system/ui/screens/home/home_widgets.dart';
+import 'package:retail_system/ui/screens/more/more_screen.dart';
 import 'package:retail_system/ui/widgets/custom_widget.dart';
 
 class HomeScreen extends GetResponsiveView {
@@ -25,7 +26,9 @@ class HomeScreen extends GetResponsiveView {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 8.0.w),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => MoreScreen());
+              },
               icon: SvgPicture.asset(kAssetMore),
             ),
           ),

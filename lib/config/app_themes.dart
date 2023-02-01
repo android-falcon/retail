@@ -22,10 +22,10 @@ class AppThemes {
           type: BottomNavigationBarType.fixed,
           selectedItemColor: AppColor.primaryColor,
         ),
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,
           elevation: 0,
-          iconTheme: IconThemeData(color: Colors.black),
+          iconTheme: IconThemeData(color: AppColor.primaryColor),
         ),
         colorScheme: ColorScheme.fromSwatch(primarySwatch: AppColor.primaryColor).copyWith(
           secondary: AppColor.primaryColor.shade700,
