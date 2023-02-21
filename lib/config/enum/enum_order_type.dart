@@ -1,0 +1,4 @@
+enum EnumOrderType {
+  takeAway,
+  dineIn,
+}

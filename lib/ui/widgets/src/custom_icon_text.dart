@@ -15,7 +15,6 @@ class CustomIconText extends StatelessWidget {
     this.label = "",
     this.style,
     this.bold = false,
-
   }) : super(key: key);
 
   @override
@@ -24,12 +23,13 @@ class CustomIconText extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          children: [
-            const SizedBox(height: 10),
-            SvgPicture.asset(icon),
-          ],
-        ),
+        if (icon.isNotEmpty)
+          Column(
+            children: [
+              const SizedBox(height: 10),
+              SvgPicture.asset(icon),
+            ],
+          ),
         SizedBox(width: 5.w),
         Expanded(
           child: Text(

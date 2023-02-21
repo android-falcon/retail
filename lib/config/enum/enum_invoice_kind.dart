@@ -1,0 +1,4 @@
+enum EnumInvoiceKind {
+  invoicePay,
+  invoiceReturn,
+}

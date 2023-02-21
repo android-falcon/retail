@@ -1,0 +1,15 @@
+enum EnumCreditCardType{
+  visa,
+  amex,
+  discover,
+  mastercard,
+  dinersclub,
+  jcb,
+  unionpay,
+  maestro,
+  elo,
+  mir,
+  hiper,
+  hipercard,
+  unknown,
+}

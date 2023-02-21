@@ -1,0 +1,4 @@
+enum EnumDiscountType{
+  value,
+  percentage
+}

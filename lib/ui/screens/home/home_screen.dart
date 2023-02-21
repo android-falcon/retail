@@ -5,6 +5,9 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:retail_system/config/app_color.dart';
 import 'package:retail_system/config/constant.dart';
+import 'package:retail_system/config/text_input_formatters.dart';
+import 'package:retail_system/config/utils.dart';
+import 'package:retail_system/config/validation.dart';
 import 'package:retail_system/controllers/home_controller.dart';
 import 'package:retail_system/ui/screens/home/home_widgets.dart';
 import 'package:retail_system/ui/screens/more/more_screen.dart';
@@ -265,7 +268,9 @@ class HomeScreen extends GetResponsiveView {
                 children: [
                   Expanded(
                     child: CustomButtonOutline(
-                      onPressed: () {},
+                      onPressed: () {
+
+                      },
                       label: Text('Hold Items'.tr),
                       icon: SvgPicture.asset(kAssetHoldItems),
                     ),
@@ -302,7 +307,7 @@ class HomeScreen extends GetResponsiveView {
                     children: [
                       Text(
                         '${'Current bill'.tr} : ',
-                        style:  kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                        style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
                       ),
                       Row(
                         children: [
@@ -372,7 +377,7 @@ class HomeScreen extends GetResponsiveView {
                 children: [
                   Text(
                     '${'Payment Methods'.tr} : ',
-                    style:  kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                    style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10.h),
                   Row(
@@ -382,9 +387,12 @@ class HomeScreen extends GetResponsiveView {
                           margin: EdgeInsets.symmetric(horizontal: 40.w),
                           backgroundColor: Colors.white,
                           icon: SvgPicture.asset(kAssetCreditCard),
-                          label: Text('Other Payment Methods'.tr, textAlign: TextAlign.center,),
+                          label: Text(
+                            'Other Payment Methods'.tr,
+                            textAlign: TextAlign.center,
+                          ),
                           onPressed: () {
-
+                           _controller.paymentMethodDialog();
                           },
                         ),
                       ),
@@ -395,7 +403,7 @@ class HomeScreen extends GetResponsiveView {
                           icon: SvgPicture.asset(kAssetCash),
                           label: Text('Cash'.tr),
                           onPressed: () {
-
+                            _controller.paymentMethodDialog();
                           },
                         ),
                       ),

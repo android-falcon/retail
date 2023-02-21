@@ -57,10 +57,10 @@ class AppColor {
       900: Color(0xFF1E3354),
     },
   );
-  static const Color green = Color.fromRGBO(0, 119, 0, 1.0);
+  static const Color green = Color(0xFF48EE6C);
   static const Color blue = Color.fromRGBO(156, 180, 255, 1.0);
   static const Color gray = Color.fromRGBO(30, 30, 30, 1);
-  static const Color red = Color.fromRGBO(255, 0, 0, 1.0);
+  static const Color red = Color(0xFFFF3D3D);
   static const Color gray2 = Color.fromRGBO(149, 149, 149, 1.0);
   static const Color grayLight = Color.fromRGBO(236, 236, 236, 1);
   static const Color grayDark = Color(0xFF181818);

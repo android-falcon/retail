@@ -3,8 +3,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:retail_system/config/app_color.dart';
 import 'package:retail_system/config/enum/enum_company_type.dart';
+import 'package:retail_system/config/enum/enum_order_type.dart';
 import 'package:retail_system/config/shared_prefs_client.dart';
 import 'package:retail_system/models/all_data_model.dart';
+import 'package:retail_system/models/cart_model.dart';
 
 final kStyleTextDefault = TextStyle(fontWeight: FontWeight.normal, fontSize: 16.sp, color: AppColor.tertiaryColor);
 final kStyleTextTitle = TextStyle(fontWeight: FontWeight.normal, fontSize: 20.sp, color: AppColor.tertiaryColor);
@@ -20,6 +22,7 @@ final kStyleDataPrinter = TextStyle(fontSize: 23.sp);
 
 PackageInfo packageInfo = PackageInfo(appName: '', packageName: '', version: '', buildNumber: '');
 AllDataModel allDataModel = AllDataModel.fromJson({});
+CartModel cart = CartModel.init(orderType: EnumOrderType.takeAway);
 final sharedPrefsClient = SharedPrefsClient();
 const companyType = EnumCompanyType.falcons;
 
