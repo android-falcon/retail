@@ -12,8 +12,14 @@ import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:retail_system/config/app_color.dart';
 import 'package:retail_system/config/constant.dart';
+import 'package:retail_system/config/enum/enum_discount_type.dart';
+import 'package:retail_system/config/enum/enum_invoice_kind.dart';
+import 'package:retail_system/config/enum/enum_order_type.dart';
+import 'package:retail_system/config/validation.dart';
 import 'package:retail_system/models/all_data/category_model.dart';
+import 'package:retail_system/models/all_data/employee_model.dart';
 import 'package:retail_system/models/all_data/item_model.dart';
+import 'package:retail_system/models/cart_model.dart';
 import 'package:retail_system/ui/widgets/custom_widget.dart';
 
 class Utils {
@@ -39,11 +45,11 @@ class Utils {
     );
   }
 
-  static showSnackbar(String title, String message) {
+  static showSnackbar([String? title, String? message]) {
     hideLoadingDialog();
     Get.snackbar(
-      title,
-      message,
+      title ?? '',
+      message ?? '',
       duration: const Duration(seconds: 4),
       backgroundColor: AppColor.gray.withOpacity(0.5),
       margin: EdgeInsets.only(top: 20.h, left: 10.w, right: 10.w),
@@ -54,6 +60,89 @@ class Utils {
     if (Get.isDialogOpen!) {
       Get.back();
     }
+  }
+
+  static CartModel calculateOrder({required CartModel cart, EnumInvoiceKind invoiceKind = EnumInvoiceKind.invoicePay}) {
+    if (allDataModel.companyConfig.first.taxCalcMethod == 0) {
+      // خاضع
+      switch (invoiceKind) {
+        case EnumInvoiceKind.invoicePay:
+          for (var element in cart.items) {
+            element.total = element.priceChange * element.qty;
+            element.totalLineDiscount = (element.lineDiscountType == EnumDiscountType.percentage ? element.priceChange * (element.lineDiscount / 100) : element.lineDiscount) * element.qty;
+          }
+          break;
+        case EnumInvoiceKind.invoiceReturn:
+          for (var element in cart.items) {
+            element.returnedPrice = element.priceChange - element.lineDiscount - element.discount;
+            element.returnedTotal = element.returnedPrice * element.returnedQty;
+            element.total = element.priceChange * element.returnedQty;
+            element.totalLineDiscount = (element.lineDiscountType == EnumDiscountType.percentage ? element.priceChange * (element.lineDiscount / 100) : element.lineDiscount) * element.returnedQty;
+          }
+          break;
+      }
+      cart.total = cart.items.fold(0.0, (sum, item) => sum + item.total);
+      cart.totalLineDiscount = cart.items.fold(0.0, (sum, item) => sum + item.totalLineDiscount);
+      cart.totalDiscount = cart.discountType == EnumDiscountType.percentage ? (cart.total - cart.totalLineDiscount) * (cart.discount / 100) : cart.discount;
+      cart.subTotal = cart.total - cart.totalDiscount - cart.totalLineDiscount;
+      cart.service = cart.orderType == EnumOrderType.takeAway ? 0 : cart.subTotal * (allDataModel.companyConfig.first.servicePerc / 100);
+      cart.serviceTax = cart.orderType == EnumOrderType.takeAway ? 0 : cart.service * (allDataModel.companyConfig.first.serviceTaxPerc / 100);
+      double totalDiscountAvailableItem = cart.items.fold(0.0, (sum, item) => sum + (item.discountAvailable ? (item.total - item.totalLineDiscount) : 0));
+      for (var element in cart.items) {
+        if (element.discountAvailable) {
+          element.discount = cart.totalDiscount * ((element.total - element.totalLineDiscount) / totalDiscountAvailableItem);
+        } else {
+          element.discount = 0;
+        }
+        element.tax = element.taxType == 2 ? 0 : (element.total - element.totalLineDiscount - element.discount) * (element.taxPercent / 100);
+        element.service = cart.service * ((element.total - element.totalLineDiscount - element.discount) / cart.subTotal);
+        element.serviceTax = element.service * (allDataModel.companyConfig.first.serviceTaxPerc / 100);
+      }
+
+      cart.itemsTax = cart.items.fold(0.0, (sum, item) => sum + item.tax);
+      cart.tax = cart.itemsTax + cart.serviceTax;
+      cart.amountDue = cart.subTotal + cart.deliveryCharge + cart.service + cart.tax;
+    } else {
+      // شامل
+      switch (invoiceKind) {
+        case EnumInvoiceKind.invoicePay:
+          for (var element in cart.items) {
+            element.total = (element.priceChange / (1 + (element.taxPercent / 100))) * element.qty;
+            element.totalLineDiscount = (element.lineDiscountType == EnumDiscountType.percentage ? element.total * (element.lineDiscount / 100) : element.lineDiscount) * element.qty;
+          }
+          break;
+        case EnumInvoiceKind.invoiceReturn:
+          for (var element in cart.items) {
+            element.returnedPrice = (element.priceChange / (1 + (element.taxPercent / 100))) - element.lineDiscount - element.discount;
+            element.returnedTotal = element.returnedPrice * element.returnedQty;
+            element.total = (element.priceChange / (1 + (element.taxPercent / 100))) * element.returnedQty;
+            element.totalLineDiscount = (element.lineDiscountType == EnumDiscountType.percentage ? element.total * (element.lineDiscount / 100) : element.lineDiscount) * element.returnedQty;
+          }
+          break;
+      }
+      cart.total = cart.items.fold(0.0, (sum, item) => sum + item.total);
+      cart.totalLineDiscount = cart.items.fold(0.0, (sum, item) => sum + item.totalLineDiscount);
+      cart.totalDiscount = cart.discountType == EnumDiscountType.percentage ? (cart.total - cart.totalLineDiscount) * (cart.discount / 100) : cart.discount;
+      cart.subTotal = cart.total - cart.totalDiscount - cart.totalLineDiscount;
+      cart.service = cart.orderType == EnumOrderType.takeAway ? 0 : cart.subTotal * (allDataModel.companyConfig.first.servicePerc / 100);
+      cart.serviceTax = cart.orderType == EnumOrderType.takeAway ? 0 : cart.service * (allDataModel.companyConfig.first.serviceTaxPerc / 100);
+      double totalDiscountAvailableItem = cart.items.fold(0.0, (sum, item) => sum + (item.discountAvailable ? (item.total - item.totalLineDiscount) : 0));
+      for (var element in cart.items) {
+        if (element.discountAvailable) {
+          element.discount = cart.totalDiscount * ((element.total - element.totalLineDiscount) / totalDiscountAvailableItem);
+        } else {
+          element.discount = 0;
+        }
+        element.tax = element.taxType == 2 ? 0 : (element.total - element.totalLineDiscount - element.discount) * (element.taxPercent / 100);
+        element.service = cart.service * ((element.total - element.totalLineDiscount - element.discount) / cart.subTotal);
+        element.serviceTax = element.service * (allDataModel.companyConfig.first.serviceTaxPerc / 100);
+      }
+
+      cart.itemsTax = cart.items.fold(0.0, (sum, item) => sum + item.tax);
+      cart.tax = cart.itemsTax + cart.serviceTax;
+      cart.amountDue = cart.subTotal + cart.deliveryCharge + cart.service + cart.tax;
+    }
+    return cart;
   }
 
   static void loadSorting() {
@@ -147,14 +236,116 @@ class Utils {
     return listBase64;
   }
 
+  static Future<bool> checkPermission(hasPermission) async {
+    var permission = false;
+    if (hasPermission) {
+      permission = true;
+    } else {
+      EmployeeModel? employee = await Utils.showLoginDialog();
+      if (employee != null) {
+        if (employee.hasVoidPermission) {
+          permission = true;
+        } else {
+          Utils.showSnackbar('The account you are logged in with does not have permission'.tr);
+        }
+      }
+    }
+    return permission;
+  }
+
+  static Future<EmployeeModel?> showLoginDialog() async {
+    final GlobalKey<FormState> keyForm = GlobalKey<FormState>();
+    final TextEditingController controllerUsername = TextEditingController();
+    final TextEditingController controllerPassword = TextEditingController();
+    var result = await Get.dialog(
+      CustomDialog(
+        gestureDetectorOnTap: () {},
+        builder: (context, setState, constraints) => Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Form(
+                key: keyForm,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CustomTextField(
+                      controller: controllerUsername,
+                      label: Text('Username'.tr),
+                      maxLines: 1,
+                      validator: (value) {
+                        return Validation.isRequired(value);
+                      },
+                    ),
+                    CustomTextField(
+                      controller: controllerPassword,
+                      label: Text('Password'.tr),
+                      obscureText: true,
+                      isPass: true,
+                      maxLines: 1,
+                      validator: (value) {
+                        return Validation.isRequired(value);
+                      },
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 50.w),
+                        Expanded(
+                          child: CustomButton(
+                            fixed: true,
+                            backgroundColor: AppColor.red,
+                            child: Text(
+                              'Exit'.tr,
+                              style: kStyleTextButton,
+                            ),
+                            onPressed: () {
+                              Get.back();
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 5.w),
+                        Expanded(
+                          child: CustomButton(
+                            fixed: true,
+                            child: Text('Ok'.tr),
+                            onPressed: () {
+                              FocusScope.of(context).requestFocus(FocusNode());
+                              if (keyForm.currentState!.validate()) {
+                                var indexEmployee = allDataModel.employees.indexWhere((element) => element.username == controllerUsername.text && element.password == controllerPassword.text && !element.isKitchenUser);
+                                if (indexEmployee != -1) {
+                                  Get.back(result: allDataModel.employees[indexEmployee]);
+                                } else {
+                                  Utils.showSnackbar('Incorrect username or password'.tr);
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 50.w),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      barrierDismissible: false,
+    );
+    return result;
+  }
+
   static Widget numPadWidget(
-      TextEditingController? controller,
-      void Function(Function()) setState, {
-        bool decimal = true,
-        Function()? onClear,
-        Function()? onSubmit,
-        Function()? onExit,
-      }) {
+    TextEditingController? controller,
+    void Function(Function()) setState, {
+    bool decimal = true,
+    Function()? onClear,
+    Function()? onSubmit,
+    Function()? onExit,
+  }) {
     void addNumber(TextEditingController? controller, int number) {
       if (controller != null) {
         if (controller.text.contains('.')) {
@@ -174,7 +365,7 @@ class Utils {
       onClear: onClear,
       onSubmit: onSubmit,
       onExit: onExit ??
-              () {
+          () {
             Get.back();
           },
       onPressed1: () {
@@ -241,6 +432,4 @@ class Utils {
       },
     );
   }
-
-
 }

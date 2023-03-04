@@ -1,11 +1,14 @@
 import 'dart:convert';
 import 'dart:developer' as developer;
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' as dio;
+import 'package:get/get.dart';
 import 'package:retail_system/config/constant.dart';
+import 'package:retail_system/config/enum/enum_invoice_kind.dart';
 import 'package:retail_system/config/utils.dart';
 import 'package:retail_system/database/network_table.dart';
 import 'package:retail_system/models/all_data_model.dart';
 import 'package:retail_system/models/api_response.dart';
+import 'package:retail_system/models/cart_model.dart';
 import 'package:retail_system/networks/api_url.dart';
 
 class RestApi {
@@ -14,13 +17,13 @@ class RestApi {
     'Content-Type': 'application/json',
   };
 
-  static final Dio restDio = Dio(BaseOptions(
+  static final dio.Dio restDio = dio.Dio(dio.BaseOptions(
     baseUrl: sharedPrefsClient.baseUrl,
     connectTimeout: 30000,
     receiveTimeout: 30000,
   ));
 
-  static void _traceError(DioError e) {
+  static void _traceError(dio.DioError e) {
     String trace = '════════════════════════════════════════ \n'
         '╔╣ Dio [ERROR] info ==> \n'
         '╟ BASE_URL: ${e.requestOptions.baseUrl}\n'
@@ -45,7 +48,7 @@ class RestApi {
     developer.log(trace);
   }
 
-  static void _networkLog(Response response) {
+  static void _networkLog(dio.Response response) {
     String trace = '════════════════════════════════════════ \n'
         '╔╣ Dio [RESPONSE] info ==> \n'
         '╟ BASE_URL: ${response.requestOptions.baseUrl}\n'
@@ -60,7 +63,7 @@ class RestApi {
     developer.log(trace);
   }
 
-  static Future<Response<dynamic>> _post(String path, {dynamic data, Map<String, dynamic>? headers, Map<String, dynamic>? queryParameters}) {
+  static Future<dio.Response<dynamic>> _post(String path, {dynamic data, Map<String, dynamic>? headers, Map<String, dynamic>? queryParameters}) {
     Map<String, dynamic> requestHeads;
 
     if (headers == null) {
@@ -75,7 +78,7 @@ class RestApi {
     return restDio.post(path, data: data, queryParameters: queryParameters);
   }
 
-  static Future<Response<dynamic>> _get(String path, {Map<String, dynamic>? headers, Map<String, dynamic>? queryParameters}) {
+  static Future<dio.Response<dynamic>> _get(String path, {Map<String, dynamic>? headers, Map<String, dynamic>? queryParameters}) {
     Map<String, dynamic> requestHeads;
 
     if (headers == null) {
@@ -90,13 +93,13 @@ class RestApi {
     return restDio.get(path, queryParameters: queryParameters);
   }
 
-  static Future<ApiResponse<T>> _executeRequest<T>({required Future<Response> method, Function? fromJsonModel}) async {
+  static Future<ApiResponse<T>> _executeRequest<T>({required Future<dio.Response> method, Function? fromJsonModel}) async {
     try {
       final response = await method;
       ApiResponse<T> apiResponse = await _responseHandler(response, fromJsonModel);
       _networkLog(response);
       return apiResponse;
-    } on DioError catch (e) {
+    } on dio.DioError catch (e) {
       _traceError(e);
       ApiResponse<T> apiResponse = await _responseHandler(e.response, fromJsonModel);
       return apiResponse;
@@ -107,12 +110,12 @@ class RestApi {
     }
   }
 
-  static Future<String> _errorMessageHandler(Response response) async {
+  static Future<String> _errorMessageHandler(dio.Response response) async {
     final message = response.data is Map ? response.data["message"] : "ErrorMessage";
     return message;
   }
 
-  static Future<ApiResponse<T>> _responseHandler<T>(Response? response, Function? fromJsonModel) async {
+  static Future<ApiResponse<T>> _responseHandler<T>(dio.Response? response, Function? fromJsonModel) async {
     int statusCode = response?.statusCode ?? 600;
     if (statusCode == 200 && response != null && response.data != null) {
       statusCode = response.data['code'];
@@ -211,7 +214,7 @@ class RestApi {
         await NetworkTable.update(networkModel);
       }
       Utils.loadSorting();
-    } on DioError catch (e) {
+    } on dio.DioError catch (e) {
       _traceError(e);
       Utils.hideLoadingDialog();
       allDataModel = sharedPrefsClient.allData;
@@ -223,6 +226,163 @@ class RestApi {
       allDataModel = sharedPrefsClient.allData;
       Utils.loadSorting();
       // Fluttertoast.showToast(msg: 'Please try again'.tr, timeInSecForIosWeb: 3);
+    }
+  }
+
+  static Future<void> invoice({required CartModel cart, required EnumInvoiceKind invoiceKind}) async {
+    try {
+      List<Map<String, dynamic>> modifiers = [];
+      for (var item in cart.items) {
+        int rowSerial = 0;
+        modifiers.addAll(item.modifiers.map((e) {
+          rowSerial++;
+          return e.toInvoice(itemId: item.id, rowSerial: rowSerial, orderType: item.orderType);
+        }));
+        for (var question in item.questions) {
+          modifiers.addAll(question.modifiers.map((e) {
+            rowSerial++;
+            return e.toInvoice(itemId: item.id, rowSerial: rowSerial, orderType: item.orderType);
+          }));
+        }
+      }
+      var body = jsonEncode({
+        "InvoiceMaster": invoiceKind == EnumInvoiceKind.invoicePay ? cart.toInvoice() : cart.toReturnInvoice(),
+        "InvoiceDetails": List<dynamic>.from(cart.items.map((e) => invoiceKind == EnumInvoiceKind.invoicePay ? e.toInvoice() : e.toReturnInvoice())).toList(),
+        "InvoiceModifires": modifiers,
+      });
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'INVOICE',
+        status: 1,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.INVOICE,
+        method: 'POST',
+        params: '',
+        body: body,
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.post(ApiUrl.INVOICE, data: body);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.status = 2;
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+    } on dio.DioError catch (e) {
+      _traceError(e);
+      //Utils.showSnackbar('Please try again'.tr, '${e.response?.data ?? ''}');
+    } catch (e) {
+      _traceCatch(e);
+      //Utils.showSnackbar('Please try again'.tr);
+    }
+  }
+
+  static Future<void> saveVoidItem({required CartItemModel item, required String reason}) async {
+    try {
+      var body = jsonEncode({
+        "CoYear": sharedPrefsClient.dailyClose.year,
+        "PosNo": sharedPrefsClient.posNo,
+        "CashNo": sharedPrefsClient.cashNo,
+        "VoidDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "RowNo": item.rowSerial,
+        "Reason": reason,
+        "ItemID": item.id,
+        "Qty": item.qty,
+        "UserID": sharedPrefsClient.employee.id,
+      });
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'SAVE_VOID_ITEMS',
+        status: 1,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.SAVE_VOID_ITEMS,
+        method: 'POST',
+        params: '',
+        body: body,
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.post(ApiUrl.SAVE_VOID_ITEMS, data: body);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.status = 2;
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+    } on dio.DioError catch (e) {
+      _traceError(e);
+      Utils.showSnackbar('Please try again'.tr, '${e.response?.data ?? ''}');
+    } catch (e) {
+      _traceCatch(e);
+      Utils.showSnackbar('Please try again'.tr);
+    }
+  }
+
+  static Future<void> saveVoidAllItems({required List<CartItemModel> items, required String reason}) async {
+    try {
+      var body = jsonEncode(items
+          .map((e) => {
+                "CoYear": sharedPrefsClient.dailyClose.year,
+                "PosNo": sharedPrefsClient.posNo,
+                "CashNo": sharedPrefsClient.cashNo,
+                "VoidDate": sharedPrefsClient.dailyClose.toIso8601String(),
+                "RowNo": e.rowSerial,
+                "Reason": reason,
+                "ItemID": e.id,
+                "Qty": e.qty,
+                "UserID": sharedPrefsClient.employee.id,
+              })
+          .toList());
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'SAVE_VOID_ALL_ITEMS',
+        status: 1,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.SAVE_VOID_ALL_ITEMS,
+        method: 'POST',
+        params: '',
+        body: body,
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.post(ApiUrl.SAVE_VOID_ALL_ITEMS, data: body);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.status = 2;
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+    } on dio.DioError catch (e) {
+      _traceError(e);
+      Utils.showSnackbar('Please try again'.tr, '${e.response?.data ?? ''}');
+    } catch (e) {
+      _traceCatch(e);
+      Utils.showSnackbar('Please try again'.tr);
     }
   }
 }

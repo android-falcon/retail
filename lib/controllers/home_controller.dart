@@ -1,29 +1,458 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:retail_system/config/app_color.dart';
 import 'package:retail_system/config/constant.dart';
 import 'package:retail_system/config/enum/enum_credit_card_type.dart';
+import 'package:retail_system/config/enum/enum_invoice_kind.dart';
+import 'package:retail_system/config/enum/enum_order_type.dart';
 import 'package:retail_system/config/text_input_formatters.dart';
 import 'package:retail_system/config/utils.dart';
 import 'package:retail_system/config/validation.dart';
+import 'package:retail_system/models/all_data/void_reason_model.dart';
+import 'package:retail_system/models/cart_model.dart';
+import 'package:retail_system/networks/rest_api.dart';
+import 'package:retail_system/printer/printer.dart';
 import 'package:retail_system/ui/widgets/custom_widget.dart';
+import 'package:uuid/uuid.dart';
 
 class HomeController extends GetxController {
   static HomeController get to => Get.isRegistered<HomeController>() ? Get.find<HomeController>() : Get.put(HomeController());
 
+  final cart = CartModel.init(orderType: EnumOrderType.takeAway).obs;
   final TextEditingController controllerSearch = TextEditingController();
 
-  addItem() {}
+  searchItem() {}
 
-  deleteItem() {}
+  addItem() {
+    if (controllerSearch.text.isEmpty) {
+      Utils.showSnackbar('Please fill search field'.tr, '');
+    } else {
+      var indexItem = allDataModel.items.indexWhere((element) => '${element.id}' == controllerSearch.text);
+      if (indexItem == -1) {
+        Utils.showSnackbar('Item not found'.tr, '');
+      } else {
+        var indexCartItem = cart.value.items.lastIndexWhere((element) => element.id == allDataModel.items[indexItem].id);
+        if (indexCartItem == -1) {
+          cart.value.items.add(CartItemModel(
+            uuid: const Uuid().v1(),
+            parentUuid: '',
+            orderType: EnumOrderType.takeAway,
+            id: allDataModel.items[indexItem].id,
+            categoryId: allDataModel.items[indexItem].category.id,
+            taxType: allDataModel.items[indexItem].taxTypeId,
+            taxPercent: allDataModel.items[indexItem].taxPercent.percent,
+            name: allDataModel.items[indexItem].menuName,
+            qty: 1,
+            price: cart.value.deliveryCompanyId == 0 ? allDataModel.items[indexItem].price : allDataModel.items[indexItem].companyPrice,
+            priceChange: cart.value.deliveryCompanyId == 0 ? allDataModel.items[indexItem].price : allDataModel.items[indexItem].companyPrice,
+            total: cart.value.deliveryCompanyId == 0 ? allDataModel.items[indexItem].price : allDataModel.items[indexItem].companyPrice,
+            tax: 0,
+            discountAvailable: allDataModel.items[indexItem].discountAvailable == 1,
+            openPrice: allDataModel.items[indexItem].openPrice == 1,
+            rowSerial: cart.value.items.length + 1,
+          ));
+        } else {
+          cart.value.items[indexCartItem].qty += 1;
+        }
+        cart.value = Utils.calculateOrder(cart: cart.value);
+        controllerSearch.text = "";
+        update();
+      }
+    }
+  }
+
+  holdItems() async {
+    if (cart.value.items.isEmpty) {
+      showHoldItems();
+    } else {
+      var result = await showAddParkDialog();
+      if (result['caption'].isNotEmpty) {
+        cart.value.parkName = result['caption'];
+        cart.value.parkColor = result['color'];
+        var park = sharedPrefsClient.park;
+        park.add(cart.value);
+        sharedPrefsClient.park = park;
+        cart.value = CartModel.init(orderType: EnumOrderType.takeAway);
+        cart.value = Utils.calculateOrder(cart: cart.value);
+        update();
+      }
+    }
+  }
+
+  voidAllItem() async {
+    if (await Utils.checkPermission(sharedPrefsClient.employee.hasVoidAllPermission)) {
+      if (cart.value.items.isEmpty) {
+        Utils.showSnackbar('There must be items'.tr);
+      } else {
+        VoidReasonModel? result;
+        if (allDataModel.companyConfig[0].useVoidReason) {
+          result = await showVoidReasonDialog();
+        } else {
+          var areYouSure = await Utils.showAreYouSureDialog(title: 'Void All'.tr);
+          if (areYouSure) {
+            result = VoidReasonModel.fromJson({});
+          }
+        }
+        if (result != null) {
+          RestApi.saveVoidAllItems(items: cart.value.items, reason: result.reasonName);
+
+          cart.value.items = [];
+          cart.value.deliveryCharge = 0;
+          cart.value.discount = 0;
+          cart.value = Utils.calculateOrder(cart: cart.value);
+          update();
+        }
+      }
+    }
+  }
+
+  voidItem({required int index}) async {
+    if (await Utils.checkPermission(sharedPrefsClient.employee.hasVoidPermission)) {
+      VoidReasonModel? result;
+      if (allDataModel.companyConfig[0].useVoidReason) {
+        result = await showVoidReasonDialog();
+      } else {
+        var areYouSure = await Utils.showAreYouSureDialog(title: 'Void Item'.tr);
+        if (areYouSure) {
+          result = VoidReasonModel.fromJson({});
+        }
+      }
+      if (result != null) {
+        RestApi.saveVoidItem(item: cart.value.items[index], reason: result.reasonName);
+        cart.value.items.removeWhere((element) => element.parentUuid == cart.value.items[index].uuid);
+        cart.value.items.removeAt(index);
+        if (cart.value.items.isEmpty) {
+          cart.value.deliveryCharge = 0;
+          cart.value.discount = 0;
+        } else if (cart.value.items.every((element) => !element.discountAvailable)) {
+          cart.value.discount = 0;
+        }
+        cart.value = Utils.calculateOrder(cart: cart.value);
+        update();
+      }
+    }
+  }
 
   editItem() {}
 
   double _calculateRemaining() {
-    return cart.amountDue - (cart.cash + cart.credit + cart.cheque + cart.gift + cart.coupon + cart.point);
+    return cart.value.amountDue - (cart.value.cash + cart.value.credit + cart.value.cheque + cart.value.gift + cart.value.coupon + cart.value.point);
+  }
+
+  Future<Map<dynamic, dynamic>> showAddParkDialog() async {
+    GlobalKey<FormState> keyForm = GlobalKey<FormState>();
+    TextEditingController controllerCaption = TextEditingController();
+    Color? parkColor;
+    await Get.dialog(
+      CustomDialog(
+        borderRadius: BorderRadius.circular(20.r),
+        width: 250.w,
+        height: 300.h,
+        builder: (context, setState, constraints) => Padding(
+          padding: EdgeInsets.all(16.sp),
+          child: Form(
+            key: keyForm,
+            child: Column(
+              children: [
+                Wrap(
+                  children: [
+                    CustomSelectColor(
+                      value: Colors.green,
+                      gropeValue: parkColor,
+                      onTap: () {
+                        parkColor = Colors.green;
+                        setState(() {});
+                      },
+                    ),
+                    CustomSelectColor(
+                      value: Colors.red,
+                      gropeValue: parkColor,
+                      onTap: () {
+                        parkColor = Colors.red;
+                        setState(() {});
+                      },
+                    ),
+                    CustomSelectColor(
+                      value: Colors.blue,
+                      gropeValue: parkColor,
+                      onTap: () {
+                        parkColor = Colors.blue;
+                        setState(() {});
+                      },
+                    ),
+                    CustomSelectColor(
+                      value: Colors.yellow,
+                      gropeValue: parkColor,
+                      onTap: () {
+                        parkColor = Colors.yellow;
+                        setState(() {});
+                      },
+                    ),
+                    CustomSelectColor(
+                      value: Colors.orange,
+                      gropeValue: parkColor,
+                      onTap: () {
+                        parkColor = Colors.orange;
+                        setState(() {});
+                      },
+                    ),
+                    CustomSelectColor(
+                      value: Colors.pink,
+                      gropeValue: parkColor,
+                      onTap: () {
+                        parkColor = Colors.pink;
+                        setState(() {});
+                      },
+                    ),
+                    CustomSelectColor(
+                      value: Colors.purple,
+                      gropeValue: parkColor,
+                      onTap: () {
+                        parkColor = Colors.purple;
+                        setState(() {});
+                      },
+                    ),
+                    CustomSelectColor(
+                      value: Colors.tealAccent,
+                      gropeValue: parkColor,
+                      onTap: () {
+                        parkColor = Colors.tealAccent;
+                        setState(() {});
+                      },
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20.h),
+                const Divider(thickness: 2),
+                SizedBox(height: 20.h),
+                CustomTextField(
+                  borderColor: AppColor.primaryColor,
+                  controller: controllerCaption,
+                  label: Text('Hold Caption'.tr),
+                  fillColor: Colors.white,
+                  validator: (value) {
+                    return Validation.isRequired(value);
+                  },
+                ),
+                SizedBox(height: 50.h),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CustomButton(
+                      fixed: true,
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      backgroundColor: AppColor.primaryColor,
+                      onPressed: () {
+                        if (keyForm.currentState!.validate()) {
+                          Get.back();
+                        }
+                      },
+                      child: Text('Add'.tr),
+                    ),
+                    CustomButton(
+                      fixed: true,
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text('Cancel'.tr),
+                      onPressed: () {
+                        controllerCaption.text = '';
+                        Get.back();
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+    return {'caption': controllerCaption.text, 'color': parkColor ?? Colors.white};
+  }
+
+  showHoldItems() {
+    var holdItems = sharedPrefsClient.park;
+    Get.dialog(
+      CustomDialog(
+        builder: (context, setState, constraints) => Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          child: Column(
+            children: [
+              Container(
+                height: 250.h,
+                margin: EdgeInsets.symmetric(vertical: 16.h),
+                decoration: BoxDecoration(
+                  border: Border.all(color: AppColor.primaryColor),
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.all(8.sp),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 6,
+                            child: Text(
+                              'Caption'.tr,
+                              style: kStyleTextTable,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              'Total'.tr,
+                              style: kStyleTextTable,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 10.h),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: holdItems.length,
+                        itemBuilder: (context, index) => InkWell(
+                          onTap: () {
+                            cart.value = holdItems[index];
+                            holdItems.removeAt(index);
+                            sharedPrefsClient.park = holdItems;
+                            Get.back();
+                            update();
+                          },
+                          child: Container(
+                            padding: EdgeInsets.all(8.sp),
+                            color: holdItems[index].parkColor,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 6,
+                                  child: Text(
+                                    holdItems[index].parkName,
+                                    style: kStyleDataTable,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    holdItems[index].amountDue.toStringAsFixed(fractionDigits),
+                                    style: kStyleDataTable,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomButton(
+                    backgroundColor: AppColor.red,
+                    padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 16.h),
+                    fixed: true,
+                    onPressed: () {
+                      Get.back();
+                    },
+                    child: Text(
+                      'Exit'.tr,
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<VoidReasonModel?> showVoidReasonDialog() async {
+    int? selectedVoidReasonId;
+    await Get.dialog(
+      WillPopScope(
+        onWillPop: () async => false,
+        child: CustomDialog(
+          builder: (context, setState, constraints) => Column(
+            children: [
+              Text(
+                'Void Reason'.tr,
+                style: kStyleTextTitle,
+              ),
+              const Divider(thickness: 2),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: allDataModel.voidReason.length,
+                itemBuilder: (context, index) => RadioListTile(
+                  title: Text(
+                    allDataModel.voidReason[index].reasonName,
+                    style: kStyleForceQuestion,
+                  ),
+                  value: allDataModel.voidReason[index].id,
+                  groupValue: selectedVoidReasonId,
+                  onChanged: (value) {
+                    selectedVoidReasonId = value as int;
+                    setState(() {});
+                  },
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(child: Container()),
+                  Expanded(
+                    child: CustomButton(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                      backgroundColor: AppColor.primaryColor,
+                      onPressed: () {
+                        selectedVoidReasonId = null;
+                        Get.back();
+                      },
+                      child: Text('Cancel'.tr),
+                    ),
+                  ),
+                  Expanded(
+                    child: CustomButton(
+                      margin: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                      backgroundColor: AppColor.primaryColor,
+                      onPressed: () {
+                        if (selectedVoidReasonId == null) {
+                          Utils.showSnackbar('Please select void reason'.tr);
+                        } else {
+                          Get.back();
+                        }
+                      },
+                      child: Text('Save'.tr),
+                    ),
+                  ),
+                  Expanded(child: Container()),
+                ],
+              ),
+              SizedBox(height: 16.h),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+    return selectedVoidReasonId == null ? null : allDataModel.voidReason.firstWhere((element) => element.id == selectedVoidReasonId);
   }
 
   paymentMethodDialog() {
@@ -49,18 +478,18 @@ class HomeController extends GetxController {
                     child: CustomButton(
                       onPressed: () async {
                         var result = await paymentDialog(
-                          balance: remaining + cart.cash,
-                          received: cart.cash,
+                          balance: remaining + cart.value.cash,
+                          received: cart.value.cash,
                           enableReturnValue: true,
                         );
-                        cart.cash = result['received'];
+                        cart.value.cash = result['received'];
                         remaining = _calculateRemaining();
                         setState(() {});
                         // if (remaining == 0) {
                         //   _showFinishDialog();
                         // }
                       },
-                      child: Text('${'Cash'.tr} : ${cart.cash.toStringAsFixed(fractionDigits)}'),
+                      child: Text('${'Cash'.tr} : ${cart.value.cash.toStringAsFixed(fractionDigits)}'),
                     ),
                   ),
                   SizedBox(width: 20.w),
@@ -68,23 +497,23 @@ class HomeController extends GetxController {
                     child: CustomButton(
                       onPressed: () async {
                         var result = await paymentDialog(
-                          balance: remaining + cart.credit,
-                          received: cart.credit,
+                          balance: remaining + cart.value.credit,
+                          received: cart.value.credit,
                           enableReturnValue: false,
-                          controllerCreditCard: TextEditingController(text: cart.creditCardNumber),
-                          paymentCompany: cart.payCompanyId == 0 ? null : cart.payCompanyId,
+                          controllerCreditCard: TextEditingController(text: cart.value.creditCardNumber),
+                          paymentCompany: cart.value.payCompanyId == 0 ? null : cart.value.payCompanyId,
                         );
-                        cart.credit = result['received'];
-                        cart.creditCardNumber = result['credit_card'];
-                        cart.creditCardType = result['credit_card_type'];
-                        cart.payCompanyId = result['payment_company'];
+                        cart.value.credit = result['received'];
+                        cart.value.creditCardNumber = result['credit_card'];
+                        cart.value.creditCardType = result['credit_card_type'];
+                        cart.value.payCompanyId = result['payment_company'];
                         remaining = _calculateRemaining();
                         setState(() {});
                         // if (remaining == 0) {
                         //   _showFinishDialog();
                         // }
                       },
-                      child: Text('${'Credit Card'.tr} : ${cart.credit.toStringAsFixed(fractionDigits)}'),
+                      child: Text('${'Credit Card'.tr} : ${cart.value.credit.toStringAsFixed(fractionDigits)}'),
                     ),
                   ),
                 ],
@@ -100,44 +529,44 @@ class HomeController extends GetxController {
                   children: [
                     CustomIconText(
                       bold: true,
-                      label: '${'Total'.tr} : ${cart.total.toStringAsFixed(fractionDigits)}',
+                      label: '${'Total'.tr} : ${cart.value.total.toStringAsFixed(fractionDigits)}',
                     ),
                     CustomIconText(
                       bold: true,
-                      label: '${'Delivery charge'.tr} : ${cart.deliveryCharge.toStringAsFixed(fractionDigits)}',
+                      label: '${'Delivery charge'.tr} : ${cart.value.deliveryCharge.toStringAsFixed(fractionDigits)}',
                     ),
                     CustomIconText(
                       bold: true,
-                      label: '${'Line discount'.tr} : ${cart.totalLineDiscount.toStringAsFixed(fractionDigits)}',
+                      label: '${'Line discount'.tr} : ${cart.value.totalLineDiscount.toStringAsFixed(fractionDigits)}',
                     ),
                     CustomIconText(
                       bold: true,
-                      label: '${'Discount'.tr} : ${cart.totalDiscount.toStringAsFixed(fractionDigits)}',
+                      label: '${'Discount'.tr} : ${cart.value.totalDiscount.toStringAsFixed(fractionDigits)}',
                     ),
                     CustomIconText(
                       bold: true,
-                      label: '${'Sub total'.tr} : ${cart.subTotal.toStringAsFixed(fractionDigits)}',
+                      label: '${'Sub total'.tr} : ${cart.value.subTotal.toStringAsFixed(fractionDigits)}',
                     ),
                     CustomIconText(
                       bold: true,
-                      label: '${'Service'.tr} : ${cart.service.toStringAsFixed(fractionDigits)}',
+                      label: '${'Service'.tr} : ${cart.value.service.toStringAsFixed(fractionDigits)}',
                     ),
                     CustomIconText(
                       bold: true,
-                      label: '${'Tax'.tr} : ${cart.tax.toStringAsFixed(fractionDigits)}',
+                      label: '${'Tax'.tr} : ${cart.value.tax.toStringAsFixed(fractionDigits)}',
                     ),
                     CustomIconText(
                       bold: true,
-                      label: '${'Amount Due'.tr} : ${cart.amountDue.toStringAsFixed(fractionDigits)}',
+                      label: '${'Amount Due'.tr} : ${cart.value.amountDue.toStringAsFixed(fractionDigits)}',
                     ),
                     const Divider(),
                     CustomIconText(
                       bold: true,
-                      label: '${'Total Due'.tr} : ${cart.amountDue.toStringAsFixed(fractionDigits)}',
+                      label: '${'Total Due'.tr} : ${cart.value.amountDue.toStringAsFixed(fractionDigits)}',
                     ),
                     CustomIconText(
                       bold: true,
-                      label: '${'Total received'.tr} : ${(cart.cash + cart.credit + cart.cheque + cart.gift + cart.coupon + cart.point).toStringAsFixed(fractionDigits)}',
+                      label: '${'Total received'.tr} : ${(cart.value.cash + cart.value.credit + cart.value.cheque + cart.value.gift + cart.value.coupon + cart.value.point).toStringAsFixed(fractionDigits)}',
                     ),
                     CustomIconText(
                       bold: true,
@@ -150,9 +579,19 @@ class HomeController extends GetxController {
                       fixed: true,
                       onPressed: () {
                         if (remaining == 0) {
-                          // finish
+                          for (int i = 0; i < cart.value.items.length; i++) {
+                            cart.value.items[i].rowSerial = i + 1;
+                          }
+                          RestApi.invoice(cart: cart.value, invoiceKind: EnumInvoiceKind.invoicePay);
+                          sharedPrefsClient.inVocNo++;
+                          Get.back();
+                          Printer.printInvoicesDialog(cart: cart.value, showPrintButton: false, invNo: '${sharedPrefsClient.inVocNo - 1}').then((value) {
+                            cart.value = CartModel.init(orderType: EnumOrderType.takeAway);
+                            update();
+                          });
+                        } else {
+                          Utils.showSnackbar('The remainder should be 0'.tr);
                         }
-                        Get.back();
                       },
                       child: Text(
                         'Save'.tr,
@@ -166,7 +605,6 @@ class HomeController extends GetxController {
           ),
         ),
       ),
-      barrierDismissible: false,
     );
   }
 
@@ -333,7 +771,6 @@ class HomeController extends GetxController {
           ),
         ),
       ),
-      barrierDismissible: false,
     );
     double _received = result == null ? received : double.parse(result);
     if ((_received - double.parse(balance.toStringAsFixed(3))) == 0) {
@@ -369,10 +806,14 @@ class HomeController extends GetxController {
             ),
           ),
         ),
-        barrierDismissible: false,
       );
       _received = balance;
     }
-    return {"received": _received, "credit_card": controllerCreditCard?.text ?? "", "credit_card_type": selectedCreditCard.name, 'payment_company': selectedPaymentCompany};
+    return {
+      "received": _received,
+      "credit_card": controllerCreditCard?.text ?? "",
+      "credit_card_type": selectedCreditCard.name,
+      'payment_company': selectedPaymentCompany ?? 0,
+    };
   }
 }

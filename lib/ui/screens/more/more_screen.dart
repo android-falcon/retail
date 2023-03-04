@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:retail_system/config/app_color.dart';
 import 'package:retail_system/config/constant.dart';
-import 'package:retail_system/ui/screens/more/more_widgets.dart';
 import 'package:retail_system/ui/widgets/custom_widget.dart';
 
 class MoreScreen extends GetResponsiveView {
@@ -11,93 +10,13 @@ class MoreScreen extends GetResponsiveView {
 
   final List<Map<String, dynamic>> _options = [
     {
-      'label': 'Search for material'.tr,
-      'icon': kAssetSearch,
-      'onTap': () {},
-    },
-    {
-      'label': 'Wait'.tr,
-      'icon': kAssetWait,
-      'onTap': () {},
-    },
-    {
-      'label': 'Reservation'.tr,
-      'icon': kAssetReservation,
-      'onTap': () {},
-    },
-    {
-      'label': 'Replacing'.tr,
-      'icon': kAssetReplacing,
-      'onTap': () {},
-    },
-    {
-      'label': 'Return item'.tr,
-      'icon': kAssetReturnItem,
-      'onTap': () {},
-    },
-    {
-      'label': 'Delete the last'.tr,
-      'icon': kAssetDeleteTheLast,
-      'onTap': () {},
-    },
-    {
-      'label': 'Receipts'.tr,
-      'icon': kAssetReceipts,
-      'onTap': () {},
-    },
-    {
-      'label': 'Payments'.tr,
-      'icon': kAssetPayments,
-      'onTap': () {},
-    },
-    {
-      'label': 'Open cash'.tr,
-      'icon': kAssetOpenCash,
-      'onTap': () {},
-    },
-    {
       'label': 'Close cash'.tr,
       'icon': kAssetCloseCash,
       'onTap': () {},
     },
     {
-      'label': 'End cash'.tr,
-      'icon': kAssetEndCash,
-      'onTap': () {},
-    },
-    {
       'label': 'Reprint an invoice'.tr,
       'icon': kAssetReprintInvoice,
-      'onTap': () {},
-    },
-    {
-      'label': 'Replace item'.tr,
-      'icon': kAssetReplaceItem,
-      'onTap': () {},
-    },
-    {
-      'label': 'Item info'.tr,
-      'icon': kAssetItemInfo,
-      'onTap': () {},
-    },
-    {
-      'label': 'Save'.tr,
-      'icon': kAssetSave,
-      'onTap': () {},
-    },
-    {
-      'label': 'Save invoice'.tr,
-      'icon': kAssetSaveInvoice,
-      'onTap': () {},
-    },
-    {
-      'label': 'Payment Methods'.tr,
-      'icon': kAssetPaymentMethods,
-      'onTap': () {},
-    },
-    {
-      'label': 'Customer Payments'.tr,
-      'icon': kAssetCustomerPayments,
       'onTap': () {},
     },
     {
@@ -112,7 +31,7 @@ class MoreScreen extends GetResponsiveView {
       alignment: Alignment.topCenter,
       appBar: CustomAppBar(
         title: Text(
-          '${'Action Number'.tr} : 72911',
+          '${'Action Number'.tr} : ',
           style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
         ),
         backgroundColor: AppColor.accentColor,

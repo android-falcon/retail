@@ -14,3 +14,4 @@ export 'src/phone_number_field/phonenumbers.dart';
 export 'src/num_pad.dart';
 export 'src/custom_dialog.dart';
 export 'src/custom_drop_down.dart';
+export 'src/custom_select_color.dart';

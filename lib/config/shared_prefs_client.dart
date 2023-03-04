@@ -2,6 +2,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:retail_system/config/sorting_model.dart';
 import 'package:retail_system/models/all_data/employee_model.dart';
 import 'package:retail_system/models/all_data_model.dart';
+import 'package:retail_system/models/cart_model.dart';
 
 class SharedPrefsClient {
   static const String _storageName = "MyPref";
@@ -46,6 +47,12 @@ class SharedPrefsClient {
 
   set isGMS(bool value) {
     _storage.write(keyIsGMS, value);
+  }
+
+  List<CartModel> get park => List<CartModel>.from((_storage.read(keyPark) ?? []).map((e) => CartModel.fromJson(e)));
+
+  set park(List<CartModel> value) {
+    _storage.write(keyPark, List<dynamic>.from(value.map((e) => e.toJson())));
   }
 
   EmployeeModel get employee => EmployeeModel.fromJson(_storage.read(keyEmployee) ?? {});
@@ -119,6 +126,7 @@ const String keyDeviceToken = "key_device_token";
 const String keyIsLogin = "key_is_login";
 const String keyLanguage = "key_language";
 const String keyIsGMS = "key_is_gms";
+const String keyPark = "key_park";
 const String keyEmployee = "key_employee";
 const String keyAllData = "key_all_data";
 const String keyDailyClose = "key_daily_close";

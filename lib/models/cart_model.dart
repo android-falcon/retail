@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:retail_system/config/constant.dart';
 import 'package:retail_system/config/enum/enum_discount_type.dart';
@@ -35,6 +36,7 @@ class CartModel extends Equatable {
     this.payCompanyId = 0,
     this.deliveryCompanyId = 0,
     this.parkName = '',
+    this.parkColor = Colors.white,
     this.invNo = 0,
     this.posNo = 0,
     this.cashNo = 0,
@@ -84,6 +86,7 @@ class CartModel extends Equatable {
   int seatsFemale;
   int seatsMale;
   String parkName;
+  Color parkColor;
   int orderNo;
 
   factory CartModel.init({required EnumOrderType orderType, int? tableId}) => CartModel(
@@ -135,6 +138,7 @@ class CartModel extends Equatable {
         payCompanyId: json['payCompanyId'] ?? 0,
         deliveryCompanyId: json['deliveryCompanyId'] ?? 0,
         parkName: json['parkName'] ?? '',
+        parkColor: json['parkColor'] == null ? Colors.white : Color(json['parkColor']),
         invNo: json['invNo'] ?? 0,
         posNo: json['posNo'] ?? 0,
         cashNo: json['cashNo'] ?? 0,
@@ -213,6 +217,7 @@ class CartModel extends Equatable {
         'payCompanyId': payCompanyId,
         'deliveryCompanyId': deliveryCompanyId,
         'parkName': parkName,
+        'parkColor': parkColor.value,
         'invNo': invNo,
         'posNo': posNo,
         'cashNo': cashNo,

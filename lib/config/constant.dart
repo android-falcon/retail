@@ -3,10 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:retail_system/config/app_color.dart';
 import 'package:retail_system/config/enum/enum_company_type.dart';
-import 'package:retail_system/config/enum/enum_order_type.dart';
 import 'package:retail_system/config/shared_prefs_client.dart';
 import 'package:retail_system/models/all_data_model.dart';
-import 'package:retail_system/models/cart_model.dart';
 
 final kStyleTextDefault = TextStyle(fontWeight: FontWeight.normal, fontSize: 16.sp, color: AppColor.tertiaryColor);
 final kStyleTextTitle = TextStyle(fontWeight: FontWeight.normal, fontSize: 20.sp, color: AppColor.tertiaryColor);
@@ -19,10 +17,11 @@ final kStyleButtonPayment = TextStyle(fontWeight: FontWeight.bold, fontSize: 17.
 final kStyleLargePrinter = TextStyle(fontWeight: FontWeight.bold, fontSize: 34.sp);
 final kStyleTitlePrinter = TextStyle(fontWeight: FontWeight.bold, fontSize: 27.sp);
 final kStyleDataPrinter = TextStyle(fontSize: 23.sp);
+final kStyleForceQuestion = TextStyle(fontWeight: FontWeight.bold, fontSize: 17.sp);
 
 PackageInfo packageInfo = PackageInfo(appName: '', packageName: '', version: '', buildNumber: '');
 AllDataModel allDataModel = AllDataModel.fromJson({});
-CartModel cart = CartModel.init(orderType: EnumOrderType.takeAway);
+
 final sharedPrefsClient = SharedPrefsClient();
 const companyType = EnumCompanyType.falcons;
 
@@ -66,6 +65,8 @@ String kAssetSaveInvoice = "";
 String kAssetPaymentMethods = "";
 String kAssetCustomerPayments = "";
 String kAssetLogout = "";
+String kAssetsWelcome = "";
+String kAssetExit = "";
 
 loadAssets() {
   switch (companyType) {
@@ -105,6 +106,8 @@ loadAssets() {
       kAssetPaymentMethods = "assets/images/payment_methods.svg";
       kAssetCustomerPayments = "assets/images/customer_payments.svg";
       kAssetLogout = "assets/images/logout.svg";
+      kAssetsWelcome = "assets/images/welcome.png";
+      kAssetExit = "assets/images/exit.svg";
       break;
   }
 }

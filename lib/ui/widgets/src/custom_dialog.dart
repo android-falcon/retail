@@ -6,11 +6,12 @@ typedef CustomDialogBuilder = Widget Function(BuildContext context, StateSetter 
 class CustomDialog extends StatelessWidget {
   final double? width;
   final double? height;
+  final BorderRadiusGeometry? borderRadius;
   final bool enableScroll;
   final CustomDialogBuilder builder;
   final GestureTapCallback? gestureDetectorOnTap;
 
-  const CustomDialog({Key? key, this.width, this.height, required this.builder, this.gestureDetectorOnTap, this.enableScroll = true}) : super(key: key);
+  const CustomDialog({Key? key, this.width, this.height, required this.builder, this.borderRadius, this.gestureDetectorOnTap, this.enableScroll = true}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +26,9 @@ class CustomDialog extends StatelessWidget {
           },
           child: Container(
             width: width ?? 0.95.sw,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius:  BorderRadius.zero,
+              borderRadius: borderRadius ?? BorderRadius.zero,
             ),
             child: LayoutBuilder(
               builder: (context, constraints) => enableScroll
