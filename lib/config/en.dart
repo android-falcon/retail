@@ -137,5 +137,7 @@ const Map<String, String> en = {
   "POS No":"POS No",
   "Cashier  No":"Cashier  No",
   "Ret Qty":"Ret Qty",
+  "Reprint Invoice":"Reprint Invoice",
+  "Show":"Show",
   "":"",
 };

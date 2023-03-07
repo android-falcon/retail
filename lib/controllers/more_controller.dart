@@ -129,64 +129,46 @@ class MoreController extends GetxController {
     Get.offAll(() => LoginScreen());
   }
 
-
-
   _showReprintInvoiceDialog() async {
-    TextEditingController controllerVoucherNumber = TextEditingController();
+    TextEditingController controllerVoucherNo = TextEditingController();
     CartModel? reprintModel;
     bool result = await Get.dialog(
       CustomDialog(
-        height: 400.h,
-        width: 250.w,
+        width: 300.w,
         gestureDetectorOnTap: () {},
         builder: (context, setState, constraints) => Column(
           children: [
             Text(
               'Reprint Invoice'.tr,
               textAlign: TextAlign.end,
-              style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+              style: kStyleTextLarge,
             ),
             SizedBox(height: 30.h),
             Row(
               children: [
                 Expanded(
-                  child: Text(
-                    '${'Voucher Number'.tr} : ',
-                    textAlign: TextAlign.center,
-                    style: kStyleTextDefault,
+                  child: CustomTextField(
+                    margin: EdgeInsets.symmetric(horizontal: 16.w),
+                    controller: controllerVoucherNo,
+                    label: Text('Voucher No'.tr),
+                    maxLines: 1,
+                    inputFormatters: [
+                      EnglishDigitsTextInputFormatter(decimal: false),
+                    ],
+                    keyboardType: const TextInputType.numberWithOptions(),
+                    validator: (value) => Validation.isRequired(value),
                   ),
                 ),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: CustomTextFieldNum(
-                          controller: controllerVoucherNumber,
-                          fillColor: Colors.white,
-                          decimal: false,
-                          validator: (value) {
-                            return Validation.isRequired(value);
-                          },
-                          onChanged: (value) {
-                            reprintModel = null;
-                            setState(() {});
-                          },
-                        ),
-                      ),
-                      SizedBox(width: 10.w),
-                      CustomButton(
-                        fixed: true,
-                        child: Text('Show'.tr),
-                        backgroundColor: AppColor.red,
-                        onPressed: () async {
-                          FocusScope.of(context).requestFocus(FocusNode());
-                          reprintModel = await RestApi.getInvoice(invNo: int.parse(controllerVoucherNumber.text));
-                          reprintModel = Utils.calculateOrder(cart: reprintModel!, invoiceKind: EnumInvoiceKind.invoicePay);
-                          setState(() {});
-                        },
-                      ),
-                    ],
-                  ),
+                CustomButton(
+                  margin: EdgeInsetsDirectional.only(end: 16.w),
+                  fixed: true,
+                  child: Text('Show'.tr),
+                  onPressed: () async {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    reprintModel = await RestApi.getInvoice(invNo: int.parse(controllerVoucherNo.text));
+                    reprintModel = Utils.calculateOrder(cart: reprintModel!, invoiceKind: EnumInvoiceKind.invoicePay);
+                    setState(() {});
+                  },
                 ),
               ],
             ),
@@ -227,52 +209,29 @@ class MoreController extends GetxController {
               ],
             ),
             SizedBox(height: 40.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(
-                  width: 50.w,
-                  height: 50.h,
+            Center(
+              child: CustomButton(
+                fixed: true,
+                backgroundColor: AppColor.green,
+                onPressed: reprintModel == null
+                    ? null
+                    : () async {
+                        Get.back(result: true);
+                      },
+                child: Text(
+                  'Print'.tr,
+                  style: kStyleTextButton,
                 ),
-                Expanded(
-                  child: CustomButton(
-                    fixed: true,
-                    backgroundColor: AppColor.red,
-                    child: Text(
-                      'Exit'.tr,
-                      style: kStyleTextButton,
-                    ),
-                    onPressed: () {
-                      Get.back(result: false);
-                    },
-                  ),
-                ),
-                SizedBox(width: 5.w),
-                Expanded(
-                  child: CustomButton(
-                    fixed: true,
-                    backgroundColor: AppColor.green,
-                    child: Text(
-                      'Print'.tr,
-                      style: kStyleTextButton,
-                    ),
-                    onPressed: reprintModel == null
-                        ? null
-                        : () async {
-                      Get.back(result: true);
-                    },
-                  ),
-                ),
-                SizedBox(width: 50.w),
-              ],
+              ),
             ),
+            Utils.numPadWidget(controllerVoucherNo, setState),
           ],
         ),
       ),
       barrierDismissible: false,
     );
     if (result) {
-      await Printer.printInvoicesDialog(cart: reprintModel!, reprint: true,  showOrderNo: false, invNo: '${reprintModel!.invNo}');
+      await Printer.printInvoicesDialog(cart: reprintModel!, reprint: true, showOrderNo: false, invNo: '${reprintModel!.invNo}');
     }
   }
 
