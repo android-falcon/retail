@@ -25,6 +25,7 @@ class AppThemes {
         appBarTheme: AppBarTheme(
           backgroundColor: Colors.white,
           elevation: 0,
+          centerTitle: true,
           iconTheme: IconThemeData(color: AppColor.primaryColor),
         ),
         colorScheme: ColorScheme.fromSwatch(primarySwatch: AppColor.primaryColor).copyWith(

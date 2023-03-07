@@ -6,6 +6,7 @@ import 'package:retail_system/controllers/home_controller.dart';
 import 'package:retail_system/controllers/login_controller.dart';
 import 'package:retail_system/controllers/more_controller.dart';
 import 'package:retail_system/controllers/network_log_controller.dart';
+import 'package:retail_system/controllers/refund_controller.dart';
 import 'package:retail_system/controllers/report_controller.dart';
 
 class Binding extends Bindings{
@@ -19,5 +20,6 @@ class Binding extends Bindings{
     Get.lazyPut(() => MoreController());
     Get.lazyPut(() => ReportController());
     Get.lazyPut(() => HistoryPayInOutController());
+    Get.lazyPut(() => RefundController());
   }
 }

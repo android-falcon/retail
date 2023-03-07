@@ -132,5 +132,10 @@ const Map<String, String> en = {
   "Discount cannot be more than %100":"Discount cannot be more than %100",
   "The item price cannot be less than zero":"The item price cannot be less than zero",
   "Please enter valid email":"Please enter valid email",
+  "Refund":"Refund",
+  "Voucher Number":"Voucher Number",
+  "POS No":"POS No",
+  "Cashier  No":"Cashier  No",
+  "Ret Qty":"Ret Qty",
   "":"",
 };

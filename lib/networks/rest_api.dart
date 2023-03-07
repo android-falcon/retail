@@ -720,4 +720,158 @@ class RestApi {
       _traceCatch(e);
     }
   }
+
+  static Future<CartModel?> getRefundInvoice({required int invNo}) async {
+    try {
+      Utils.showLoadingDialog();
+      var queryParameters = {
+        "PosNo": sharedPrefsClient.posNo,
+        "CashNo": sharedPrefsClient.cashNo,
+        "InvNo": invNo,
+      };
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'REFUND_INVOICE',
+        status: 3,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.REFUND_INVOICE,
+        method: 'GET',
+        params: jsonEncode(queryParameters),
+        body: '',
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.get(ApiUrl.REFUND_INVOICE, queryParameters: queryParameters);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+      if (response.statusCode == 200) {
+        CartModel refundModel = CartModel.fromJsonServer(response.data);
+        Utils.hideLoadingDialog();
+        return refundModel;
+      } else {
+        Utils.hideLoadingDialog();
+        return null;
+      }
+    } on dio.DioError catch (e) {
+      Utils.hideLoadingDialog();
+      _traceError(e);
+      Utils.showSnackbar('${e.response?.data ?? 'Please try again'.tr}');
+      return null;
+    } catch (e) {
+      Utils.hideLoadingDialog();
+      _traceCatch(e);
+      Utils.showSnackbar('Please try again'.tr);
+      return null;
+    }
+  }
+
+  static Future<void> returnInvoiceQty({required CartModel refundModel, required int invNo}) async {
+    try {
+      var queryParameters = {
+        'orgInvNo': invNo,
+      };
+      var body = jsonEncode(List<dynamic>.from(refundModel.items.map((e) => e.toReturnInvoiceQty())));
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'INVOICE_RETURNED_QTY',
+        status: 1,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.INVOICE_RETURNED_QTY,
+        method: 'POST',
+        params: jsonEncode(queryParameters),
+        body: body,
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.post(ApiUrl.INVOICE_RETURNED_QTY, data: body, queryParameters: queryParameters);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.status = 2;
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+    } on dio.DioError catch (e) {
+      _traceError(e);
+      Utils.showSnackbar('${e.response?.data ?? 'Please try again'.tr}');
+    } catch (e) {
+      _traceCatch(e);
+      Utils.showSnackbar('Please try again'.tr);
+    }
+  }
+
+  static Future<CartModel?> getInvoice({required int invNo}) async {
+    try {
+      Utils.showLoadingDialog();
+      var queryParameters = {
+        "coYear": sharedPrefsClient.dailyClose.year,
+        "PosNo": sharedPrefsClient.posNo,
+        "CashNo": sharedPrefsClient.cashNo,
+        "InvNo": invNo,
+      };
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'GET_INVOICE',
+        status: 3,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.GET_INVOICE,
+        method: 'GET',
+        params: jsonEncode(queryParameters),
+        body: '',
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.get(ApiUrl.GET_INVOICE, queryParameters: queryParameters);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+      if (response.statusCode == 200) {
+        CartModel model = CartModel.fromJsonServer(response.data);
+        Utils.hideLoadingDialog();
+        return model;
+      } else {
+        Utils.hideLoadingDialog();
+        return null;
+      }
+    } on dio.DioError catch (e) {
+      Utils.hideLoadingDialog();
+      _traceError(e);
+      Utils.showSnackbar('${e.response?.data ?? 'Please try again'.tr}');
+      return null;
+    } catch (e) {
+      Utils.hideLoadingDialog();
+      _traceCatch(e);
+      Utils.showSnackbar('Please try again'.tr);
+      return null;
+    }
+  }
+
 }

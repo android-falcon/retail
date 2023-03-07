@@ -31,4 +31,13 @@ class ApiUrl {
 
   // ignore: non_constant_identifier_names
   static String PAY_IN_OUT = "/api/postData/payinout";
+
+  // ignore: non_constant_identifier_names
+  static String REFUND_INVOICE = "/api/GetData/RefundInvoice";
+
+  // ignore: non_constant_identifier_names
+  static String INVOICE_RETURNED_QTY = "/api/postData/UpdateSaleInvReturnedQty";
+
+  // ignore: non_constant_identifier_names
+  static String GET_INVOICE = "/api/GetData/GetMyInvoice";
 }
