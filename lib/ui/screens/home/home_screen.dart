@@ -42,10 +42,26 @@ class HomeScreen extends GetResponsiveView {
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
                 child: Column(
                   children: [
-                    CustomIconText(
-                      icon: kAssetArrow,
-                      bold: true,
-                      label: '${'Voucher No'.tr} : ${sharedPrefsClient.inVocNo}',
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          child: CustomIconText(
+                            icon: kAssetArrow,
+                            bold: true,
+                            expanded: false,
+                            label: '${'Voucher No'.tr} : ${sharedPrefsClient.inVocNo}',
+                          ),
+                        ),
+                        Flexible(
+                          child: CustomIconText(
+                            icon: kAssetArrow,
+                            bold: true,
+                            expanded: false,
+                            label: sharedPrefsClient.employee.empName,
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 40.h),
                     CustomIconText(
@@ -113,15 +129,17 @@ class HomeScreen extends GetResponsiveView {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        SizedBox(width: 2.w),
                         Expanded(
-                          flex: 5,
+                          flex: 3,
                           child: Text(
-                            'Sold Unit'.tr,
+                            'Unit'.tr,
                             style: kStyleTextTable,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        SizedBox(width: 2.w),
                         Expanded(
                           flex: 3,
                           child: Text(
@@ -131,6 +149,7 @@ class HomeScreen extends GetResponsiveView {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        SizedBox(width: 2.w),
                         Expanded(
                           flex: 3,
                           child: Text(
@@ -140,6 +159,7 @@ class HomeScreen extends GetResponsiveView {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        SizedBox(width: 2.w),
                         Expanded(
                           flex: 3,
                           child: Text(
@@ -149,6 +169,7 @@ class HomeScreen extends GetResponsiveView {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        SizedBox(width: 2.w),
                         Expanded(
                           flex: 4,
                           child: Text(
@@ -158,6 +179,7 @@ class HomeScreen extends GetResponsiveView {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        SizedBox(width: 2.w),
                         Expanded(
                           flex: 4,
                           child: Container(),
@@ -179,8 +201,9 @@ class HomeScreen extends GetResponsiveView {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            SizedBox(width: 2.w),
                             Expanded(
-                              flex: 5,
+                              flex: 3,
                               child: Text(
                                 'Unit',
                                 style: kStyleDataTable,
@@ -188,6 +211,7 @@ class HomeScreen extends GetResponsiveView {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            SizedBox(width: 2.w),
                             Expanded(
                               flex: 3,
                               child: Text(
@@ -197,15 +221,17 @@ class HomeScreen extends GetResponsiveView {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            SizedBox(width: 2.w),
                             Expanded(
                               flex: 3,
                               child: Text(
-                                _controller.cart.value.items[index].price.toStringAsFixed(fractionDigits),
+                                _controller.cart.value.items[index].priceChange.toStringAsFixed(fractionDigits),
                                 style: kStyleDataTable,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            SizedBox(width: 2.w),
                             Expanded(
                               flex: 3,
                               child: Text(
@@ -215,6 +241,7 @@ class HomeScreen extends GetResponsiveView {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            SizedBox(width: 2.w),
                             Expanded(
                               flex: 4,
                               child: Text(
@@ -224,6 +251,7 @@ class HomeScreen extends GetResponsiveView {
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
+                            SizedBox(width: 2.w),
                             Expanded(
                               flex: 4,
                               child: Row(
@@ -235,18 +263,18 @@ class HomeScreen extends GetResponsiveView {
                                         _controller.voidItem(index: index);
                                       },
                                       padding: EdgeInsets.zero,
-                                      icon: SvgPicture.asset(kAssetDelete),
-                                      splashRadius: 20.r,
+                                      icon: SvgPicture.asset(kAssetDelete, height: 20.h),
+                                      splashRadius: 25.r,
                                     ),
                                   ),
                                   Flexible(
                                     child: IconButton(
                                       onPressed: () {
-                                        _controller.editItem();
+                                        _controller.editItem(indexItem: index);
                                       },
                                       padding: EdgeInsets.zero,
-                                      icon: SvgPicture.asset(kAssetEdit),
-                                      splashRadius: 20.r,
+                                      icon: SvgPicture.asset(kAssetEdit, height: 20.h),
+                                      splashRadius: 25.r,
                                     ),
                                   ),
                                 ],
@@ -349,6 +377,7 @@ class HomeScreen extends GetResponsiveView {
                               child: CustomIconText(
                                 icon: kAssetArrow,
                                 bold: true,
+                                style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold, fontSize: 23.sp, color: AppColor.red),
                                 label: '${'Net Total'.tr} : ${_controller.cart.value.amountDue.toStringAsFixed(fractionDigits)}',
                               ),
                             ),

@@ -11,6 +11,12 @@ class HistoryPayInOutScreen extends GetResponsiveView {
 
   final _controller = HistoryPayInOutController.to;
 
+  @override
+  StatelessElement createElement() {
+    _controller.init();
+    return super.createElement();
+  }
+
   _buildWidget() {
     return CustomWidget(
       alignment: Alignment.topCenter,

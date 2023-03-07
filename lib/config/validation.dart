@@ -1,7 +1,43 @@
 import 'package:get/get.dart';
+import 'package:retail_system/config/enum/enum_discount_type.dart';
 import 'package:retail_system/config/utils.dart';
 
 class Validation {
+  static String? qty(value, {double? minQty, double? maxQty}) {
+    if (Utils.isEmpty(value)) {
+      return 'This field is required'.tr;
+    } else if (minQty != null && double.parse(value) < minQty) {
+      return '${'Quantity must be greater than or equal to'.tr} $minQty';
+    } else if (maxQty != null && double.parse(value) > maxQty) {
+      return '${'Quantity must be less than or equal to'.tr} $maxQty';
+    }
+    return null;
+  }
+
+  static String? discount(type, value, price) {
+    if (Utils.isEmpty(value)) {
+      return 'This field is required'.tr;
+    } else {
+      if (EnumDiscountType.value == type) {
+        if (double.parse(value) > price) {
+          return 'The discount cannot be greater than the price of an item'.tr;
+        }
+      } else {
+        if (double.parse(value) > 100) {
+          return 'Discount cannot be more than %100'.tr;
+        }
+      }
+    }
+    return null;
+  }
+
+  static String? priceChange(value) {
+    if (double.parse(value) < 0) {
+      return 'The item price cannot be less than zero'.tr;
+    }
+    return null;
+  }
+
   static String? isEmail(String? email) {
     String p = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regExp = RegExp(p);

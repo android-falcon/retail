@@ -393,34 +393,34 @@ class Printer {
                                 ),
                               ],
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Delivery Charge'.tr,
-                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Text(
-                                  cart.deliveryCharge.toStringAsFixed(3),
-                                  style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Service'.tr,
-                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Text(
-                                  cart.service.toStringAsFixed(3),
-                                  style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
+                            // Row(
+                            //   children: [
+                            //     Expanded(
+                            //       child: Text(
+                            //         'Delivery Charge'.tr,
+                            //         style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                            //       ),
+                            //     ),
+                            //     Text(
+                            //       cart.deliveryCharge.toStringAsFixed(3),
+                            //       style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                            //     ),
+                            //   ],
+                            // ),
+                            // Row(
+                            //   children: [
+                            //     Expanded(
+                            //       child: Text(
+                            //         'Service'.tr,
+                            //         style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                            //       ),
+                            //     ),
+                            //     Text(
+                            //       cart.service.toStringAsFixed(3),
+                            //       style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                            //     ),
+                            //   ],
+                            // ),
                             Row(
                               children: [
                                 Expanded(

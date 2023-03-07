@@ -13,6 +13,7 @@ class ReportsScreen extends GetResponsiveView {
 
   _buildWidget(){
     return CustomWidget(
+      alignment: Alignment.topCenter,
       appBar: AppBar(
         title: Text('Reports'.tr),
       ),

@@ -8,6 +8,7 @@ class CustomIconText extends StatelessWidget {
   final String label;
   final TextStyle? style;
   final bool bold;
+  final bool expanded;
 
   const CustomIconText({
     Key? key,
@@ -15,6 +16,7 @@ class CustomIconText extends StatelessWidget {
     this.label = "",
     this.style,
     this.bold = false,
+    this.expanded = true,
   }) : super(key: key);
 
   @override
@@ -31,12 +33,19 @@ class CustomIconText extends StatelessWidget {
             ],
           ),
         SizedBox(width: 5.w),
-        Expanded(
-          child: Text(
-            label,
-            style: style ?? (bold ? kStyleTextTitle.copyWith(fontWeight: FontWeight.bold) : kStyleTextTitle),
-          ),
-        ),
+        expanded
+            ? Expanded(
+                child: Text(
+                  label,
+                  style: style ?? (bold ? kStyleTextTitle.copyWith(fontWeight: FontWeight.bold) : kStyleTextTitle),
+                ),
+              )
+            : Flexible(
+                child: Text(
+                  label,
+                  style: style ?? (bold ? kStyleTextTitle.copyWith(fontWeight: FontWeight.bold) : kStyleTextTitle),
+                ),
+              ),
       ],
     );
   }

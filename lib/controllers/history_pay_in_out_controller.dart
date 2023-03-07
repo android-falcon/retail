@@ -1,3 +1,4 @@
+import 'package:flutter/scheduler.dart';
 import 'package:get/get.dart';
 import 'package:retail_system/config/utils.dart';
 import 'package:retail_system/models/get_pay_in_out_model.dart';
@@ -8,11 +9,11 @@ class HistoryPayInOutController extends GetxController {
 
   final data = <GetPayInOutModel>[].obs;
 
-  @override
-  void onInit() async {
-    super.onInit();
-    data.value = await RestApi.getPayInOut();
-    update();
+  init(){
+    SchedulerBinding.instance.addPostFrameCallback((timeStamp) async {
+      data.value = await RestApi.getPayInOut();
+      update();
+    });
   }
 
   deletePayInOut({required GetPayInOutModel model}) async {

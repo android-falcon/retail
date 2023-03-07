@@ -99,7 +99,7 @@ class MoreController extends GetxController {
   }
 
   endCash() async {
-    if (!await Utils.checkPermission(sharedPrefsClient.employee.hasSeeEndCashPermission)) {
+    if (await Utils.checkPermission(sharedPrefsClient.employee.hasSeeEndCashPermission)) {
       EndCashModel? model = await RestApi.getEndCash();
       if (model != null) {
         _showEndCashDialog(endCash: model);
@@ -395,7 +395,6 @@ class MoreController extends GetxController {
                     }
                   },
                 ),
-
               ],
             ),
           );
@@ -528,7 +527,7 @@ class MoreController extends GetxController {
         onWillPop: () async => false,
         child: CustomDialog(
           builder: (context, setState, constraints) => Padding(
-            padding:  EdgeInsets.all(16.sp),
+            padding: EdgeInsets.all(16.sp),
             child: Column(
               children: [
                 Text(
@@ -618,144 +617,121 @@ class MoreController extends GetxController {
         builder: (context, setState, constraints) {
           double netTotal = double.parse(controllerTotalCash.text) + double.parse(controllerTotalCreditCard.text) + double.parse(controllerTotalCredit.text);
           controllerNetTotal.text = netTotal.toStringAsFixed(3);
-          return Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      '${'Date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
-                      style: kStyleTextDefault,
-                    ),
-                  ),
-                  Text(
-                    'End Cash'.tr,
-                    style: kStyleTextTitle,
-                  ),
-                  Expanded(
-                    child: Text(
-                      '', //'${'Transaction Number'.tr} : ',
-                      textAlign: TextAlign.end,
-                      style: kStyleTextDefault,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 8.h),
-              const Divider(
-                thickness: 1,
-                height: 1,
-              ),
-              Form(
-                key: keyForm,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          CustomTextField(
-                            controller: controllerTotalCash,
-                            label: Text('Total Cash'.tr),
-                            fillColor: Colors.white,
-                            maxLines: 1,
-                            inputFormatters: [
-                              EnglishDigitsTextInputFormatter(decimal: true),
-                            ],
-                            validator: (value) {
-                              return Validation.isRequired(value);
-                            },
-                            enableInteractiveSelection: false,
-                            keyboardType: const TextInputType.numberWithOptions(),
-                            onTap: () {
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              controllerSelectEdit = controllerTotalCash;
-                              setState(() {});
-                            },
-                          ),
-                          CustomTextField(
-                            controller: controllerTotalCreditCard,
-                            label: Text('Total Credit Card'.tr),
-                            fillColor: Colors.white,
-                            maxLines: 1,
-                            inputFormatters: [
-                              EnglishDigitsTextInputFormatter(decimal: true),
-                            ],
-                            validator: (value) {
-                              return Validation.isRequired(value);
-                            },
-                            enableInteractiveSelection: false,
-                            keyboardType: const TextInputType.numberWithOptions(),
-                            onTap: () {
-                              FocusScope.of(context).requestFocus(FocusNode());
-                              controllerSelectEdit = controllerTotalCreditCard;
-                              setState(() {});
-                            },
-                          ),
-                          // CustomTextField(
-                          //   controller: _controllerTotalCredit,
-                          //   label: Text('Total Credit'.tr),
-                          //   fillColor: Colors.white,
-                          //   maxLines: 1,
-                          //   inputFormatters: [
-                          //     EnglishDigitsTextInputFormatter(decimal: true),
-                          //   ],
-                          //   validator: (value) {
-                          //     return Validation.isRequired(value);
-                          //   },
-                          //   enableInteractiveSelection: false,
-                          //   keyboardType: const TextInputType.numberWithOptions(),
-                          //   onTap: () {
-                          //     FocusScope.of(context).requestFocus(FocusNode());
-                          //     _controllerSelectEdit = _controllerTotalCredit;
-                          //     setState(() {});
-                          //   },
-                          // ),
-                          CustomTextField(
-                            controller: controllerNetTotal,
-                            label: Text('Net Total'.tr),
-                            fillColor: Colors.white,
-                            maxLines: 1,
-                            readOnly: true,
-                            enabled: false,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Utils.numPadWidget(
-                          controllerSelectEdit,
-                          setState,
-                          onExit: () async {
-                            var result = await Utils.showAreYouSureDialog(title: 'Exit'.tr);
-                            if (result) {
-                              Get.back();
-                            }
-                          },
-                          onSubmit: () async {
-                            var result = await Utils.showAreYouSureDialog(title: 'Save'.tr);
-                            if (result) {
-                              var resultEndCash = await RestApi.endCash(
-                                totalCash: double.parse(controllerTotalCash.text),
-                                totalCreditCard: double.parse(controllerTotalCreditCard.text),
-                                totalCredit: double.parse(controllerTotalCredit.text),
-                                netTotal: double.parse(controllerNetTotal.text),
-                              );
-                              if (resultEndCash) {
-                                Get.back(result: true);
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
+          return Form(
+            key: keyForm,
+            child: Column(
+              children: [
+                Text(
+                  'End Cash'.tr,
+                  style: kStyleTextLarge,
                 ),
-              ),
-            ],
+                Text(
+                  '${'Date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
+                  style: kStyleTextTitle,
+                ),
+                SizedBox(height: 8.h),
+                const Divider(
+                  thickness: 1,
+                  height: 1,
+                ),
+                Padding(
+                  padding: EdgeInsets.all(16.sp),
+                  child: Column(
+                    children: [
+                      CustomTextField(
+                        controller: controllerTotalCash,
+                        label: Text('Total Cash'.tr),
+                        fillColor: Colors.white,
+                        maxLines: 1,
+                        inputFormatters: [
+                          EnglishDigitsTextInputFormatter(decimal: true),
+                        ],
+                        validator: (value) {
+                          return Validation.isRequired(value);
+                        },
+                        enableInteractiveSelection: false,
+                        keyboardType: const TextInputType.numberWithOptions(),
+                        onTap: () {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          controllerSelectEdit = controllerTotalCash;
+                          setState(() {});
+                        },
+                      ),
+                      CustomTextField(
+                        controller: controllerTotalCreditCard,
+                        label: Text('Total Credit Card'.tr),
+                        fillColor: Colors.white,
+                        maxLines: 1,
+                        inputFormatters: [
+                          EnglishDigitsTextInputFormatter(decimal: true),
+                        ],
+                        validator: (value) {
+                          return Validation.isRequired(value);
+                        },
+                        enableInteractiveSelection: false,
+                        keyboardType: const TextInputType.numberWithOptions(),
+                        onTap: () {
+                          FocusScope.of(context).requestFocus(FocusNode());
+                          controllerSelectEdit = controllerTotalCreditCard;
+                          setState(() {});
+                        },
+                      ),
+                      // CustomTextField(
+                      //   controller: _controllerTotalCredit,
+                      //   label: Text('Total Credit'.tr),
+                      //   fillColor: Colors.white,
+                      //   maxLines: 1,
+                      //   inputFormatters: [
+                      //     EnglishDigitsTextInputFormatter(decimal: true),
+                      //   ],
+                      //   validator: (value) {
+                      //     return Validation.isRequired(value);
+                      //   },
+                      //   enableInteractiveSelection: false,
+                      //   keyboardType: const TextInputType.numberWithOptions(),
+                      //   onTap: () {
+                      //     FocusScope.of(context).requestFocus(FocusNode());
+                      //     _controllerSelectEdit = _controllerTotalCredit;
+                      //     setState(() {});
+                      //   },
+                      // ),
+                      CustomTextField(
+                        controller: controllerNetTotal,
+                        label: Text('Net Total'.tr),
+                        fillColor: Colors.white,
+                        maxLines: 1,
+                        readOnly: true,
+                        enabled: false,
+                      ),
+                    ],
+                  ),
+                ),
+                Utils.numPadWidget(
+                  controllerSelectEdit,
+                  setState,
+                  onExit: () async {
+                    var result = await Utils.showAreYouSureDialog(title: 'Exit'.tr);
+                    if (result) {
+                      Get.back();
+                    }
+                  },
+                  onSubmit: () async {
+                    var result = await Utils.showAreYouSureDialog(title: 'Save'.tr);
+                    if (result) {
+                      var resultEndCash = await RestApi.endCash(
+                        totalCash: double.parse(controllerTotalCash.text),
+                        totalCreditCard: double.parse(controllerTotalCreditCard.text),
+                        totalCredit: double.parse(controllerTotalCredit.text),
+                        netTotal: double.parse(controllerNetTotal.text),
+                      );
+                      if (resultEndCash) {
+                        Get.back(result: true);
+                      }
+                    }
+                  },
+                )
+              ],
+            ),
           );
         },
       ),

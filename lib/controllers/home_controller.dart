@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' as intl;
 import 'package:retail_system/config/app_color.dart';
 import 'package:retail_system/config/constant.dart';
 import 'package:retail_system/config/enum/enum_credit_card_type.dart';
+import 'package:retail_system/config/enum/enum_discount_type.dart';
 import 'package:retail_system/config/enum/enum_invoice_kind.dart';
 import 'package:retail_system/config/enum/enum_order_type.dart';
 import 'package:retail_system/config/text_input_formatters.dart';
@@ -34,6 +35,7 @@ class HomeController extends GetxController {
       var indexItem = allDataModel.items.indexWhere((element) => '${element.id}' == controllerSearch.text);
       if (indexItem == -1) {
         Utils.showSnackbar('Item not found'.tr, '');
+        controllerSearch.text = '';
       } else {
         var indexCartItem = cart.value.items.lastIndexWhere((element) => element.id == allDataModel.items[indexItem].id);
         if (indexCartItem == -1) {
@@ -137,7 +139,124 @@ class HomeController extends GetxController {
     }
   }
 
-  editItem() {}
+  editItem({required int indexItem}) async {
+    GlobalKey<FormState> keyForm = GlobalKey<FormState>();
+    TextEditingController controllerQty = TextEditingController(text: cart.value.items[indexItem].qty.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
+    TextEditingController controllerPrice = TextEditingController(text: cart.value.items[indexItem].priceChange.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
+    TextEditingController controllerLineDiscount = TextEditingController(text: cart.value.items[indexItem].lineDiscount.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
+    TextEditingController controllerSelected = controllerQty;
+    var result = await Get.dialog(
+      CustomDialog(
+        builder: (context, setState, constraints) => Form(
+          key: keyForm,
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16.sp),
+                child: Column(
+                  children: [
+                    CustomTextField(
+                      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.w),
+                      controller: controllerQty,
+                      label: Text('Qty'.tr),
+                      fillColor: Colors.white,
+                      maxLines: 1,
+                      inputFormatters: [
+                        EnglishDigitsTextInputFormatter(decimal: true),
+                      ],
+                      enableInteractiveSelection: false,
+                      keyboardType: const TextInputType.numberWithOptions(),
+                      borderColor: controllerSelected == controllerQty ? AppColor.primaryColor : null,
+                      onTap: () {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                        controllerSelected = controllerQty;
+                        setState(() {});
+                      },
+                      validator: (value) {
+                        return Validation.qty(value, minQty: 0);
+                      },
+                    ),
+                    CustomTextField(
+                      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.w),
+                      controller: controllerPrice,
+                      label: Text('Price'.tr),
+                      fillColor: Colors.white,
+                      maxLines: 1,
+                      inputFormatters: [
+                        EnglishDigitsTextInputFormatter(decimal: true),
+                      ],
+                      enableInteractiveSelection: false,
+                      keyboardType: const TextInputType.numberWithOptions(),
+                      borderColor: controllerSelected == controllerPrice ? AppColor.primaryColor : null,
+                      onTap: () async {
+                        if (await Utils.checkPermission(sharedPrefsClient.employee.hasPriceChangePermission)) {
+                          if (cart.value.items[indexItem].openPrice) {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            controllerSelected = controllerPrice;
+                            setState(() {});
+                          } else {
+                            Utils.showSnackbar('Price change is not available for this item'.tr);
+                          }
+                        }
+                      },
+                      validator: (value) {
+                        return Validation.priceChange(value);
+                      },
+                    ),
+                    CustomTextField(
+                      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.w),
+                      controller: controllerLineDiscount,
+                      label: Text('Line Discount'.tr),
+                      fillColor: Colors.white,
+                      maxLines: 1,
+                      inputFormatters: [
+                        EnglishDigitsTextInputFormatter(decimal: true),
+                      ],
+                      enableInteractiveSelection: false,
+                      keyboardType: const TextInputType.numberWithOptions(),
+                      borderColor: controllerSelected == controllerLineDiscount ? AppColor.primaryColor : null,
+                      onTap: () async {
+                        if (await Utils.checkPermission(sharedPrefsClient.employee.hasLineDiscPermission)) {
+                          if (cart.value.items[indexItem].discountAvailable) {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            controllerSelected = controllerLineDiscount;
+                            setState(() {});
+                          } else {
+                            Utils.showSnackbar('Line discount is not available for this item'.tr);
+                          }
+                        }
+                      },
+                      validator: (value) {
+                        return Validation.discount(EnumDiscountType.value, value, double.parse(controllerPrice.text));
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Utils.numPadWidget(
+                controllerSelected,
+                setState,
+                decimal: true,
+                onSubmit: () {
+                  if (keyForm.currentState!.validate()) {
+                    Get.back(result: true);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+    if (result != null && result == true) {
+      cart.value.items[indexItem].qty = double.parse(controllerQty.text);
+      cart.value.items[indexItem].price = double.parse(controllerPrice.text);
+      cart.value.items[indexItem].lineDiscount = double.parse(controllerLineDiscount.text);
+    }
+    cart.value = Utils.calculateOrder(cart: cart.value);
+    update();
+  }
 
   double _calculateRemaining() {
     return cart.value.amountDue - (cart.value.cash + cart.value.credit + cart.value.cheque + cart.value.gift + cart.value.coupon + cart.value.point);
@@ -151,7 +270,6 @@ class HomeController extends GetxController {
       CustomDialog(
         borderRadius: BorderRadius.circular(20.r),
         width: 250.w,
-        height: 300.h,
         builder: (context, setState, constraints) => Padding(
           padding: EdgeInsets.all(16.sp),
           child: Form(
@@ -531,10 +649,10 @@ class HomeController extends GetxController {
                       bold: true,
                       label: '${'Total'.tr} : ${cart.value.total.toStringAsFixed(fractionDigits)}',
                     ),
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Delivery charge'.tr} : ${cart.value.deliveryCharge.toStringAsFixed(fractionDigits)}',
-                    ),
+                    // CustomIconText(
+                    //   bold: true,
+                    //   label: '${'Delivery charge'.tr} : ${cart.value.deliveryCharge.toStringAsFixed(fractionDigits)}',
+                    // ),
                     CustomIconText(
                       bold: true,
                       label: '${'Line discount'.tr} : ${cart.value.totalLineDiscount.toStringAsFixed(fractionDigits)}',
@@ -547,10 +665,10 @@ class HomeController extends GetxController {
                       bold: true,
                       label: '${'Sub total'.tr} : ${cart.value.subTotal.toStringAsFixed(fractionDigits)}',
                     ),
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Service'.tr} : ${cart.value.service.toStringAsFixed(fractionDigits)}',
-                    ),
+                    // CustomIconText(
+                    //   bold: true,
+                    //   label: '${'Service'.tr} : ${cart.value.service.toStringAsFixed(fractionDigits)}',
+                    // ),
                     CustomIconText(
                       bold: true,
                       label: '${'Tax'.tr} : ${cart.value.tax.toStringAsFixed(fractionDigits)}',
@@ -639,9 +757,12 @@ class HomeController extends GetxController {
                       onTap: () {
                         controllerReceived!.text = balance.toStringAsFixed(fractionDigits);
                       },
-                      child: Text(
-                        '${'Balance'.tr} : ${balance.toStringAsFixed(fractionDigits)}',
-                        style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                      child: Padding(
+                        padding: EdgeInsets.all(8.sp),
+                        child: Text(
+                          '${'Balance'.tr} : ${balance.toStringAsFixed(fractionDigits)}',
+                          style: kStyleTextLarge,
+                        ),
                       ),
                     ),
                     SizedBox(height: 10.h),
