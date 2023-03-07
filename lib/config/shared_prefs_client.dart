@@ -67,7 +67,7 @@ class SharedPrefsClient {
     _storage.write(keyAllData, value?.toJson());
   }
 
-  DateTime get dailyClose => DateTime.tryParse(_storage.read(keyDailyClose)) ?? DateTime.now();
+  DateTime get dailyClose => DateTime.tryParse(_storage.read(keyDailyClose) ?? '') ?? DateTime.now();
 
   set dailyClose(DateTime value) {
     _storage.write(keyDailyClose, value.toIso8601String());

@@ -138,7 +138,7 @@ class Printer {
                                     style: kStyleDataPrinter,
                                   ),
                                 Text(
-                                  '${'Date'.tr} : ${DateFormat('yyyy-MM-dd').format(DateTime.now())}',
+                                  '${'Date'.tr} : ${DateFormat(dateFormat).format(DateTime.now())}',
                                   style: kStyleDataPrinter,
                                 ),
                                 Text(

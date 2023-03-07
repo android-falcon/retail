@@ -29,7 +29,7 @@ class LoginScreen extends GetResponsiveView<LoginController> {
                     fit: BoxFit.cover,
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+                    padding: EdgeInsets.symmetric(horizontal: 70.w, vertical: 2.h),
                     child: Column(
                       children: [
                         Text(

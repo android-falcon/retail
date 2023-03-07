@@ -15,3 +15,4 @@ export 'src/num_pad.dart';
 export 'src/custom_dialog.dart';
 export 'src/custom_drop_down.dart';
 export 'src/custom_select_color.dart';
+export 'src/custom_text_field_num.dart';

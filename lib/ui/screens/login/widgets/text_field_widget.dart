@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:retail_system/config/app_color.dart';
+import 'package:retail_system/config/constant.dart';
 
 class TextFieldWidget extends StatefulWidget {
   final TextEditingController? controller;
@@ -90,7 +91,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
         maxLength: widget.maxLength,
         textAlign: widget.textAlign,
 
-        // style: TextStyle(color: Colors.black),
+        style: kStyleTextTitle,
         decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,

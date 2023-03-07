@@ -3,28 +3,13 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:retail_system/config/app_color.dart';
 import 'package:retail_system/config/constant.dart';
+import 'package:retail_system/controllers/more_controller.dart';
 import 'package:retail_system/ui/widgets/custom_widget.dart';
 
 class MoreScreen extends GetResponsiveView {
   MoreScreen({super.key});
 
-  final List<Map<String, dynamic>> _options = [
-    {
-      'label': 'Close cash'.tr,
-      'icon': kAssetCloseCash,
-      'onTap': () {},
-    },
-    {
-      'label': 'Reprint an invoice'.tr,
-      'icon': kAssetReprintInvoice,
-      'onTap': () {},
-    },
-    {
-      'label': 'Logout'.tr,
-      'icon': kAssetLogout,
-      'onTap': () {},
-    },
-  ];
+  final _controller = MoreController.to;
 
   _buildWidget() {
     return CustomWidget(
@@ -52,16 +37,16 @@ class MoreScreen extends GetResponsiveView {
             ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
-              itemCount: _options.length,
+              itemCount: _controller.options.length,
               itemBuilder: (context, index) => Material(
                 color: index % 2 == 0 ? null : AppColor.accentColor,
                 child: InkWell(
-                  onTap: _options[index]['onTap'],
+                  onTap: _controller.options[index]['onTap'],
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 24.w),
                     child: CustomIconText(
-                      icon: _options[index]['icon'],
-                      label: _options[index]['label'],
+                      icon: _controller.options[index]['icon'],
+                      label: _controller.options[index]['label'],
                     ),
                   ),
                 ),

@@ -14,6 +14,7 @@ class CustomTextField extends StatefulWidget {
   final String? helperText;
   final Widget? icon;
   final bool enabled;
+  final bool readOnly;
   final Widget? label;
   final bool enableInteractiveSelection;
   bool obscureText;
@@ -56,6 +57,7 @@ class CustomTextField extends StatefulWidget {
     this.helperText,
     this.contentPadding,
     this.enabled = true,
+    this.readOnly = false,
     this.enableInteractiveSelection = true,
     this.obscureText = false,
     this.isPass = false,
@@ -147,6 +149,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           ),
         ),
         enabled: widget.enabled,
+        readOnly: widget.readOnly,
         enableInteractiveSelection: widget.enableInteractiveSelection,
         focusNode: widget.focusNode ?? (widget.enableInteractiveSelection ? null : AlwaysDisabledFocusNode()),
         inputFormatters: widget.inputFormatters,

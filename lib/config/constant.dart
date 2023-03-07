@@ -26,7 +26,7 @@ final sharedPrefsClient = SharedPrefsClient();
 const companyType = EnumCompanyType.falcons;
 
 const fractionDigits = 3;
-const dateFormat = 'dd/MM/yyyy';
+const dateFormat = 'yyyy-MM-dd';
 const timeFormat = 'HH:mm a';
 
 

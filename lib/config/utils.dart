@@ -298,7 +298,6 @@ class Utils {
                             backgroundColor: AppColor.red,
                             child: Text(
                               'Exit'.tr,
-                              style: kStyleTextButton,
                             ),
                             onPressed: () {
                               Get.back();

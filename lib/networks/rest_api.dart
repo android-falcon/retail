@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer' as developer;
 import 'package:dio/dio.dart' as dio;
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:retail_system/config/constant.dart';
 import 'package:retail_system/config/enum/enum_invoice_kind.dart';
 import 'package:retail_system/config/utils.dart';
@@ -9,6 +10,8 @@ import 'package:retail_system/database/network_table.dart';
 import 'package:retail_system/models/all_data_model.dart';
 import 'package:retail_system/models/api_response.dart';
 import 'package:retail_system/models/cart_model.dart';
+import 'package:retail_system/models/end_cash_model.dart';
+import 'package:retail_system/models/get_pay_in_out_model.dart';
 import 'package:retail_system/networks/api_url.dart';
 
 class RestApi {
@@ -383,6 +386,338 @@ class RestApi {
     } catch (e) {
       _traceCatch(e);
       Utils.showSnackbar('Please try again'.tr);
+    }
+  }
+
+  static Future<void> posDailyClose({required DateTime closeDate}) async {
+    try {
+      Utils.showLoadingDialog();
+      closeDate = DateFormat(dateFormat).parse(DateFormat(dateFormat).format(closeDate));
+      var body = jsonEncode({
+        "CoYear": sharedPrefsClient.dailyClose.year,
+        "PosNo": sharedPrefsClient.posNo,
+        "UserId": sharedPrefsClient.employee.id,
+        "CloseDate": closeDate.toIso8601String(),
+      });
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'POS_DAILY_CLOSE',
+        status: 3,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.POS_DAILY_CLOSE,
+        method: 'POST',
+        params: '',
+        body: body,
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.post(ApiUrl.POS_DAILY_CLOSE, data: body);
+      _networkLog(response);
+      sharedPrefsClient.dailyClose = closeDate;
+      allDataModel.posClose = closeDate;
+      sharedPrefsClient.allData = allDataModel;
+
+      Utils.hideLoadingDialog();
+      Get.back();
+      Utils.showSnackbar('Successfully'.tr);
+      if (networkModel != null) {
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+    } on dio.DioError catch (e) {
+      _traceError(e);
+      Utils.showSnackbar('Please try again'.tr);
+    } catch (e) {
+      _traceCatch(e);
+      Utils.showSnackbar('Please try again'.tr);
+    }
+  }
+
+  static Future<EndCashModel?> getEndCash() async {
+    try {
+      Utils.showLoadingDialog();
+      var queryParameters = {
+        "coYear": sharedPrefsClient.dailyClose.year,
+        "PosNo": sharedPrefsClient.posNo,
+        "CashNo": sharedPrefsClient.cashNo,
+        "UserId": sharedPrefsClient.employee.id,
+        "dayDate": sharedPrefsClient.dailyClose.toIso8601String(),
+      };
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'GET_END_CASH',
+        status: 3,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.GET_END_CASH,
+        method: 'GET',
+        params: jsonEncode(queryParameters),
+        body: '',
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.get(ApiUrl.GET_END_CASH, queryParameters: queryParameters);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.status = 2;
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+      Utils.hideLoadingDialog();
+      if (response.statusCode == 200) {
+        return EndCashModel.fromJson(response.data);
+      } else {
+        Utils.showSnackbar('Please try again'.tr);
+        return null;
+      }
+    } on dio.DioError catch (e) {
+      _traceError(e);
+      Utils.showSnackbar('${e.response?.data ?? 'Please try again'.tr}');
+      return null;
+    } catch (e) {
+      _traceCatch(e);
+      Utils.showSnackbar('Please try again'.tr);
+      return null;
+    }
+  }
+
+  static Future<bool> endCash({required double totalCash, required double totalCreditCard, required double totalCredit, required double netTotal}) async {
+    try {
+      Utils.showLoadingDialog();
+      var body = jsonEncode({
+        "CoYear": sharedPrefsClient.dailyClose.year,
+        "EndCashDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "PosNo": sharedPrefsClient.posNo,
+        "CashNo": sharedPrefsClient.cashNo,
+        "TotalCash": totalCash,
+        "TotalCreditCard": totalCreditCard,
+        "TotalCredit": totalCredit,
+        "NetTotal": netTotal,
+        "UserId": sharedPrefsClient.employee.id,
+      });
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'END_CASH',
+        status: 3,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.END_CASH,
+        method: 'POST',
+        params: '',
+        body: body,
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.post(ApiUrl.END_CASH, data: body);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.status = 2;
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+      Utils.hideLoadingDialog();
+      if (response.statusCode == 200) {
+        Utils.showSnackbar('Successfully'.tr);
+        return true;
+      } else {
+        return false;
+      }
+    } on dio.DioError catch (e) {
+      _traceError(e);
+      Utils.showSnackbar('${e.response?.data ?? 'Please try again'.tr}');
+      return false;
+    } catch (e) {
+      _traceCatch(e);
+      Utils.showSnackbar('Please try again'.tr);
+      return false;
+    }
+  }
+
+  static Future<void> payInOut({required double value, required int type, String remark = '', required int descId}) async {
+    try {
+      var body = jsonEncode({
+        "CoYear": sharedPrefsClient.dailyClose.year,
+        "VoucherType": type,
+        "VoucherNo": sharedPrefsClient.payInOutNo,
+        "PosNo": sharedPrefsClient.posNo,
+        "CashNo": sharedPrefsClient.cashNo,
+        "VoucherDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "VoucherTime": DateFormat('HH:mm:ss').format(sharedPrefsClient.dailyClose),
+        "VoucherValue": value,
+        "Remark": remark,
+        "UserId": sharedPrefsClient.employee.id,
+        "ShiftId": 0,
+        "DescId": descId,
+      });
+      sharedPrefsClient.payInOutNo++;
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'PAY_IN_OUT',
+        status: 1,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.PAY_IN_OUT,
+        method: 'POST',
+        params: '',
+        body: body,
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.post(ApiUrl.PAY_IN_OUT, data: body);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.status = 2;
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+    } on dio.DioError catch (e) {
+      _traceError(e);
+      Utils.showSnackbar('${e.response?.data ?? 'Please try again'.tr}');
+    } catch (e) {
+      _traceCatch(e);
+      Utils.showSnackbar('Please try again'.tr);
+    }
+  }
+
+  static Future<List<GetPayInOutModel>> getPayInOut() async {
+    try {
+      Utils.showLoadingDialog();
+      var queryParameters = {
+        "Year": sharedPrefsClient.dailyClose.year,
+        "PosNo": sharedPrefsClient.posNo,
+        "CashNo": sharedPrefsClient.cashNo,
+        "POSDATE": sharedPrefsClient.dailyClose.toIso8601String(),
+      };
+
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'GET_PAY_IN_OUT',
+        status: 3,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.GET_PAY_IN_OUT,
+        method: 'GET',
+        params: jsonEncode(queryParameters),
+        body: '',
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.get(ApiUrl.GET_PAY_IN_OUT, queryParameters: queryParameters);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+      if (response.statusCode == 200) {
+        List<GetPayInOutModel> model = List<GetPayInOutModel>.from(response.data.map((x) => GetPayInOutModel.fromJson(x)));
+        Utils.hideLoadingDialog();
+        return model;
+      } else {
+        Utils.hideLoadingDialog();
+        return [];
+      }
+    } on dio.DioError catch (e) {
+      Utils.hideLoadingDialog();
+      _traceError(e);
+      Utils.showSnackbar('${e.response?.data ?? 'Please try again'.tr}');
+      return [];
+    } catch (e) {
+      Utils.hideLoadingDialog();
+      _traceCatch(e);
+      Utils.showSnackbar('Please try again'.tr);
+      return [];
+    }
+  }
+
+  static Future<void> deletePayInOut({required GetPayInOutModel model}) async {
+    try {
+      var queryParameters = {
+        "Year": sharedPrefsClient.dailyClose.year,
+        "VoucherType": model.voucherType,
+        "VoucherNo": model.voucherNo,
+        "PosNo": sharedPrefsClient.posNo,
+        "CashNo": sharedPrefsClient.cashNo,
+      };
+      sharedPrefsClient.payInOutNo++;
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'DELETE_PAY_IN_OUT',
+        status: 1,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.DELETE_PAY_IN_OUT,
+        method: 'DELETE',
+        params: jsonEncode(queryParameters),
+        body: '',
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      List<NetworkTableModel> data = await NetworkTable.queryRowsReports(types: ['PAY_IN_OUT']);
+      var payIn = data.firstWhereOrNull((element) {
+        var body = jsonDecode(element.body);
+        if (body['VoucherNo'] == model.voucherNo && body['PosNo'] == sharedPrefsClient.posNo && body['CashNo'] == sharedPrefsClient.cashNo) {
+          return true;
+        }
+        return false;
+      });
+      if (payIn != null) {
+        developer.log('ana ${payIn.id}');
+        await NetworkTable.delete(payIn.id);
+      }
+      final response = await restDio.delete(ApiUrl.DELETE_PAY_IN_OUT, queryParameters: queryParameters);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.status = 2;
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+    } on dio.DioError catch (e) {
+      _traceError(e);
+    } catch (e) {
+      _traceCatch(e);
     }
   }
 }
