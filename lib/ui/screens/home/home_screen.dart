@@ -377,7 +377,7 @@ class HomeScreen extends GetResponsiveView {
                               child: CustomIconText(
                                 icon: kAssetArrow,
                                 bold: true,
-                                style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold, fontSize: 23.sp, color: AppColor.red),
+                                style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold, fontSize: 23.sp, color: AppColor.blue2),
                                 label: '${'Net Total'.tr} : ${_controller.cart.value.amountDue.toStringAsFixed(fractionDigits)}',
                               ),
                             ),

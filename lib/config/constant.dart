@@ -67,6 +67,7 @@ String kAssetCustomerPayments = "";
 String kAssetLogout = "";
 String kAssetsWelcome = "";
 String kAssetExit = "";
+String kAssetPhoto = "";
 
 loadAssets() {
   switch (companyType) {
@@ -108,6 +109,7 @@ loadAssets() {
       kAssetLogout = "assets/images/logout.svg";
       kAssetsWelcome = "assets/images/welcome.png";
       kAssetExit = "assets/images/exit.svg";
+      kAssetPhoto = "assets/images/photo.svg";
       break;
   }
 }

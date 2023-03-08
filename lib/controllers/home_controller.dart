@@ -17,6 +17,7 @@ import 'package:retail_system/models/all_data/void_reason_model.dart';
 import 'package:retail_system/models/cart_model.dart';
 import 'package:retail_system/networks/rest_api.dart';
 import 'package:retail_system/printer/printer.dart';
+import 'package:retail_system/ui/screens/search_item/search_item_screen.dart';
 import 'package:retail_system/ui/widgets/custom_widget.dart';
 import 'package:uuid/uuid.dart';
 
@@ -26,7 +27,14 @@ class HomeController extends GetxController {
   final cart = CartModel.init(orderType: EnumOrderType.takeAway).obs;
   final TextEditingController controllerSearch = TextEditingController();
 
-  searchItem() {}
+  searchItem() {
+    controllerSearch.text = '';
+    Get.to(() => SearchItemScreen())?.then((value) {
+      if(value != null){
+        controllerSearch.text = '$value';
+      }
+    });
+  }
 
   addItem() {
     if (controllerSearch.text.isEmpty) {

@@ -52,7 +52,7 @@ class CustomDropDown extends StatelessWidget {
                     ? DropdownButton(
                         isExpanded: isExpanded ?? false,
                         style: textStyle ?? Theme.of(context).textTheme.bodyText1!.copyWith(fontWeight: FontWeight.bold),
-                        value: selectItem ?? (hint != "" ? null : items[0].value),
+                        value: selectItem,
                         items: items,
                         hint: Text(
                           hint,
