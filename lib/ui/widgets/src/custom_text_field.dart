@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:retail_system/config/app_color.dart';
+import 'package:retail_system/config/constant.dart';
 
 class CustomTextField extends StatefulWidget {
   final TextEditingController? controller;
@@ -23,7 +24,7 @@ class CustomTextField extends StatefulWidget {
   final String? Function(String? value)? validator;
   final void Function(String? value)? onChanged;
   final String? Function(String? value)? onSaved;
-  final String? Function(String? value)? onFieldSubmitted;
+  final void Function(String)? onFieldSubmitted;
   final void Function()? onTap;
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
@@ -94,7 +95,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         maxLength: widget.maxLength,
         textAlign: widget.textAlign,
 
-        // style: TextStyle(color: Colors.black),
+        style: kStyleTextTextField,
         decoration: InputDecoration(
           fillColor: widget.fillColor ?? Colors.transparent,
           filled: true,
@@ -102,7 +103,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           label: widget.label,
           helperText: widget.helperText,
           contentPadding: widget.contentPadding ?? (widget.icon != null ? EdgeInsets.zero : EdgeInsetsDirectional.only(start: 8.w, end: 20.w)),
-          hintStyle: Theme.of(context).textTheme.bodyText1!.copyWith(color: AppColor.gray2),
+          hintStyle: kStyleTextTitle.copyWith(color: AppColor.gray2),
           prefixIcon: widget.icon != null
               ? Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0.h),

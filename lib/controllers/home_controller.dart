@@ -13,6 +13,7 @@ import 'package:retail_system/config/enum/enum_credit_card_type.dart';
 import 'package:retail_system/config/enum/enum_discount_type.dart';
 import 'package:retail_system/config/enum/enum_invoice_kind.dart';
 import 'package:retail_system/config/enum/enum_order_type.dart';
+import 'package:retail_system/config/enum/enum_payment_method_type.dart';
 import 'package:retail_system/config/text_input_formatters.dart';
 import 'package:retail_system/config/utils.dart';
 import 'package:retail_system/config/validation.dart';
@@ -677,7 +678,7 @@ class HomeController extends GetxController {
             children: [
               Text(
                 'Void Reason'.tr,
-                style: kStyleTextTitle,
+                style: kStyleTextLarge,
               ),
               const Divider(thickness: 2),
               ListView.builder(
@@ -698,36 +699,32 @@ class HomeController extends GetxController {
                 ),
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Expanded(child: Container()),
-                  Expanded(
-                    child: CustomButton(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                      backgroundColor: AppColor.primaryColor,
-                      onPressed: () {
-                        selectedVoidReasonId = null;
+                  CustomButton(
+                    fixed: true,
+
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    backgroundColor: AppColor.primaryColor,
+                    onPressed: () {
+                      selectedVoidReasonId = null;
+                      Get.back();
+                    },
+                    child: Text('Cancel'.tr),
+                  ),
+                  CustomButton(
+                    fixed: true,
+                    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+                    backgroundColor: AppColor.primaryColor,
+                    onPressed: () {
+                      if (selectedVoidReasonId == null) {
+                        Utils.showSnackbar('Please select void reason'.tr);
+                      } else {
                         Get.back();
-                      },
-                      child: Text('Cancel'.tr),
-                    ),
+                      }
+                    },
+                    child: Text('Save'.tr),
                   ),
-                  Expanded(
-                    child: CustomButton(
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-                      backgroundColor: AppColor.primaryColor,
-                      onPressed: () {
-                        if (selectedVoidReasonId == null) {
-                          Utils.showSnackbar('Please select void reason'.tr);
-                        } else {
-                          Get.back();
-                        }
-                      },
-                      child: Text('Save'.tr),
-                    ),
-                  ),
-                  Expanded(child: Container()),
                 ],
               ),
               SizedBox(height: 16.h),
@@ -740,7 +737,7 @@ class HomeController extends GetxController {
     return selectedVoidReasonId == null ? null : allDataModel.voidReason.firstWhere((element) => element.id == selectedVoidReasonId);
   }
 
-  paymentMethodDialog() {
+  paymentMethodDialog({required EnumPaymentMethodType type}) {
     if (cart.value.items.isNotEmpty) {
       double remaining = _calculateRemaining();
       Get.dialog(
@@ -762,6 +759,7 @@ class HomeController extends GetxController {
                   children: [
                     Expanded(
                       child: CustomButton(
+                        margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
                         onPressed: () async {
                           var result = await paymentDialog(
                             balance: remaining + cart.value.cash,
@@ -778,30 +776,31 @@ class HomeController extends GetxController {
                         child: Text('${'Cash'.tr} : ${cart.value.cash.toStringAsFixed(fractionDigits)}'),
                       ),
                     ),
-                    SizedBox(width: 20.w),
-                    Expanded(
-                      child: CustomButton(
-                        onPressed: () async {
-                          var result = await paymentDialog(
-                            balance: remaining + cart.value.credit,
-                            received: cart.value.credit,
-                            enableReturnValue: false,
-                            controllerCreditCard: TextEditingController(text: cart.value.creditCardNumber),
-                            paymentCompany: cart.value.payCompanyId == 0 ? null : cart.value.payCompanyId,
-                          );
-                          cart.value.credit = result['received'];
-                          cart.value.creditCardNumber = result['credit_card'];
-                          cart.value.creditCardType = result['credit_card_type'];
-                          cart.value.payCompanyId = result['payment_company'];
-                          remaining = _calculateRemaining();
-                          setState(() {});
-                          // if (remaining == 0) {
-                          //   _showFinishDialog();
-                          // }
-                        },
-                        child: Text('${'Credit Card'.tr} : ${cart.value.credit.toStringAsFixed(fractionDigits)}'),
+                    if (type == EnumPaymentMethodType.otherPayment)
+                      Expanded(
+                        child: CustomButton(
+                          margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.h),
+                          onPressed: () async {
+                            var result = await paymentDialog(
+                              balance: remaining + cart.value.credit,
+                              received: cart.value.credit,
+                              enableReturnValue: false,
+                              controllerCreditCard: TextEditingController(text: cart.value.creditCardNumber),
+                              paymentCompany: cart.value.payCompanyId == 0 ? null : cart.value.payCompanyId,
+                            );
+                            cart.value.credit = result['received'];
+                            cart.value.creditCardNumber = result['credit_card'];
+                            cart.value.creditCardType = result['credit_card_type'];
+                            cart.value.payCompanyId = result['payment_company'];
+                            remaining = _calculateRemaining();
+                            setState(() {});
+                            // if (remaining == 0) {
+                            //   _showFinishDialog();
+                            // }
+                          },
+                          child: Text('${'Credit Card'.tr} : ${cart.value.credit.toStringAsFixed(fractionDigits)}'),
+                        ),
                       ),
-                    ),
                   ],
                 ),
                 SizedBox(height: 20.h),

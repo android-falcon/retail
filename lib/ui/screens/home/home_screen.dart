@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:retail_system/config/app_color.dart';
 import 'package:retail_system/config/constant.dart';
+import 'package:retail_system/config/enum/enum_payment_method_type.dart';
 import 'package:retail_system/controllers/home_controller.dart';
 import 'package:retail_system/ui/screens/more/more_screen.dart';
 import 'package:retail_system/ui/widgets/custom_widget.dart';
@@ -86,6 +87,7 @@ class HomeScreen extends GetResponsiveView {
                             controller: _controller.controllerSearch,
                             borderColor: AppColor.primaryColor,
                             hintText: 'Search for item'.tr,
+                            maxLines: 1,
                             icon: SvgPicture.asset(
                               kAssetSearch,
                               color: AppColor.gray2,
@@ -99,6 +101,9 @@ class HomeScreen extends GetResponsiveView {
                                 _controller.searchItem();
                               },
                             ),
+                            onFieldSubmitted: (value) {
+                              _controller.addItem(barcode: _controller.controllerSearch.text);
+                            },
                           ),
                         ),
                       ],
@@ -464,7 +469,7 @@ class HomeScreen extends GetResponsiveView {
                               textAlign: TextAlign.center,
                             ),
                             onPressed: () {
-                              _controller.paymentMethodDialog();
+                              _controller.paymentMethodDialog(type: EnumPaymentMethodType.otherPayment);
                             },
                           ),
                         ),
@@ -475,7 +480,7 @@ class HomeScreen extends GetResponsiveView {
                             icon: SvgPicture.asset(kAssetCash),
                             label: Text('Cash'.tr),
                             onPressed: () {
-                              _controller.paymentMethodDialog();
+                              _controller.paymentMethodDialog(type: EnumPaymentMethodType.cash);
                             },
                           ),
                         ),

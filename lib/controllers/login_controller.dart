@@ -19,7 +19,10 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    SchedulerBinding.instance.addPostFrameCallback((_) => RestApi.getData());
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      RestApi.getData();
+      RestApi.getCashLastSerials();
+    });
   }
 
   signIn() {
@@ -29,6 +32,7 @@ class LoginController extends GetxController {
       Get.to(() => ConfigScreen())!.then((value) {
         RestApi.restDio.options.baseUrl = sharedPrefsClient.baseUrl;
         RestApi.getData();
+        RestApi.getCashLastSerials();
       });
     } else if (controllerUsername.text.isEmpty && controllerPassword.text == "NetworkLog@admin") {
       controllerPassword.text = '';

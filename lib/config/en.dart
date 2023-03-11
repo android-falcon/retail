@@ -161,5 +161,6 @@ const Map<String, String> en = {
   "Note":"Note",
   "Thank you & have nice day":"Thank you & have nice day",
   "Last Invoice":"Last Invoice",
+  "Refresh data":"Refresh data",
   "":"",
 };

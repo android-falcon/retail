@@ -89,6 +89,13 @@ class MoreController extends GetxController {
         },
       },
       {
+        'label': 'Refresh data'.tr,
+        'icon': kAssetReprintInvoice,
+        'onTap': () {
+          refreshData();
+        },
+      },
+      {
         'label': 'Logout'.tr,
         'icon': kAssetLogout,
         'onTap': () {
@@ -108,6 +115,11 @@ class MoreController extends GetxController {
     if (await Utils.checkPermission(sharedPrefsClient.employee.hasReportsPermission)) {
       _showDailyCloseDialog();
     }
+  }
+
+  refreshData(){
+    RestApi.getData();
+    RestApi.getCashLastSerials();
   }
 
   refund() async {
@@ -753,7 +765,7 @@ class MoreController extends GetxController {
                 ),
                 Text(
                   '${'Date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
-                  style: kStyleTextTitle,
+                  style: kStyleTextLarge,
                 ),
                 SizedBox(height: 8.h),
                 const Divider(
@@ -775,6 +787,7 @@ class MoreController extends GetxController {
                         validator: (value) {
                           return Validation.isRequired(value);
                         },
+                        borderColor: controllerSelectEdit == controllerTotalCash ? AppColor.primaryColor : null,
                         enableInteractiveSelection: false,
                         keyboardType: const TextInputType.numberWithOptions(),
                         onTap: () {
@@ -794,6 +807,7 @@ class MoreController extends GetxController {
                         validator: (value) {
                           return Validation.isRequired(value);
                         },
+                        borderColor: controllerSelectEdit == controllerTotalCreditCard ? AppColor.primaryColor : null,
                         enableInteractiveSelection: false,
                         keyboardType: const TextInputType.numberWithOptions(),
                         onTap: () {

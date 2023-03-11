@@ -10,6 +10,7 @@ import 'package:retail_system/database/network_table.dart';
 import 'package:retail_system/models/all_data_model.dart';
 import 'package:retail_system/models/api_response.dart';
 import 'package:retail_system/models/cart_model.dart';
+import 'package:retail_system/models/cash_last_serials_model.dart';
 import 'package:retail_system/models/end_cash_model.dart';
 import 'package:retail_system/models/get_pay_in_out_model.dart';
 import 'package:retail_system/networks/api_url.dart';
@@ -874,4 +875,52 @@ class RestApi {
     }
   }
 
+  static Future<void> getCashLastSerials() async {
+    try {
+      var queryParameters = {
+        "PosNo": sharedPrefsClient.posNo,
+        "CashNo": sharedPrefsClient.cashNo,
+      };
+      var networkId = await NetworkTable.insert(NetworkTableModel(
+        id: 0,
+        type: 'GET_CASH_LAST_SERIALS',
+        status: 3,
+        baseUrl: restDio.options.baseUrl,
+        path: ApiUrl.GET_CASH_LAST_SERIALS,
+        method: 'GET',
+        params: jsonEncode(queryParameters),
+        body: '',
+        headers: '',
+        countRequest: 1,
+        statusCode: 0,
+        response: '',
+        createdAt: DateTime.now().toIso8601String(),
+        uploadedAt: DateTime.now().toIso8601String(),
+        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+      ));
+      var networkModel = await NetworkTable.queryById(id: networkId);
+      final response = await restDio.get(ApiUrl.GET_CASH_LAST_SERIALS, queryParameters: queryParameters);
+      _networkLog(response);
+      if (networkModel != null) {
+        networkModel.status = 2;
+        networkModel.statusCode = response.statusCode!;
+        networkModel.response = response.data is String ? response.data : jsonEncode(response.data);
+        networkModel.uploadedAt = DateTime.now().toIso8601String();
+        await NetworkTable.update(networkModel);
+      }
+      if (response.statusCode == 200) {
+        var model = CashLastSerialsModel.fromJson(response.data);
+        if (sharedPrefsClient.inVocNo <= model.invNo) {
+          sharedPrefsClient.inVocNo = model.invNo + 1;
+        }
+        if (sharedPrefsClient.payInOutNo <= model.cashInOutNo) {
+          sharedPrefsClient.payInOutNo = model.cashInOutNo + 1;
+        }
+      }
+    } on dio.DioError catch (e) {
+      _traceError(e);
+    } catch (e) {
+      _traceCatch(e);
+    }
+  }
 }
