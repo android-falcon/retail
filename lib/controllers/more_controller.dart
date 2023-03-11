@@ -231,7 +231,7 @@ class MoreController extends GetxController {
       barrierDismissible: false,
     );
     if (result) {
-      await Printer.printInvoicesDialog(cart: reprintModel!, reprint: true, showOrderNo: false, invNo: '${reprintModel!.invNo}');
+      await Printer.printInvoicesDialog(cart: reprintModel!, reprint: true, invNo: '${reprintModel!.invNo}');
     }
   }
 
@@ -547,6 +547,7 @@ class MoreController extends GetxController {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CustomButton(
+                      margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
                       fixed: true,
                       child: Text('Print'.tr),
                       onPressed: () async {
@@ -555,6 +556,7 @@ class MoreController extends GetxController {
                     ),
                     SizedBox(width: 10.w),
                     CustomButton(
+                      margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
                       fixed: true,
                       child: Text('Close'.tr),
                       onPressed: () {
@@ -882,6 +884,7 @@ class MoreController extends GetxController {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     CustomButton(
+                      margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
                       fixed: true,
                       child: Text('Print'.tr),
                       onPressed: () async {
@@ -890,6 +893,7 @@ class MoreController extends GetxController {
                     ),
                     SizedBox(width: 10.w),
                     CustomButton(
+                      margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
                       fixed: true,
                       child: Text('Close'.tr),
                       onPressed: () {
@@ -1037,16 +1041,16 @@ class MoreController extends GetxController {
   _showDailyCloseDialog() {
     Get.defaultDialog(
       title: 'Are you sure?'.tr,
-      titleStyle: kStyleTextTitle,
+      titleStyle: kStyleTextLarge,
       content: Column(
         children: [
           Text(
             '${'Daily close date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
-            style: kStyleTextDefault,
+            style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
           ),
           Text(
             '${'New daily close date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose.add(const Duration(days: 1)))}',
-            style: kStyleTextDefault,
+            style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10.h),
         ],

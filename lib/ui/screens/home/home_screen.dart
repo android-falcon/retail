@@ -63,23 +63,21 @@ class HomeScreen extends GetResponsiveView {
                         ),
                       ],
                     ),
-                    SizedBox(height: 40.h),
                     CustomIconText(
                       icon: kAssetDate,
                       label: '${'Date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
                     ),
                     CustomIconText(
                       icon: kAssetTime,
-                      label: '${'Time'.tr} : ${DateFormat(timeFormat).format(sharedPrefsClient.dailyClose)}',
+                      label: '${'Time'.tr} : ${DateFormat(timeFormat).format(DateTime.now())}',
                     ),
-                    SizedBox(height: 27.h),
                     Row(
                       children: [
                         CustomButton(
                           fixed: true,
                           child: Text('Add Item'.tr),
                           onPressed: () {
-                            _controller.addItem();
+                            _controller.addItem(barcode: _controller.controllerSearch.text);
                           },
                         ),
                         SizedBox(width: 9.w),
@@ -110,7 +108,7 @@ class HomeScreen extends GetResponsiveView {
               ),
               Container(
                 height: 250.h,
-                margin: EdgeInsets.symmetric(vertical: 16.h),
+                margin: EdgeInsets.symmetric(vertical: 4.h),
                 padding: EdgeInsets.all(8.w),
                 decoration: BoxDecoration(
                   border: Border.all(color: AppColor.primaryColor),
@@ -313,7 +311,9 @@ class HomeScreen extends GetResponsiveView {
                     SizedBox(width: 10.w),
                     Expanded(
                       child: CustomButtonOutline(
-                        onPressed: () {},
+                        onPressed: () {
+                          _controller.speedItems();
+                        },
                         label: Text('Speed Items'.tr),
                         icon: SvgPicture.asset(kAssetSpeedItems),
                       ),
@@ -324,8 +324,8 @@ class HomeScreen extends GetResponsiveView {
               Stack(
                 children: [
                   Container(
-                    margin: EdgeInsets.symmetric(vertical: 16.h),
-                    padding: EdgeInsets.only(top: 8.w, left: 14.w, right: 14.w, bottom: 16.w),
+                    margin: EdgeInsets.only(top: 4.h, bottom: 16.h),
+                    padding: EdgeInsets.only(top: 8.h, left: 14.w, right: 14.w, bottom: 16.h),
                     decoration: BoxDecoration(
                       color: AppColor.accentColor,
                       borderRadius: BorderRadius.circular(10.r),
@@ -362,9 +362,14 @@ class HomeScreen extends GetResponsiveView {
                         Row(
                           children: [
                             Expanded(
-                              child: CustomIconText(
-                                icon: kAssetArrow,
-                                label: '${'Disc'.tr} : ${_controller.cart.value.totalDiscount.toStringAsFixed(fractionDigits)}',
+                              child: InkWell(
+                                onTap: () {
+                                  _controller.discountOrder();
+                                },
+                                child: CustomIconText(
+                                  icon: kAssetArrow,
+                                  label: '${'Disc'.tr} : ${_controller.cart.value.totalDiscount.toStringAsFixed(fractionDigits)}',
+                                ),
                               ),
                             ),
                             Expanded(
@@ -389,14 +394,53 @@ class HomeScreen extends GetResponsiveView {
                   Positioned.fill(
                     child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: SvgPicture.asset(kAssetArrowBottom),
+                      child: GestureDetector(
+                        onTap: (){
+                          _controller.showLastInvoice.value = !_controller.showLastInvoice.value;
+                          _controller.update();
+                        },
+                        child: SvgPicture.asset(kAssetArrowBottom),
+                      ),
                     ),
                   )
                 ],
               ),
+              if (_controller.showLastInvoice.value)
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 8.h),
+                  padding: EdgeInsets.only(top: 8.h, left: 14.w, right: 14.w, bottom: 8.h),
+                  decoration: BoxDecoration(
+                    color: AppColor.accentColor,
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        '${'Last Invoice'.tr} : ',
+                        style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 6.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          CustomIconText(
+                            expanded: false,
+                            icon: kAssetArrow,
+                            label: '${'Invoice No'.tr} : ${sharedPrefsClient.lastInvoice.invoiceNo}',
+                          ),
+                          CustomIconText(
+                            expanded: false,
+                            icon: kAssetArrow,
+                            label: '${'Total'.tr} : ${sharedPrefsClient.lastInvoice.total.toStringAsFixed(fractionDigits)}',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               Container(
-                margin: EdgeInsets.symmetric(vertical: 16.h),
-                padding: EdgeInsets.only(top: 8.w, left: 14.w, right: 14.w, bottom: 16.w),
+                margin: EdgeInsets.symmetric(vertical: 8.h),
+                padding: EdgeInsets.only(top: 8.h, left: 14.w, right: 14.w, bottom: 8.h),
                 decoration: BoxDecoration(
                   color: AppColor.accentColor,
                   borderRadius: BorderRadius.circular(10.r),
@@ -407,7 +451,7 @@ class HomeScreen extends GetResponsiveView {
                       '${'Payment Methods'.tr} : ',
                       style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(height: 10.h),
+                    SizedBox(height: 6.h),
                     Row(
                       children: [
                         Expanded(

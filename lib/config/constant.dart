@@ -14,9 +14,10 @@ final kStyleTextButton = TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp,
 final kStyleTextTable = TextStyle(fontWeight: FontWeight.bold, fontSize: 16.sp, color: AppColor.tertiaryColor);
 final kStyleDataTable = TextStyle( fontSize: 16.sp, color: AppColor.tertiaryColor);
 final kStyleButtonPayment = TextStyle(fontWeight: FontWeight.bold, fontSize: 17.sp);
-final kStyleLargePrinter = TextStyle(fontWeight: FontWeight.bold, fontSize: 34.sp);
-final kStyleTitlePrinter = TextStyle(fontWeight: FontWeight.bold, fontSize: 27.sp);
-final kStyleDataPrinter = TextStyle(fontSize: 23.sp);
+const kStyleLargePrinter =  TextStyle(fontWeight: FontWeight.bold, fontSize: 34);
+const kStyleTitlePrinter = TextStyle(fontWeight: FontWeight.bold, fontSize: 25);
+const kStyleDataPrinter = TextStyle(fontSize: 20);
+const kStyleSmallPrinter = TextStyle(fontSize: 16);
 final kStyleForceQuestion = TextStyle(fontWeight: FontWeight.bold, fontSize: 17.sp);
 
 PackageInfo packageInfo = PackageInfo(appName: '', packageName: '', version: '', buildNumber: '');

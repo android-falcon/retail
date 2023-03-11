@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart' as intl;
@@ -13,8 +16,10 @@ import 'package:retail_system/config/enum/enum_order_type.dart';
 import 'package:retail_system/config/text_input_formatters.dart';
 import 'package:retail_system/config/utils.dart';
 import 'package:retail_system/config/validation.dart';
+import 'package:retail_system/models/all_data/item_model.dart';
 import 'package:retail_system/models/all_data/void_reason_model.dart';
 import 'package:retail_system/models/cart_model.dart';
+import 'package:retail_system/models/last_invoice.dart';
 import 'package:retail_system/networks/rest_api.dart';
 import 'package:retail_system/printer/printer.dart';
 import 'package:retail_system/ui/screens/search_item/search_item_screen.dart';
@@ -26,21 +31,32 @@ class HomeController extends GetxController {
 
   final cart = CartModel.init(orderType: EnumOrderType.takeAway).obs;
   final TextEditingController controllerSearch = TextEditingController();
+  final showLastInvoice = false.obs;
+
+  refreshTime() {
+    Timer.periodic(const Duration(minutes: 1), (Timer t) => update());
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    refreshTime();
+  }
 
   searchItem() {
     controllerSearch.text = '';
     Get.to(() => SearchItemScreen())?.then((value) {
-      if(value != null){
+      if (value != null) {
         controllerSearch.text = '$value';
       }
     });
   }
 
-  addItem() {
-    if (controllerSearch.text.isEmpty) {
+  addItem({required String barcode}) {
+    if (barcode.isEmpty) {
       Utils.showSnackbar('Please fill search field'.tr, '');
     } else {
-      var indexItem = allDataModel.items.indexWhere((element) => '${element.id}' == controllerSearch.text);
+      var indexItem = allDataModel.items.indexWhere((element) => element.itemBarcodes.firstWhereOrNull((element) => element.barcode == barcode) != null);
       if (indexItem == -1) {
         Utils.showSnackbar('Item not found'.tr, '');
         controllerSearch.text = '';
@@ -261,6 +277,73 @@ class HomeController extends GetxController {
       cart.value.items[indexItem].qty = double.parse(controllerQty.text);
       cart.value.items[indexItem].price = double.parse(controllerPrice.text);
       cart.value.items[indexItem].lineDiscount = double.parse(controllerLineDiscount.text);
+    }
+    cart.value = Utils.calculateOrder(cart: cart.value);
+    update();
+  }
+
+  discountOrder() async {
+    GlobalKey<FormState> keyForm = GlobalKey<FormState>();
+    TextEditingController controllerDiscount = TextEditingController(text: cart.value.discount.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
+    TextEditingController controllerSelected = controllerDiscount;
+    var result = await Get.dialog(
+      CustomDialog(
+        builder: (context, setState, constraints) => Form(
+          key: keyForm,
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.all(16.sp),
+                child: Column(
+                  children: [
+                    CustomTextField(
+                      margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.w),
+                      controller: controllerDiscount,
+                      label: Text('Discount'.tr),
+                      fillColor: Colors.white,
+                      maxLines: 1,
+                      inputFormatters: [
+                        EnglishDigitsTextInputFormatter(decimal: true),
+                      ],
+                      enableInteractiveSelection: false,
+                      keyboardType: const TextInputType.numberWithOptions(),
+                      borderColor: controllerSelected == controllerDiscount ? AppColor.primaryColor : null,
+                      onTap: () async {
+                        if (await Utils.checkPermission(sharedPrefsClient.employee.hasLineDiscPermission)) {
+                          if (cart.value.items.any((element) => element.discountAvailable)) {
+                            FocusScope.of(context).requestFocus(FocusNode());
+                            controllerSelected = controllerDiscount;
+                            setState(() {});
+                          } else {
+                            Utils.showSnackbar('No items accept discount in order'.tr);
+                          }
+                        }
+                      },
+                      validator: (value) {
+                        return Validation.discount(EnumDiscountType.value, value, cart.value.total);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Utils.numPadWidget(
+                controllerSelected,
+                setState,
+                decimal: true,
+                onSubmit: () {
+                  if (keyForm.currentState!.validate()) {
+                    Get.back(result: true);
+                  }
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      barrierDismissible: false,
+    );
+    if (result != null && result == true) {
+      cart.value.discount = double.parse(controllerDiscount.text);
     }
     cart.value = Utils.calculateOrder(cart: cart.value);
     update();
@@ -508,6 +591,82 @@ class HomeController extends GetxController {
     );
   }
 
+  speedItems() {
+    List<ItemModel> items = allDataModel.items.where((element) => element.isSpeedItem == 1).toList();
+    if (items.isNotEmpty) {
+      Get.dialog(
+        CustomDialog(
+          enableScroll: false,
+          builder: (context, setState, constraints) => Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Flexible(
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 16.h),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColor.primaryColor),
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    child: CustomSingleChildScrollView(
+                      child: StaggeredGrid.count(
+                        crossAxisCount: 2,
+                        children: items
+                            .map((e) => Padding(
+                                  padding: EdgeInsets.all(8.sp),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Get.back();
+                                      addItem(barcode: e.itemBarcodes.first.barcode);
+                                    },
+                                    child: Container(
+                                      padding: EdgeInsets.all(12.sp),
+                                      decoration: BoxDecoration(color: AppColor.grayLight, borderRadius: BorderRadius.all(Radius.circular(10.r))),
+                                      child: Column(
+                                        children: [
+                                          Text(
+                                            '${e.menuName}\n',
+                                            style: kStyleTextTitle,
+                                            textAlign: TextAlign.center,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Text(
+                                            '${'Price'} : ${e.price.toStringAsFixed(fractionDigits)}',
+                                            style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ))
+                            .toList(),
+                      ),
+                    ),
+                  ),
+                ),
+                CustomButton(
+                  backgroundColor: AppColor.red,
+                  padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 16.h),
+                  fixed: true,
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: Text(
+                    'Exit'.tr,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } else {
+      Utils.showSnackbar('There are no speed items'.tr);
+    }
+  }
+
   Future<VoidReasonModel?> showVoidReasonDialog() async {
     int? selectedVoidReasonId;
     await Get.dialog(
@@ -582,156 +741,161 @@ class HomeController extends GetxController {
   }
 
   paymentMethodDialog() {
-    double remaining = _calculateRemaining();
-    Get.dialog(
-      CustomDialog(
-        builder: (context, setState, constraints) => Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-          child: Column(
-            children: [
-              Text(
-                '${'Date'.tr} : ${intl.DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
-                style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
-              ),
-              Text(
-                '${'Remaining'.tr} : ${remaining.toStringAsFixed(fractionDigits)}',
-                style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 35.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: CustomButton(
-                      onPressed: () async {
-                        var result = await paymentDialog(
-                          balance: remaining + cart.value.cash,
-                          received: cart.value.cash,
-                          enableReturnValue: true,
-                        );
-                        cart.value.cash = result['received'];
-                        remaining = _calculateRemaining();
-                        setState(() {});
-                        // if (remaining == 0) {
-                        //   _showFinishDialog();
-                        // }
-                      },
-                      child: Text('${'Cash'.tr} : ${cart.value.cash.toStringAsFixed(fractionDigits)}'),
-                    ),
-                  ),
-                  SizedBox(width: 20.w),
-                  Expanded(
-                    child: CustomButton(
-                      onPressed: () async {
-                        var result = await paymentDialog(
-                          balance: remaining + cart.value.credit,
-                          received: cart.value.credit,
-                          enableReturnValue: false,
-                          controllerCreditCard: TextEditingController(text: cart.value.creditCardNumber),
-                          paymentCompany: cart.value.payCompanyId == 0 ? null : cart.value.payCompanyId,
-                        );
-                        cart.value.credit = result['received'];
-                        cart.value.creditCardNumber = result['credit_card'];
-                        cart.value.creditCardType = result['credit_card_type'];
-                        cart.value.payCompanyId = result['payment_company'];
-                        remaining = _calculateRemaining();
-                        setState(() {});
-                        // if (remaining == 0) {
-                        //   _showFinishDialog();
-                        // }
-                      },
-                      child: Text('${'Credit Card'.tr} : ${cart.value.credit.toStringAsFixed(fractionDigits)}'),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20.h),
-              Container(
-                padding: EdgeInsets.only(top: 8.w, left: 14.w, right: 14.w, bottom: 16.w),
-                decoration: BoxDecoration(
-                  color: AppColor.accentColor,
-                  borderRadius: BorderRadius.circular(10.r),
+    if (cart.value.items.isNotEmpty) {
+      double remaining = _calculateRemaining();
+      Get.dialog(
+        CustomDialog(
+          builder: (context, setState, constraints) => Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+            child: Column(
+              children: [
+                Text(
+                  '${'Date'.tr} : ${intl.DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
+                  style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
                 ),
-                child: Column(
+                Text(
+                  '${'Remaining'.tr} : ${remaining.toStringAsFixed(fractionDigits)}',
+                  style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 35.h),
+                Row(
                   children: [
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Total'.tr} : ${cart.value.total.toStringAsFixed(fractionDigits)}',
-                    ),
-                    // CustomIconText(
-                    //   bold: true,
-                    //   label: '${'Delivery charge'.tr} : ${cart.value.deliveryCharge.toStringAsFixed(fractionDigits)}',
-                    // ),
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Line discount'.tr} : ${cart.value.totalLineDiscount.toStringAsFixed(fractionDigits)}',
-                    ),
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Discount'.tr} : ${cart.value.totalDiscount.toStringAsFixed(fractionDigits)}',
-                    ),
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Sub total'.tr} : ${cart.value.subTotal.toStringAsFixed(fractionDigits)}',
-                    ),
-                    // CustomIconText(
-                    //   bold: true,
-                    //   label: '${'Service'.tr} : ${cart.value.service.toStringAsFixed(fractionDigits)}',
-                    // ),
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Tax'.tr} : ${cart.value.tax.toStringAsFixed(fractionDigits)}',
-                    ),
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Amount Due'.tr} : ${cart.value.amountDue.toStringAsFixed(fractionDigits)}',
-                    ),
-                    const Divider(),
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Total Due'.tr} : ${cart.value.amountDue.toStringAsFixed(fractionDigits)}',
-                    ),
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Total received'.tr} : ${(cart.value.cash + cart.value.credit + cart.value.cheque + cart.value.gift + cart.value.coupon + cart.value.point).toStringAsFixed(fractionDigits)}',
-                    ),
-                    CustomIconText(
-                      bold: true,
-                      label: '${'Balance'.tr} : ${remaining.toStringAsFixed(fractionDigits)}',
-                    ),
-                    SizedBox(height: 20.h),
-                    CustomButton(
-                      padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 24.h),
-                      backgroundColor: Colors.white,
-                      fixed: true,
-                      onPressed: () {
-                        if (remaining == 0) {
-                          for (int i = 0; i < cart.value.items.length; i++) {
-                            cart.value.items[i].rowSerial = i + 1;
-                          }
-                          RestApi.invoice(cart: cart.value, invoiceKind: EnumInvoiceKind.invoicePay);
-                          sharedPrefsClient.inVocNo++;
-                          Get.back();
-                          Printer.printInvoicesDialog(cart: cart.value, showPrintButton: false, invNo: '${sharedPrefsClient.inVocNo - 1}').then((value) {
-                            cart.value = CartModel.init(orderType: EnumOrderType.takeAway);
-                            update();
-                          });
-                        } else {
-                          Utils.showSnackbar('The remainder should be 0'.tr);
-                        }
-                      },
-                      child: Text(
-                        'Save'.tr,
-                        style: TextStyle(color: AppColor.tertiaryColor),
+                    Expanded(
+                      child: CustomButton(
+                        onPressed: () async {
+                          var result = await paymentDialog(
+                            balance: remaining + cart.value.cash,
+                            received: cart.value.cash,
+                            enableReturnValue: true,
+                          );
+                          cart.value.cash = result['received'];
+                          remaining = _calculateRemaining();
+                          setState(() {});
+                          // if (remaining == 0) {
+                          //   _showFinishDialog();
+                          // }
+                        },
+                        child: Text('${'Cash'.tr} : ${cart.value.cash.toStringAsFixed(fractionDigits)}'),
                       ),
-                    )
+                    ),
+                    SizedBox(width: 20.w),
+                    Expanded(
+                      child: CustomButton(
+                        onPressed: () async {
+                          var result = await paymentDialog(
+                            balance: remaining + cart.value.credit,
+                            received: cart.value.credit,
+                            enableReturnValue: false,
+                            controllerCreditCard: TextEditingController(text: cart.value.creditCardNumber),
+                            paymentCompany: cart.value.payCompanyId == 0 ? null : cart.value.payCompanyId,
+                          );
+                          cart.value.credit = result['received'];
+                          cart.value.creditCardNumber = result['credit_card'];
+                          cart.value.creditCardType = result['credit_card_type'];
+                          cart.value.payCompanyId = result['payment_company'];
+                          remaining = _calculateRemaining();
+                          setState(() {});
+                          // if (remaining == 0) {
+                          //   _showFinishDialog();
+                          // }
+                        },
+                        child: Text('${'Credit Card'.tr} : ${cart.value.credit.toStringAsFixed(fractionDigits)}'),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
+                SizedBox(height: 20.h),
+                Container(
+                  padding: EdgeInsets.only(top: 8.w, left: 14.w, right: 14.w, bottom: 16.w),
+                  decoration: BoxDecoration(
+                    color: AppColor.accentColor,
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: Column(
+                    children: [
+                      CustomIconText(
+                        bold: true,
+                        label: '${'Total'.tr} : ${cart.value.total.toStringAsFixed(fractionDigits)}',
+                      ),
+                      // CustomIconText(
+                      //   bold: true,
+                      //   label: '${'Delivery charge'.tr} : ${cart.value.deliveryCharge.toStringAsFixed(fractionDigits)}',
+                      // ),
+                      CustomIconText(
+                        bold: true,
+                        label: '${'Line discount'.tr} : ${cart.value.totalLineDiscount.toStringAsFixed(fractionDigits)}',
+                      ),
+                      CustomIconText(
+                        bold: true,
+                        label: '${'Discount'.tr} : ${cart.value.totalDiscount.toStringAsFixed(fractionDigits)}',
+                      ),
+                      CustomIconText(
+                        bold: true,
+                        label: '${'Sub total'.tr} : ${cart.value.subTotal.toStringAsFixed(fractionDigits)}',
+                      ),
+                      // CustomIconText(
+                      //   bold: true,
+                      //   label: '${'Service'.tr} : ${cart.value.service.toStringAsFixed(fractionDigits)}',
+                      // ),
+                      CustomIconText(
+                        bold: true,
+                        label: '${'Tax'.tr} : ${cart.value.tax.toStringAsFixed(fractionDigits)}',
+                      ),
+                      CustomIconText(
+                        bold: true,
+                        label: '${'Amount Due'.tr} : ${cart.value.amountDue.toStringAsFixed(fractionDigits)}',
+                      ),
+                      const Divider(),
+                      CustomIconText(
+                        bold: true,
+                        label: '${'Total Due'.tr} : ${cart.value.amountDue.toStringAsFixed(fractionDigits)}',
+                      ),
+                      CustomIconText(
+                        bold: true,
+                        label: '${'Total received'.tr} : ${(cart.value.cash + cart.value.credit + cart.value.cheque + cart.value.gift + cart.value.coupon + cart.value.point).toStringAsFixed(fractionDigits)}',
+                      ),
+                      CustomIconText(
+                        bold: true,
+                        label: '${'Balance'.tr} : ${remaining.toStringAsFixed(fractionDigits)}',
+                      ),
+                      SizedBox(height: 20.h),
+                      CustomButton(
+                        padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 24.h),
+                        backgroundColor: Colors.white,
+                        fixed: true,
+                        onPressed: () {
+                          if (remaining == 0) {
+                            for (int i = 0; i < cart.value.items.length; i++) {
+                              cart.value.items[i].rowSerial = i + 1;
+                            }
+                            RestApi.invoice(cart: cart.value, invoiceKind: EnumInvoiceKind.invoicePay);
+                            sharedPrefsClient.lastInvoice = LastInvoice(invoiceNo: sharedPrefsClient.inVocNo, total: cart.value.amountDue);
+                            sharedPrefsClient.inVocNo++;
+                            Get.back();
+                            Printer.printInvoicesDialog(cart: cart.value, showPrintButton: false, invNo: '${sharedPrefsClient.inVocNo - 1}').then((value) {
+                              cart.value = CartModel.init(orderType: EnumOrderType.takeAway);
+                              update();
+                            });
+                          } else {
+                            Utils.showSnackbar('The remainder should be 0'.tr);
+                          }
+                        },
+                        child: Text(
+                          'Save'.tr,
+                          style: TextStyle(color: AppColor.tertiaryColor),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
+    } else {
+      Utils.showSnackbar('Please add items'.tr);
+    }
   }
 
   paymentDialog({TextEditingController? controllerReceived, required double balance, required double received, bool enableReturnValue = false, TextEditingController? controllerCreditCard, int? paymentCompany}) async {

@@ -3,6 +3,7 @@ import 'package:retail_system/config/sorting_model.dart';
 import 'package:retail_system/models/all_data/employee_model.dart';
 import 'package:retail_system/models/all_data_model.dart';
 import 'package:retail_system/models/cart_model.dart';
+import 'package:retail_system/models/last_invoice.dart';
 
 class SharedPrefsClient {
   static const String _storageName = "MyPref";
@@ -120,6 +121,12 @@ class SharedPrefsClient {
   set storeNo(int value) {
     _storage.write(keyStoreNo, value);
   }
+
+  LastInvoice get lastInvoice => LastInvoice.fromJson(_storage.read(keyLastInvoice) ?? {});
+
+  set lastInvoice(LastInvoice value) {
+    _storage.write(keyLastInvoice, value.toJson());
+  }
 }
 
 const String keyDeviceToken = "key_device_token";
@@ -138,3 +145,4 @@ const String keyPayInOutNoNo = "key_pay_in_out_no";
 const String keyPosNo = "key_pos_no";
 const String keyCashNo = "key_cash_no";
 const String keyStoreNo = "key_store_no";
+const String keyLastInvoice = "key_last_invoice";

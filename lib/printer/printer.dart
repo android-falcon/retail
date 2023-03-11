@@ -17,7 +17,7 @@ import 'package:retail_system/ui/widgets/custom_widget.dart';
 import 'package:screenshot/screenshot.dart';
 
 class Printer {
-  static Future<void> printInvoicesDialog({required CartModel cart, bool cashPrinter = true, bool reprint = false, bool showPrintButton = true, bool showOrderNo = true, bool showInvoiceNo = true, String invNo = ''}) async {
+  static Future<void> printInvoicesDialog({required CartModel cart, bool cashPrinter = true, bool reprint = false, bool showPrintButton = true, bool showInvoiceNo = true, String invNo = ''}) async {
     ScreenshotController _screenshotControllerCash = ScreenshotController();
     List<PrinterInvoiceModel> invoices = [];
 
@@ -65,7 +65,7 @@ class Printer {
               children: [
                 if (showPrintButton)
                   CustomButton(
-                    margin: EdgeInsets.symmetric(horizontal: 5.w),
+                    margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
                     fixed: true,
                     child: Text('Print'.tr),
                     onPressed: () {
@@ -74,7 +74,7 @@ class Printer {
                   ),
                 // SizedBox(width: 10.w),
                 CustomButton(
-                  margin: EdgeInsets.symmetric(horizontal: 5.w),
+                  margin: EdgeInsets.symmetric(horizontal: 5.w, vertical: 5.h),
                   fixed: true,
                   child: Text('Close'.tr),
                   onPressed: () {
@@ -101,72 +101,39 @@ class Printer {
                                 'Reprint'.tr,
                                 style: kStyleLargePrinter,
                               ),
-                            Text(
-                              cart.orderType.name.tr,
-                              style: kStyleLargePrinter,
-                            ),
                           ],
                         ),
                       ),
                       const SizedBox(height: 15),
-                      if (showOrderNo)
-                        Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                'Order No'.tr,
-                                style: kStyleLargePrinter,
-                              ),
-                              Text(
-                                '${cart.orderNo}',
-                                style: kStyleLargePrinter,
-                              ),
-                            ],
-                          ),
-                        ),
                       const Divider(color: Colors.black, thickness: 2),
+                      if (showInvoiceNo)
+                        Text(
+                          '${'Invoice'.tr} : $invNo',
+                          style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                        ),
                       Row(
                         children: [
                           Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (showInvoiceNo)
-                                  Text(
-                                    '${'Invoice No'.tr} : $invNo',
-                                    style: kStyleDataPrinter,
-                                  ),
-                                Text(
-                                  '${'Date'.tr} : ${DateFormat(dateFormat).format(DateTime.now())}',
-                                  style: kStyleDataPrinter,
-                                ),
-                                Text(
-                                  '${'Time'.tr} : ${DateFormat('HH:mm:ss a').format(DateTime.now())}',
-                                  style: kStyleDataPrinter,
-                                ),
-                              ],
+                            child: Text(
+                              '${'Cash'.tr} : ${sharedPrefsClient.cashNo}',
+                              style: kStyleDataPrinter,
                             ),
                           ),
                           Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '${'User'.tr} : ${sharedPrefsClient.employee.empName}',
-                                  style: kStyleDataPrinter,
-                                  maxLines: 1,
-                                ),
-                                Text(
-                                  '${'Phone'.tr} : ${allDataModel.companyConfig[0].phoneNo}',
-                                  style: kStyleDataPrinter,
-                                  maxLines: 1,
-                                ),
-                              ],
+                            child: Text(
+                              '${'Cashier'.tr} : ${sharedPrefsClient.employee.empName}',
+                              style: kStyleDataPrinter,
                             ),
                           ),
                         ],
+                      ),
+                      Text(
+                        '${'Date'.tr} : ${DateFormat('$dateFormat $timeFormat').format(DateTime.now())}',
+                        style: kStyleDataPrinter,
+                      ),
+                      Text(
+                        '${'Customer'.tr} : ',
+                        style: kStyleDataPrinter,
                       ),
                       const Divider(color: Colors.black, thickness: 2),
                       Column(
@@ -178,22 +145,28 @@ class Printer {
                                 Expanded(
                                   flex: 4,
                                   child: Text(
-                                    'Pro-Nam'.tr,
-                                    style: kStyleDataPrinter,
-                                    textAlign: TextAlign.center,
+                                    'Item Description'.tr,
+                                    style: kStyleSmallPrinter,
                                   ),
                                 ),
                                 Expanded(
                                   child: Text(
                                     'Qty'.tr,
-                                    style: kStyleDataPrinter,
+                                    style: kStyleSmallPrinter,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    'Price'.tr,
+                                    style: kStyleSmallPrinter,
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
                                 Expanded(
                                   child: Text(
                                     'Total'.tr,
-                                    style: kStyleDataPrinter,
+                                    style: kStyleSmallPrinter,
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
@@ -220,22 +193,28 @@ class Printer {
                                           Expanded(
                                             flex: 4,
                                             child: Text(
-                                              cart.items[index].name,
-                                              style: kStyleDataPrinter,
-                                              textAlign: TextAlign.center,
+                                              '${index + 1}) ${cart.items[index].name}',
+                                              style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
                                             ),
                                           ),
                                           Expanded(
                                             child: Text(
                                               '${cart.items[index].qty}',
-                                              style: kStyleDataPrinter,
+                                              style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              cart.items[index].priceChange.toStringAsFixed(3),
+                                              style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
                                           Expanded(
                                             child: Text(
                                               cart.items[index].total.toStringAsFixed(3),
-                                              style: kStyleDataPrinter,
+                                              style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
@@ -355,83 +334,62 @@ class Printer {
                               children: [
                                 Expanded(
                                   child: Text(
+                                    'Item Count'.tr,
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Text(
+                                  ':',
+                                  style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    '${cart.items.length}',
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
                                     'Total'.tr,
-                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Text(
-                                  cart.total.toStringAsFixed(3),
-                                  style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                  ':',
+                                  style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
                                 ),
-                              ],
-                            ),
-                            Row(
-                              children: [
                                 Expanded(
                                   child: Text(
-                                    'Discount'.tr,
-                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    cart.total.toStringAsFixed(3),
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
                                   ),
-                                ),
-                                Text(
-                                  cart.totalDiscount.toStringAsFixed(3),
-                                  style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Line Discount'.tr,
-                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Text(
-                                  cart.totalLineDiscount.toStringAsFixed(3),
-                                  style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
-                            // Row(
-                            //   children: [
-                            //     Expanded(
-                            //       child: Text(
-                            //         'Delivery Charge'.tr,
-                            //         style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                            //       ),
-                            //     ),
-                            //     Text(
-                            //       cart.deliveryCharge.toStringAsFixed(3),
-                            //       style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                            //     ),
-                            //   ],
-                            // ),
-                            // Row(
-                            //   children: [
-                            //     Expanded(
-                            //       child: Text(
-                            //         'Service'.tr,
-                            //         style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                            //       ),
-                            //     ),
-                            //     Text(
-                            //       cart.service.toStringAsFixed(3),
-                            //       style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                            //     ),
-                            //   ],
-                            // ),
                             Row(
                               children: [
                                 Expanded(
                                   child: Text(
                                     'Tax'.tr,
-                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Text(
-                                  cart.tax.toStringAsFixed(3),
-                                  style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                  ':',
+                                  style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    cart.tax.toStringAsFixed(3),
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                               ],
                             ),
@@ -439,48 +397,52 @@ class Printer {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    'Amount Due'.tr,
-                                    style: kStyleTitlePrinter.copyWith(fontWeight: FontWeight.bold),
+                                    'Sub Total'.tr,
+                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ),
                                 Text(
-                                  cart.amountDue.toStringAsFixed(3),
-                                  style: kStyleTitlePrinter.copyWith(fontWeight: FontWeight.bold),
+                                  ':',
+                                  style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    cart.subTotal.toStringAsFixed(3),
+                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Note'.tr,
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Text(
+                                  ':',
+                                  style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    cart.note,
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ),
                               ],
                             ),
                             const Divider(color: Colors.black, thickness: 2),
-                            if (cart.cash != 0)
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'Cash'.tr,
-                                      style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Text(
-                                    cart.cash.toStringAsFixed(3),
-                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
-                            if (cart.credit != 0)
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      'Credit'.tr,
-                                      style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  Text(
-                                    cart.credit.toStringAsFixed(3),
-                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ],
-                              ),
+                            Text(
+                              'Thank you & have nice day'.tr,
+                              style: kStyleSmallPrinter,
+                              textAlign: TextAlign.center,
+                            ),
                             SizedBox(height: 15.h),
+                            const Divider(color: Colors.black, thickness: 2),
                             Image.asset(
                               kAssetsWelcome,
                               height: 80.h,
