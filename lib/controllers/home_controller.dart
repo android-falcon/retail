@@ -58,6 +58,7 @@ class HomeController extends GetxController {
       Utils.showSnackbar('Please fill search field'.tr, '');
     } else {
       var indexItem = allDataModel.items.indexWhere((element) => element.itemBarcodes.firstWhereOrNull((element) => element.barcode == barcode) != null);
+      // var indexItem = allDataModel.items.indexWhere((element) => element.itemBarcode == barcode);
       if (indexItem == -1) {
         Utils.showSnackbar('Item not found'.tr, '');
         controllerSearch.text = '';
@@ -166,6 +167,7 @@ class HomeController extends GetxController {
 
   editItem({required int indexItem}) async {
     GlobalKey<FormState> keyForm = GlobalKey<FormState>();
+    EnumDiscountType type = cart.value.items[indexItem].lineDiscountType;
     TextEditingController controllerQty = TextEditingController(text: cart.value.items[indexItem].qty.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
     TextEditingController controllerPrice = TextEditingController(text: cart.value.items[indexItem].priceChange.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
     TextEditingController controllerLineDiscount = TextEditingController(text: cart.value.items[indexItem].lineDiscount.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
@@ -231,7 +233,7 @@ class HomeController extends GetxController {
                     CustomTextField(
                       margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.w),
                       controller: controllerLineDiscount,
-                      label: Text('Line Discount'.tr),
+                      label: Text('${'Line Discount'.tr} ${EnumDiscountType.value == type ? '(${controllerPrice.text})' : '(%)'}'),
                       fillColor: Colors.white,
                       maxLines: 1,
                       inputFormatters: [
@@ -252,7 +254,15 @@ class HomeController extends GetxController {
                         }
                       },
                       validator: (value) {
-                        return Validation.discount(EnumDiscountType.value, value, double.parse(controllerPrice.text));
+                        return Validation.discount(type, value, double.parse(controllerPrice.text));
+                      },
+                    ),
+                    CheckboxListTile(
+                      title: Text('Percentage'.tr),
+                      value: type == EnumDiscountType.percentage,
+                      onChanged: (value) {
+                        type = value! ? EnumDiscountType.percentage : EnumDiscountType.value;
+                        setState(() {});
                       },
                     ),
                   ],
@@ -278,6 +288,7 @@ class HomeController extends GetxController {
       cart.value.items[indexItem].qty = double.parse(controllerQty.text);
       cart.value.items[indexItem].price = double.parse(controllerPrice.text);
       cart.value.items[indexItem].lineDiscount = double.parse(controllerLineDiscount.text);
+      cart.value.items[indexItem].lineDiscountType = type;
     }
     cart.value = Utils.calculateOrder(cart: cart.value);
     update();
@@ -285,6 +296,7 @@ class HomeController extends GetxController {
 
   discountOrder() async {
     GlobalKey<FormState> keyForm = GlobalKey<FormState>();
+    EnumDiscountType type = cart.value.discountType;
     TextEditingController controllerDiscount = TextEditingController(text: cart.value.discount.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
     TextEditingController controllerSelected = controllerDiscount;
     var result = await Get.dialog(
@@ -300,7 +312,7 @@ class HomeController extends GetxController {
                     CustomTextField(
                       margin: EdgeInsets.symmetric(horizontal: 10.w, vertical: 8.w),
                       controller: controllerDiscount,
-                      label: Text('Discount'.tr),
+                      label: Text('${'Discount'.tr} ${EnumDiscountType.value == type ? '(${cart.value.total.toStringAsFixed(3)})' : '(%)'}'),
                       fillColor: Colors.white,
                       maxLines: 1,
                       inputFormatters: [
@@ -321,7 +333,15 @@ class HomeController extends GetxController {
                         }
                       },
                       validator: (value) {
-                        return Validation.discount(EnumDiscountType.value, value, cart.value.total);
+                        return Validation.discount(type, value, cart.value.total);
+                      },
+                    ),
+                    CheckboxListTile(
+                      title: Text('Percentage'.tr),
+                      value: type == EnumDiscountType.percentage,
+                      onChanged: (value) {
+                        type = value! ? EnumDiscountType.percentage : EnumDiscountType.value;
+                        setState(() {});
                       },
                     ),
                   ],
@@ -345,6 +365,7 @@ class HomeController extends GetxController {
     );
     if (result != null && result == true) {
       cart.value.discount = double.parse(controllerDiscount.text);
+      cart.value.discountType = type;
     }
     cart.value = Utils.calculateOrder(cart: cart.value);
     update();
