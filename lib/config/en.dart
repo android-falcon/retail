@@ -162,5 +162,7 @@ const Map<String, String> en = {
   "Thank you & have nice day":"Thank you & have nice day",
   "Last Invoice":"Last Invoice",
   "Refresh data":"Refresh data",
+  "POS  No":"POS  No",
+  "Close System":"Close System",
   "":"",
 };

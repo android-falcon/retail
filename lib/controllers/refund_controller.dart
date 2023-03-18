@@ -15,7 +15,6 @@ class RefundController extends GetxController {
 
   final keyForm = GlobalKey<FormState>();
   final controllerInvoiceNo = TextEditingController();
-  final controllerPosNo = TextEditingController();
   final refundModel = Rxn<CartModel>();
 
   saveRefund() async {

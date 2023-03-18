@@ -35,6 +35,12 @@ class RefundScreen extends GetResponsiveView {
                   expanded: false,
                   label: '${'Cashier  No'.tr} : ${sharedPrefsClient.cashNo}',
                 ),
+                CustomIconText(
+                  icon: kAssetArrow,
+                  bold: true,
+                  expanded: false,
+                  label: '${'POS  No'.tr} : ${sharedPrefsClient.posNo}',
+                ),
                 SizedBox(height: 20.h),
                 Row(
                   children: [
@@ -43,19 +49,6 @@ class RefundScreen extends GetResponsiveView {
                         margin: EdgeInsets.symmetric(horizontal: 16.w),
                         controller: _controller.controllerInvoiceNo,
                         label: Text('Invoice No'.tr),
-                        maxLines: 1,
-                        inputFormatters: [
-                          EnglishDigitsTextInputFormatter(decimal: false),
-                        ],
-                        keyboardType: const TextInputType.numberWithOptions(),
-                        validator: (value) => Validation.isRequired(value),
-                      ),
-                    ),
-                    Expanded(
-                      child: CustomTextField(
-                        margin: EdgeInsets.symmetric(horizontal: 16.w),
-                        controller: _controller.controllerPosNo,
-                        label: Text('POS No'.tr),
                         maxLines: 1,
                         inputFormatters: [
                           EnglishDigitsTextInputFormatter(decimal: false),

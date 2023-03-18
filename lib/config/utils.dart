@@ -108,7 +108,7 @@ class Utils {
         case EnumInvoiceKind.invoicePay:
           for (var element in cart.items) {
             element.total = (element.priceChange / (1 + (element.taxPercent / 100))) * element.qty;
-            element.totalLineDiscount = (element.lineDiscountType == EnumDiscountType.percentage ? element.total * (element.lineDiscount / 100) : element.lineDiscount) * element.qty;
+            element.totalLineDiscount = (element. lineDiscountType == EnumDiscountType.percentage ? (element.priceChange / (1 + (element.taxPercent / 100))) * (element.lineDiscount / 100) : element.lineDiscount) * element.qty;
           }
           break;
         case EnumInvoiceKind.invoiceReturn:
@@ -116,7 +116,7 @@ class Utils {
             element.returnedPrice = (element.priceChange / (1 + (element.taxPercent / 100))) - element.lineDiscount - element.discount;
             element.returnedTotal = element.returnedPrice * element.returnedQty;
             element.total = (element.priceChange / (1 + (element.taxPercent / 100))) * element.returnedQty;
-            element.totalLineDiscount = (element.lineDiscountType == EnumDiscountType.percentage ? element.total * (element.lineDiscount / 100) : element.lineDiscount) * element.returnedQty;
+            element.totalLineDiscount = (element.lineDiscountType == EnumDiscountType.percentage ? (element.priceChange / (1 + (element.taxPercent / 100))) * (element.lineDiscount / 100) : element.lineDiscount) * element.returnedQty;
           }
           break;
       }
@@ -341,20 +341,25 @@ class Utils {
     TextEditingController? controller,
     void Function(Function()) setState, {
     bool decimal = true,
+    bool card = false,
     Function()? onClear,
     Function()? onSubmit,
     Function()? onExit,
   }) {
     void addNumber(TextEditingController? controller, int number) {
       if (controller != null) {
-        if (controller.text.contains('.')) {
-          var split = controller.text.split('.');
-          if (split[1].length < 3) {
-            controller.text += '$number';
-          }
-        } else {
+        if (card) {
           controller.text += '$number';
-          controller.text = '${int.parse(controller.text)}';
+        } else {
+          if (controller.text.contains('.')) {
+            var split = controller.text.split('.');
+            if (split[1].length < 3) {
+              controller.text += '$number';
+            }
+          } else {
+            controller.text += '$number';
+            controller.text = '${int.parse(controller.text)}';
+          }
         }
       }
     }
@@ -419,7 +424,7 @@ class Utils {
       },
       onPressedDelete: () {
         if (controller != null) {
-          if (controller.text.length > 1) {
+          if (controller.text.length > 1 || card) {
             var split = controller.text.split('');
             split.removeLast();
             controller.text = split.join();

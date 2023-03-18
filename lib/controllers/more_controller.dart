@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -117,7 +119,7 @@ class MoreController extends GetxController {
     }
   }
 
-  refreshData(){
+  refreshData() {
     RestApi.getData();
     RestApi.getCashLastSerials();
   }
@@ -736,10 +738,10 @@ class MoreController extends GetxController {
   _showEndCashDialog({required EndCashModel endCash}) async {
     var indexPrinter = allDataModel.printers.indexWhere((element) => element.cashNo == sharedPrefsClient.cashNo);
     PrinterImageModel? printer;
+
     if (indexPrinter != -1) {
       printer = PrinterImageModel(ipAddress: allDataModel.printers[indexPrinter].ipAddress, port: allDataModel.printers[indexPrinter].port);
     }
-
     GlobalKey<FormState> keyForm = GlobalKey<FormState>();
     TextEditingController controllerTotalCash = TextEditingController(text: '0');
     TextEditingController controllerTotalCreditCard = TextEditingController(text: '0');
@@ -864,6 +866,7 @@ class MoreController extends GetxController {
                         totalCredit: double.parse(controllerTotalCredit.text),
                         netTotal: double.parse(controllerNetTotal.text),
                       );
+                      log('message $resultEndCash');
                       if (resultEndCash) {
                         Get.back(result: true);
                       }
@@ -877,7 +880,6 @@ class MoreController extends GetxController {
       ),
       barrierDismissible: false,
     );
-
     if (result != null && result && printer != null) {
       ScreenshotController screenshotController = ScreenshotController();
 

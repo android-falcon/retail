@@ -44,6 +44,11 @@ class HomeController extends GetxController {
     refreshTime();
   }
 
+  Future<bool> onWillPop() async {
+    var result = Utils.showAreYouSureDialog(title: 'Close System'.tr);
+    return result;
+  }
+
   searchItem() {
     controllerSearch.text = '';
     Get.to(() => SearchItemScreen())?.then((value) {
@@ -724,7 +729,6 @@ class HomeController extends GetxController {
                 children: [
                   CustomButton(
                     fixed: true,
-
                     padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
                     backgroundColor: AppColor.primaryColor,
                     onPressed: () {
@@ -1070,6 +1074,7 @@ class HomeController extends GetxController {
                 controllerSelected,
                 setState,
                 decimal: false,
+                card: controllerSelected == controllerCreditCard,
                 onSubmit: () {
                   if (keyForm.currentState!.validate()) {
                     if (controllerCreditCard != null && selectedPaymentCompany == null && controllerReceived!.text != '0') {

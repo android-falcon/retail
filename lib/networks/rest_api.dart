@@ -540,7 +540,7 @@ class RestApi {
       }
       Utils.hideLoadingDialog();
       if (response.statusCode == 200) {
-        Utils.showSnackbar('Successfully'.tr);
+        // Utils.showSnackbar('Successfully'.tr);
         return true;
       } else {
         return false;

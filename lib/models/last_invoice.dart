@@ -9,7 +9,7 @@ class LastInvoice {
 
   factory LastInvoice.fromJson(Map<String, dynamic> json) => LastInvoice(
         invoiceNo: json["invoiceNo"] ?? 0,
-        total: json["total"]?.toDobule() ?? 0,
+        total: json["total"]?.toDouble() ?? 0,
       );
 
   Map<String, dynamic> toJson() => {

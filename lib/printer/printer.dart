@@ -376,7 +376,7 @@ class Printer {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    'Tax'.tr,
+                                    'Line Discount'.tr,
                                     style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -386,7 +386,28 @@ class Printer {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    cart.tax.toStringAsFixed(3),
+                                    cart.totalLineDiscount.toStringAsFixed(3),
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Discount'.tr,
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Text(
+                                  ':',
+                                  style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    cart.discount.toStringAsFixed(3),
                                     style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
                                   ),
@@ -408,6 +429,48 @@ class Printer {
                                 Expanded(
                                   child: Text(
                                     cart.subTotal.toStringAsFixed(3),
+                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Tax'.tr,
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Text(
+                                  ':',
+                                  style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    cart.tax.toStringAsFixed(3),
+                                    style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Net Total'.tr,
+                                    style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Text(
+                                  ':',
+                                  style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    cart.amountDue.toStringAsFixed(3),
                                     style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
                                   ),

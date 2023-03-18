@@ -128,28 +128,28 @@ class SearchItemScreen extends GetResponsiveView {
                   ),
                 ],
               ),
-              SizedBox(height: 10.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildCheckBoxDropDown(
-                      dropDownSelect: _controller.dropDownSelectUnit,
-                      valueCheckbox: _controller.checkUnit,
-                      label: 'Unit'.tr,
-                      items: [],
-                    ),
-                  ),
-                  SizedBox(width: 10.w),
-                  Expanded(
-                    child: _buildCheckBoxDropDown(
-                      dropDownSelect: _controller.dropDownSelectMinaColor,
-                      valueCheckbox: _controller.checkMinaColor,
-                      label: 'Mina color'.tr,
-                      items: [],
-                    ),
-                  ),
-                ],
-              ),
+              // SizedBox(height: 10.h),
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       child: _buildCheckBoxDropDown(
+              //         dropDownSelect: _controller.dropDownSelectUnit,
+              //         valueCheckbox: _controller.checkUnit,
+              //         label: 'Unit'.tr,
+              //         items: [],
+              //       ),
+              //     ),
+              //     SizedBox(width: 10.w),
+              //     Expanded(
+              //       child: _buildCheckBoxDropDown(
+              //         dropDownSelect: _controller.dropDownSelectMinaColor,
+              //         valueCheckbox: _controller.checkMinaColor,
+              //         label: 'Mina color'.tr,
+              //         items: [],
+              //       ),
+              //     ),
+              //   ],
+              // ),
               Container(
                 height: 150.h,
                 margin: EdgeInsets.symmetric(vertical: 16.h),
