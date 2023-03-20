@@ -190,16 +190,16 @@ class SearchItemScreen extends GetResponsiveView {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        SizedBox(width: 2.w),
-                        Expanded(
-                          flex: 4,
-                          child: Text(
-                            'New No'.tr,
-                            style: kStyleTextTable,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
+                        // SizedBox(width: 2.w),
+                        // Expanded(
+                        //   flex: 4,
+                        //   child: Text(
+                        //     'New No'.tr,
+                        //     style: kStyleTextTable,
+                        //     maxLines: 1,
+                        //     overflow: TextOverflow.ellipsis,
+                        //   ),
+                        // ),
                         SizedBox(width: 2.w),
                         Expanded(
                           flex: 6,
@@ -237,22 +237,22 @@ class SearchItemScreen extends GetResponsiveView {
                                 Expanded(
                                   flex: 4,
                                   child: Text(
-                                    _controller.resultItems[index].itemBarcode,
+                                    _controller.resultItems[index].itemBarcodes.isEmpty ? '' : _controller.resultItems[index].itemBarcodes.first.barcode,
                                     style: kStyleDataTable,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                SizedBox(width: 2.w),
-                                Expanded(
-                                  flex: 4,
-                                  child: Text(
-                                    _controller.resultItems[index].itemBarcode,
-                                    style: kStyleDataTable,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
+                                // SizedBox(width: 2.w),
+                                // Expanded(
+                                //   flex: 4,
+                                //   child: Text(
+                                //     _controller.resultItems[index].itemBarcode,
+                                //     style: kStyleDataTable,
+                                //     maxLines: 1,
+                                //     overflow: TextOverflow.ellipsis,
+                                //   ),
+                                // ),
                                 SizedBox(width: 2.w),
                                 Expanded(
                                   flex: 6,

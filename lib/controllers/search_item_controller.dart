@@ -25,6 +25,9 @@ class SearchItemController extends GetxController {
 
   searchItems() {
     resultItems.value = allDataModel.items.where((element) {
+      if(!checkItemCode.value && !checkItemName.value && !checkItemNameE.value && !checkGroup.value){
+        return true;
+      }
       bool resultSearch = false;
       if (checkItemCode.value) {
         if (element.itemBarcodes.firstWhereOrNull((element) => element.barcode == controllerItemCode.text) != null) {

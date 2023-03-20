@@ -200,7 +200,7 @@ class RefundScreen extends GetResponsiveView {
                               Expanded(
                                 flex: 3,
                                 child: Text(
-                                  _controller.refundModel.value!.items[index].totalLineDiscount.toStringAsFixed(fractionDigits),
+                                  _controller.refundModel.value!.items[index].lineDiscount.toStringAsFixed(fractionDigits),
                                   style: kStyleDataTable,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -261,8 +261,14 @@ class RefundScreen extends GetResponsiveView {
                           Expanded(
                             child: CustomIconText(
                               icon: kAssetArrow,
+                              label: '${'Tax'.tr} : ${_controller.refundModel.value?.tax.toStringAsFixed(fractionDigits)}',
+                            ),
+                          ),
+                          Expanded(
+                            child: CustomIconText(
+                              icon: kAssetArrow,
                               style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold, fontSize: 23.sp, color: AppColor.blue2),
-                              label: '${'Return'.tr} : ${_controller.refundModel.value?.items.fold(0.0, (previousValue, element) => (previousValue) + element.returnedTotal).toStringAsFixed(3)}',
+                              label: '${'Return'.tr} : ${_controller.refundModel.value?.items.fold(0.0, (previousValue, element) => (previousValue) + element.returnedTotal + element.tax).toStringAsFixed(3)}',
                             ),
                           ),
                         ],

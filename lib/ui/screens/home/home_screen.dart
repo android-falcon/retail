@@ -436,15 +436,19 @@ class HomeScreen extends GetResponsiveView {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            CustomIconText(
-                              expanded: false,
-                              icon: kAssetArrow,
-                              label: '${'Invoice No'.tr} : ${sharedPrefsClient.lastInvoice.invoiceNo}',
+                            Flexible(
+                              child: CustomIconText(
+                                expanded: false,
+                                icon: kAssetArrow,
+                                label: '${'Invoice No'.tr} : ${sharedPrefsClient.lastInvoice.invoiceNo}',
+                              ),
                             ),
-                            CustomIconText(
-                              expanded: false,
-                              icon: kAssetArrow,
-                              label: '${'Total'.tr} : ${sharedPrefsClient.lastInvoice.total.toStringAsFixed(fractionDigits)}',
+                            Flexible(
+                              child: CustomIconText(
+                                expanded: false,
+                                icon: kAssetArrow,
+                                label: '${'Total'.tr} : ${sharedPrefsClient.lastInvoice.total.toStringAsFixed(fractionDigits)}',
+                              ),
                             ),
                           ],
                         ),
