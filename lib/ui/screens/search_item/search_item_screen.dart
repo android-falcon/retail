@@ -228,7 +228,7 @@ class SearchItemScreen extends GetResponsiveView {
                         itemCount: _controller.resultItems.length,
                         itemBuilder: (context, index) => InkWell(
                           onTap: () {
-                            Get.back(result: _controller.resultItems[index].itemBarcode);
+                            Get.back(result: _controller.resultItems[index].itemBarcodes.isEmpty ? '' : _controller.resultItems[index].itemBarcodes.first.barcode);
                           },
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 4.h),

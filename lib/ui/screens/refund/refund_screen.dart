@@ -190,7 +190,7 @@ class RefundScreen extends GetResponsiveView {
                               Expanded(
                                 flex: 3,
                                 child: Text(
-                                  _controller.refundModel.value!.items[index].returnedPrice.toStringAsFixed(fractionDigits),
+                                  _controller.refundModel.value!.items[index].priceChange.toStringAsFixed(fractionDigits),
                                   style: kStyleDataTable,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -255,6 +255,12 @@ class RefundScreen extends GetResponsiveView {
                           Expanded(
                             child: CustomIconText(
                               icon: kAssetArrow,
+                              label: '${'Line Disc'.tr} : ${_controller.refundModel.value?.totalLineDiscount.toStringAsFixed(fractionDigits)}',
+                            ),
+                          ),
+                          Expanded(
+                            child: CustomIconText(
+                              icon: kAssetArrow,
                               label: '${'Disc'.tr} : ${_controller.refundModel.value?.totalDiscount.toStringAsFixed(fractionDigits)}',
                             ),
                           ),
@@ -264,11 +270,16 @@ class RefundScreen extends GetResponsiveView {
                               label: '${'Tax'.tr} : ${_controller.refundModel.value?.tax.toStringAsFixed(fractionDigits)}',
                             ),
                           ),
+
+                        ],
+                      ),
+                      Row(
+                        children: [
                           Expanded(
                             child: CustomIconText(
                               icon: kAssetArrow,
                               style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold, fontSize: 23.sp, color: AppColor.blue2),
-                              label: '${'Return'.tr} : ${_controller.refundModel.value?.items.fold(0.0, (previousValue, element) => (previousValue) + element.returnedTotal + element.tax).toStringAsFixed(3)}',
+                              label: '${'Return'.tr} : ${_controller.refundModel.value?.returnedTotal.toStringAsFixed(fractionDigits)}',
                             ),
                           ),
                         ],

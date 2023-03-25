@@ -360,7 +360,6 @@ class CartItemModel extends Equatable {
     this.cashNo = 0,
     this.storeNo = 0,
     this.returnedQty = 0,
-    this.returnedPrice = 0,
     this.returnedTotal = 0,
   });
 
@@ -372,7 +371,6 @@ class CartItemModel extends Equatable {
   int cashNo;
   int storeNo;
   double returnedQty;
-  double returnedPrice;
   double returnedTotal;
   int id;
   int categoryId;
@@ -432,7 +430,6 @@ class CartItemModel extends Equatable {
         cashNo: json['cashNo'] ?? 0,
         storeNo: json['storeNo'] ?? 0,
         returnedQty: json['returnedQty']?.toDouble() ?? 0,
-        returnedPrice: json['returnedPrice']?.toDouble() ?? 0,
         returnedTotal: json['returnedTotal']?.toDouble() ?? 0,
       );
 
@@ -457,7 +454,7 @@ class CartItemModel extends Equatable {
         taxPercent: e["ItemTaxPerc"]?.toDouble() ?? 0,
         tax: e["ItemTaxVal"]?.toDouble() ?? 0,
         lineDiscountType: EnumDiscountType.value,
-        lineDiscount: (e["LineDisc"]?.toDouble() ?? 0/ e["Qty"]?.toDouble() ?? 0),
+        lineDiscount: ((e["LineDisc"]?.toDouble() ?? 0) / (e["Qty"]?.toDouble() ?? 0)),
         totalLineDiscount: e["LineDisc"]?.toDouble() ?? 0,
         total: e["NetTotal"]?.toDouble() ?? 0,
         returnedQty: e["ReturnedQty"]?.toDouble() ?? 0,
@@ -500,7 +497,6 @@ class CartItemModel extends Equatable {
         'cashNo': cashNo,
         'storeNo': storeNo,
         'returnedQty': returnedQty,
-        'returnedPrice': returnedPrice,
         'returnedTotal': returnedTotal,
       };
 

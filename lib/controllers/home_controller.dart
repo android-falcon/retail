@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -53,7 +54,7 @@ class HomeController extends GetxController {
     controllerSearch.text = '';
     Get.to(() => SearchItemScreen())?.then((value) {
       if (value != null) {
-        controllerSearch.text = '$value';
+        addItem(barcode: '$value');
       }
     });
   }

@@ -74,8 +74,7 @@ class Utils {
           break;
         case EnumInvoiceKind.invoiceReturn:
           for (var element in cart.items) {
-            element.returnedPrice = element.priceChange - element.lineDiscount - element.discount;
-            element.returnedTotal = element.returnedPrice * element.returnedQty;
+            element.returnedTotal = element.priceChange * element.returnedQty;
             element.total = element.priceChange * element.returnedQty;
             element.totalLineDiscount = (element.lineDiscountType == EnumDiscountType.percentage ? element.priceChange * (element.lineDiscount / 100) : element.lineDiscount) * element.returnedQty;
           }
@@ -102,20 +101,20 @@ class Utils {
       cart.itemsTax = cart.items.fold(0.0, (sum, item) => sum + item.tax);
       cart.tax = cart.itemsTax + cart.serviceTax;
       cart.amountDue = cart.subTotal + cart.deliveryCharge + cart.service + cart.tax;
+      cart.returnedTotal = cart.subTotal + cart.deliveryCharge + cart.service + cart.tax;
     } else {
       // شامل
       switch (invoiceKind) {
         case EnumInvoiceKind.invoicePay:
           for (var element in cart.items) {
             element.total = (element.priceChange / (1 + (element.taxPercent / 100))) * element.qty;
-            element.totalLineDiscount = (element. lineDiscountType == EnumDiscountType.percentage ? (element.priceChange / (1 + (element.taxPercent / 100))) * (element.lineDiscount / 100) : element.lineDiscount) * element.qty;
+            element.totalLineDiscount = (element.lineDiscountType == EnumDiscountType.percentage ? (element.priceChange / (1 + (element.taxPercent / 100))) * (element.lineDiscount / 100) : element.lineDiscount) * element.qty;
           }
           break;
         case EnumInvoiceKind.invoiceReturn:
           for (var element in cart.items) {
-            element.returnedPrice = (element.priceChange / (1 + (element.taxPercent / 100))) - element.lineDiscount - element.discount;
-            element.returnedTotal = element.returnedPrice * element.returnedQty;
-            element.total = (element.priceChange / (1 + (element.taxPercent / 100))) * element.returnedQty;
+            element.returnedTotal = ((element.priceChange / (1 + (element.taxPercent / 100))) * element.returnedQty);
+            element.total = ((element.priceChange / (1 + (element.taxPercent / 100)))  ) * element.returnedQty;
             element.totalLineDiscount = (element.lineDiscountType == EnumDiscountType.percentage ? (element.priceChange / (1 + (element.taxPercent / 100))) * (element.lineDiscount / 100) : element.lineDiscount) * element.returnedQty;
           }
           break;
@@ -141,6 +140,7 @@ class Utils {
       cart.itemsTax = cart.items.fold(0.0, (sum, item) => sum + item.tax);
       cart.tax = cart.itemsTax + cart.serviceTax;
       cart.amountDue = cart.subTotal + cart.deliveryCharge + cart.service + cart.tax;
+      cart.returnedTotal = cart.subTotal + cart.deliveryCharge + cart.service + cart.tax;
     }
     return cart;
   }

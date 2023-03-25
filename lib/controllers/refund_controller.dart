@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:retail_system/config/constant.dart';
 import 'package:retail_system/config/enum/enum_invoice_kind.dart';
 import 'package:retail_system/config/text_input_formatters.dart';
 import 'package:retail_system/config/utils.dart';
@@ -22,8 +25,14 @@ class RefundController extends GetxController {
     if (result) {
       if (refundModel.value!.items.any((element) => element.returnedQty > 0)) {
         refundModel.value!.items.removeWhere((element) => element.returnedQty == 0);
-        RestApi.invoice(cart: refundModel.value!, invoiceKind: EnumInvoiceKind.invoiceReturn);
-        RestApi.returnInvoiceQty(invNo: int.parse(controllerInvoiceNo.text), refundModel: refundModel.value!);
+        int orgInvNo = refundModel.value!.invNo;
+        refundModel.value!.invNo = sharedPrefsClient.inVocNo;
+        for (var item in refundModel.value!.items) {
+          item.invNo = sharedPrefsClient.inVocNo;
+        }
+        await RestApi.invoice(cart: refundModel.value!, invoiceKind: EnumInvoiceKind.invoiceReturn);
+        await RestApi.returnInvoiceQty(invNo: orgInvNo, refundModel: refundModel.value!);
+        sharedPrefsClient.inVocNo++;
         Get.back();
       }
     }
@@ -33,6 +42,11 @@ class RefundController extends GetxController {
     if (keyForm.currentState!.validate()) {
       FocusScope.of(Get.context!).requestFocus(FocusNode());
       refundModel.value = await RestApi.getRefundInvoice(invNo: int.parse(controllerInvoiceNo.text));
+      log('message ${refundModel.value!.totalLineDiscount}');
+      log('message ${refundModel.value!.discount}');
+      refundModel.value!.items.forEach((element) {
+        log('message ${element.lineDiscount}');
+      });
       refundModel.value = Utils.calculateOrder(cart: refundModel.value!, invoiceKind: EnumInvoiceKind.invoiceReturn);
       update();
     }
