@@ -26,13 +26,13 @@ class RefundController extends GetxController {
       if (refundModel.value!.items.any((element) => element.returnedQty > 0)) {
         refundModel.value!.items.removeWhere((element) => element.returnedQty == 0);
         int orgInvNo = refundModel.value!.invNo;
-        refundModel.value!.invNo = sharedPrefsClient.inVocNo;
+        refundModel.value!.invNo = sharedPrefsClient.returnVocNo;
         for (var item in refundModel.value!.items) {
-          item.invNo = sharedPrefsClient.inVocNo;
+          item.invNo = sharedPrefsClient.returnVocNo;
         }
         await RestApi.invoice(cart: refundModel.value!, invoiceKind: EnumInvoiceKind.invoiceReturn);
         await RestApi.returnInvoiceQty(invNo: orgInvNo, refundModel: refundModel.value!);
-        sharedPrefsClient.inVocNo++;
+        sharedPrefsClient.returnVocNo++;
         Get.back();
       }
     }
@@ -42,11 +42,6 @@ class RefundController extends GetxController {
     if (keyForm.currentState!.validate()) {
       FocusScope.of(Get.context!).requestFocus(FocusNode());
       refundModel.value = await RestApi.getRefundInvoice(invNo: int.parse(controllerInvoiceNo.text));
-      log('message ${refundModel.value!.totalLineDiscount}');
-      log('message ${refundModel.value!.discount}');
-      refundModel.value!.items.forEach((element) {
-        log('message ${element.lineDiscount}');
-      });
       refundModel.value = Utils.calculateOrder(cart: refundModel.value!, invoiceKind: EnumInvoiceKind.invoiceReturn);
       update();
     }

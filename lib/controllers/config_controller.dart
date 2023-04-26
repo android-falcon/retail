@@ -10,6 +10,7 @@ class ConfigController extends GetxController {
   final TextEditingController controllerCashNo = TextEditingController(text: '${sharedPrefsClient.cashNo}');
   final TextEditingController controllerStoreNo = TextEditingController(text: '${sharedPrefsClient.storeNo}');
   final TextEditingController controllerInVocNo = TextEditingController(text: '${sharedPrefsClient.inVocNo}');
+  final TextEditingController controllerReturnVocNo = TextEditingController(text: '${sharedPrefsClient.returnVocNo}');
   final TextEditingController controllerOutVocNo = TextEditingController(text: '${sharedPrefsClient.payInOutNo}');
 
   save() {
@@ -19,6 +20,7 @@ class ConfigController extends GetxController {
     sharedPrefsClient.cashNo = controllerCashNo.text.isEmpty ? 0 : int.parse(controllerCashNo.text);
     sharedPrefsClient.storeNo = controllerStoreNo.text.isEmpty ? 0 : int.parse(controllerStoreNo.text);
     sharedPrefsClient.inVocNo = controllerInVocNo.text.isEmpty ? 0 : int.parse(controllerInVocNo.text);
+    sharedPrefsClient.returnVocNo = controllerReturnVocNo.text.isEmpty ? 0 : int.parse(controllerReturnVocNo.text);
     sharedPrefsClient.payInOutNo = controllerOutVocNo.text.isEmpty ? 0 : int.parse(controllerOutVocNo.text);
     Get.back();
   }

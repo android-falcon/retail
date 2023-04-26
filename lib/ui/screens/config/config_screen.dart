@@ -37,6 +37,10 @@ class ConfigScreen extends GetResponsiveView {
               label: Text('In Voc No'.tr),
             ),
             CustomTextField(
+              controller: _controller.controllerReturnVocNo,
+              label: Text('Return Voc No'.tr),
+            ),
+            CustomTextField(
               controller: _controller.controllerOutVocNo,
               label: Text('Pay In Out No'.tr),
             ),

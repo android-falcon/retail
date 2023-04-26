@@ -461,6 +461,7 @@ class CartItemModel extends Equatable {
         uuid: e["UUID"] ?? '',
         parentUuid: e["ParentUUID"] ?? '',
         categoryId: 0,
+        discountAvailable:  (e["InvDisc"]?.toDouble() ?? 0) == 0 ? false : true, // InvDisc
         name: allDataModel.items.firstWhereOrNull((element) => element.id == (e["ItemId"] ?? 0))?.menuName ?? "",
       );
 

@@ -98,6 +98,12 @@ class SharedPrefsClient {
     _storage.write(keyInVocNo, value);
   }
 
+  int get returnVocNo => _storage.read(keyReturnVocNo) ?? 1;
+
+  set returnVocNo(int value) {
+    _storage.write(keyReturnVocNo, value);
+  }
+
   int get payInOutNo => _storage.read(keyPayInOutNoNo) ?? 1;
 
   set payInOutNo(int value) {
@@ -140,6 +146,7 @@ const String keyDailyClose = "key_daily_close";
 const String keySorting = "key_sorting";
 const String keyBaseUrl = "key_base_url";
 const String keyInVocNo = "key_in_voc_no";
+const String keyReturnVocNo = "key_return_voc_no";
 const String keyOrderNo = "key_order_no";
 const String keyPayInOutNoNo = "key_pay_in_out_no";
 const String keyPosNo = "key_pos_no";

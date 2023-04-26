@@ -164,5 +164,6 @@ const Map<String, String> en = {
   "Refresh data":"Refresh data",
   "POS  No":"POS  No",
   "Close System":"Close System",
+  "Return Voc No":"Return Voc No",
   "":"",
 };

@@ -407,7 +407,7 @@ class Printer {
                                 ),
                                 Expanded(
                                   child: Text(
-                                    cart.discount.toStringAsFixed(3),
+                                    cart.totalDiscount.toStringAsFixed(3),
                                     style: kStyleSmallPrinter.copyWith(fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
                                   ),
