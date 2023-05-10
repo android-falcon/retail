@@ -22,15 +22,16 @@ class ReportController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     super.onInit();
-    controllerFromDate.text = intl.DateFormat(dateFormat).format(DateTime.now());
-    controllerToDate.text = intl.DateFormat(dateFormat).format(DateTime.now());
+    controllerFromDate.text = intl.DateFormat(dateFormat).format(sharedPrefsClient.dailyClose);
+    controllerToDate.text = intl.DateFormat(dateFormat).format(sharedPrefsClient.dailyClose);
   }
 
   selectToDate() async {
     DateTime? pickedDate = await showDatePicker(
       context: Get.context!,
       initialDate: controllerToDate.text.isNotEmpty ? intl.DateFormat(dateFormat).parse(controllerToDate.text) : DateTime.now(),
-      firstDate: DateTime(2000), //DateTime.now() - not to allow to choose before today.
+      firstDate: DateTime(2000),
+      //DateTime.now() - not to allow to choose before today.
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
@@ -43,7 +44,8 @@ class ReportController extends GetxController {
     DateTime? pickedDate = await showDatePicker(
       context: Get.context!,
       initialDate: controllerFromDate.text.isNotEmpty ? intl.DateFormat(dateFormat).parse(controllerFromDate.text) : DateTime.now(),
-      firstDate: DateTime(2000), //DateTime.now() - not to allow to choose before today.
+      firstDate: DateTime(2000),
+      //DateTime.now() - not to allow to choose before today.
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
@@ -77,11 +79,19 @@ class ReportController extends GetxController {
             }
           } else if (element.type == 'INVOICE') {
             var body = jsonDecode(element.body);
-            if (body['InvoiceMaster']['PosNo'] == sharedPrefsClient.posNo && body['InvoiceMaster']['CashNo'] == sharedPrefsClient.cashNo && body['InvoiceMaster']['InvKind'] == 0) {
-              cash += body['InvoiceMaster']['CashVal'];
-              creditCard += body['InvoiceMaster']['CardsVal'];
-              if (body['InvoiceMaster']['Card1Name'] == EnumCreditCardType.visa.name) {
-                visa += body['InvoiceMaster']['CardsVal'];
+            if (body['InvoiceMaster']['PosNo'] == sharedPrefsClient.posNo && body['InvoiceMaster']['CashNo'] == sharedPrefsClient.cashNo) {
+              if (body['InvoiceMaster']['InvKind'] == 0) {
+                cash += body['InvoiceMaster']['CashVal'];
+                creditCard += body['InvoiceMaster']['CardsVal'];
+                if (body['InvoiceMaster']['Card1Name'] == EnumCreditCardType.visa.name) {
+                  visa += body['InvoiceMaster']['CardsVal'];
+                }
+              } else if (body['InvoiceMaster']['InvKind'] == 1) {
+                cash -= body['InvoiceMaster']['CashVal'];
+                creditCard -= body['InvoiceMaster']['CardsVal'];
+                if (body['InvoiceMaster']['Card1Name'] == EnumCreditCardType.visa.name) {
+                  visa -= body['InvoiceMaster']['CardsVal'];
+                }
               }
             }
           }
@@ -184,31 +194,58 @@ class ReportController extends GetxController {
         List<ReportSoldQtyModel> items = [];
         for (var element in data) {
           var body = jsonDecode(element.body);
-          if (body['InvoiceMaster']['PosNo'] == sharedPrefsClient.posNo && body['InvoiceMaster']['CashNo'] == sharedPrefsClient.cashNo && body['InvoiceMaster']['InvKind'] == 0) {
+          if (body['InvoiceMaster']['PosNo'] == sharedPrefsClient.posNo && body['InvoiceMaster']['CashNo'] == sharedPrefsClient.cashNo) {
             for (var invoiceDetails in body['InvoiceDetails']) {
               var indexItem = items.indexWhere((e) => e.itemId == invoiceDetails['ItemId']);
               if (indexItem != -1) {
-                items[indexItem].soldQty += invoiceDetails['Qty'];
-                items[indexItem].disc += invoiceDetails['InvDisc'] + invoiceDetails['LineDisc'];
-                items[indexItem].serviceValue += invoiceDetails['ServiceVal'];
-                items[indexItem].itemTax += invoiceDetails['ItemTaxVal'];
-                items[indexItem].totalNoTaxAndService += invoiceDetails['NetTotal'] - (invoiceDetails['ItemTaxVal'] - invoiceDetails['ServiceVal'] - invoiceDetails['ServiceTax']);
-                items[indexItem].totalNoTax += invoiceDetails['NetTotal'] - invoiceDetails['ItemTaxVal'];
-                items[indexItem].netTotal += invoiceDetails['NetTotal'];
+                if (body['InvoiceMaster']['InvKind'] == 0) {
+                  items[indexItem].soldQty += invoiceDetails['Qty'];
+                  items[indexItem].disc += invoiceDetails['InvDisc'] + invoiceDetails['LineDisc'];
+                  items[indexItem].serviceValue += invoiceDetails['ServiceVal'];
+                  items[indexItem].itemTax += invoiceDetails['ItemTaxVal'];
+                  items[indexItem].totalNoTaxAndService +=
+                      invoiceDetails['NetTotal'] - (invoiceDetails['ItemTaxVal'] - invoiceDetails['ServiceVal'] - invoiceDetails['ServiceTax']);
+                  items[indexItem].totalNoTax += invoiceDetails['NetTotal'] - invoiceDetails['ItemTaxVal'];
+                  items[indexItem].netTotal += invoiceDetails['NetTotal'];
+                } else if (body['InvoiceMaster']['InvKind'] == 1) {
+                  items[indexItem].soldQty -= invoiceDetails['Qty'];
+                  items[indexItem].disc -= invoiceDetails['InvDisc'] + invoiceDetails['LineDisc'];
+                  items[indexItem].serviceValue -= invoiceDetails['ServiceVal'];
+                  items[indexItem].itemTax -= invoiceDetails['ItemTaxVal'];
+                  items[indexItem].totalNoTaxAndService -=
+                      invoiceDetails['NetTotal'] - (invoiceDetails['ItemTaxVal'] - invoiceDetails['ServiceVal'] - invoiceDetails['ServiceTax']);
+                  items[indexItem].totalNoTax -= invoiceDetails['NetTotal'] - invoiceDetails['ItemTaxVal'];
+                  items[indexItem].netTotal -= invoiceDetails['NetTotal'];
+                }
               } else {
                 var itemInAllData = allDataModel.items.firstWhereOrNull((e) => e.id == invoiceDetails['ItemId']);
-                items.add(ReportSoldQtyModel(
-                  itemId: invoiceDetails['ItemId'],
-                  itemName: itemInAllData?.menuName ?? '',
-                  categoryName: itemInAllData?.category.categoryName ?? '',
-                  soldQty: invoiceDetails['Qty'],
-                  disc: invoiceDetails['InvDisc'] + invoiceDetails['LineDisc'],
-                  serviceValue: invoiceDetails['ServiceVal'],
-                  itemTax: invoiceDetails['ItemTaxVal'],
-                  totalNoTaxAndService: invoiceDetails['NetTotal'] - (invoiceDetails['ItemTaxVal'] - invoiceDetails['ServiceVal'] - invoiceDetails['ServiceTax']),
-                  totalNoTax: invoiceDetails['NetTotal'] - invoiceDetails['ItemTaxVal'],
-                  netTotal: invoiceDetails['NetTotal'],
-                ));
+                if (body['InvoiceMaster']['InvKind'] == 0) {
+                  items.add(ReportSoldQtyModel(
+                    itemId: invoiceDetails['ItemId'],
+                    itemName: itemInAllData?.menuName ?? '',
+                    categoryName: itemInAllData?.category.categoryName ?? '',
+                    soldQty: invoiceDetails['Qty'],
+                    disc: invoiceDetails['InvDisc'] + invoiceDetails['LineDisc'],
+                    serviceValue: invoiceDetails['ServiceVal'],
+                    itemTax: invoiceDetails['ItemTaxVal'],
+                    totalNoTaxAndService: invoiceDetails['NetTotal'] - (invoiceDetails['ItemTaxVal'] - invoiceDetails['ServiceVal'] - invoiceDetails['ServiceTax']),
+                    totalNoTax: invoiceDetails['NetTotal'] - invoiceDetails['ItemTaxVal'],
+                    netTotal: invoiceDetails['NetTotal'],
+                  ));
+                } else if (body['InvoiceMaster']['InvKind'] == 1) {
+                  items.add(ReportSoldQtyModel(
+                    itemId: invoiceDetails['ItemId'],
+                    itemName: itemInAllData?.menuName ?? '',
+                    categoryName: itemInAllData?.category.categoryName ?? '',
+                    soldQty: invoiceDetails['Qty'] * -1,
+                    disc: (invoiceDetails['InvDisc'] + invoiceDetails['LineDisc']) * -1,
+                    serviceValue: invoiceDetails['ServiceVal'] * -1,
+                    itemTax: invoiceDetails['ItemTaxVal'] * -1,
+                    totalNoTaxAndService: (invoiceDetails['NetTotal'] - (invoiceDetails['ItemTaxVal'] - invoiceDetails['ServiceVal'] - invoiceDetails['ServiceTax'])) * -1,
+                    totalNoTax: (invoiceDetails['NetTotal'] - invoiceDetails['ItemTaxVal']) * -1,
+                    netTotal: invoiceDetails['NetTotal'] * -1,
+                  ));
+                }
               }
             }
           }

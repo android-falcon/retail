@@ -165,5 +165,5 @@ const Map<String, String> en = {
   "POS  No":"POS  No",
   "Close System":"Close System",
   "Return Voc No":"Return Voc No",
-  "":"",
+  "Refund Invoice":"Refund Invoice",
 };

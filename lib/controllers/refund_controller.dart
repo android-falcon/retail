@@ -24,16 +24,23 @@ class RefundController extends GetxController {
     var result = await Utils.showAreYouSureDialog(title: 'Refund'.tr);
     if (result) {
       if (refundModel.value!.items.any((element) => element.returnedQty > 0)) {
+        Utils.showLoginDialog();
         refundModel.value!.items.removeWhere((element) => element.returnedQty == 0);
         int orgInvNo = refundModel.value!.invNo;
         refundModel.value!.invNo = sharedPrefsClient.returnVocNo;
         for (var item in refundModel.value!.items) {
           item.invNo = sharedPrefsClient.returnVocNo;
         }
-        await RestApi.invoice(cart: refundModel.value!, invoiceKind: EnumInvoiceKind.invoiceReturn);
-        await RestApi.returnInvoiceQty(invNo: orgInvNo, refundModel: refundModel.value!);
-        sharedPrefsClient.returnVocNo++;
-        Get.back();
+        var resultRefundInvoice = await RestApi.invoice(cart: refundModel.value!, invoiceKind: EnumInvoiceKind.invoiceReturn);
+        var resultReturnInvoiceQty = await RestApi.returnInvoiceQty(invNo: orgInvNo, refundModel: refundModel.value!);
+        if(resultRefundInvoice && resultReturnInvoiceQty){
+          sharedPrefsClient.returnVocNo++;
+          Utils.hideLoadingDialog();
+          Get.back();
+          Utils.showSnackbar('Refund Invoice'.tr, 'Successfully'.tr);
+        } else {
+          Utils.showSnackbar('Please try again'.tr);
+        }
       }
     }
   }

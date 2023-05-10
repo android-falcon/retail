@@ -84,7 +84,7 @@ class RefundScreen extends GetResponsiveView {
                             flex: 6,
                             child: Text(
                               'Item Name'.tr,
-                              style: kStyleTextTable,
+                              style: kStyleTextTable.copyWith(fontSize: 18.sp),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -94,7 +94,7 @@ class RefundScreen extends GetResponsiveView {
                             flex: 3,
                             child: Text(
                               'Unit'.tr,
-                              style: kStyleTextTable,
+                              style: kStyleTextTable.copyWith(fontSize: 18.sp),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -104,7 +104,7 @@ class RefundScreen extends GetResponsiveView {
                             flex: 3,
                             child: Text(
                               'Qty'.tr,
-                              style: kStyleTextTable,
+                              style: kStyleTextTable.copyWith(fontSize: 18.sp),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -114,7 +114,7 @@ class RefundScreen extends GetResponsiveView {
                             flex: 3,
                             child: Text(
                               'Price'.tr,
-                              style: kStyleTextTable,
+                              style: kStyleTextTable.copyWith(fontSize: 18.sp),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -124,7 +124,7 @@ class RefundScreen extends GetResponsiveView {
                             flex: 3,
                             child: Text(
                               'Disc'.tr,
-                              style: kStyleTextTable,
+                              style: kStyleTextTable.copyWith(fontSize: 18.sp),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -134,7 +134,7 @@ class RefundScreen extends GetResponsiveView {
                             flex: 3,
                             child: Text(
                               'Ret Qty'.tr,
-                              style: kStyleTextTable,
+                              style: kStyleTextTable.copyWith(fontSize: 18.sp),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -144,7 +144,7 @@ class RefundScreen extends GetResponsiveView {
                             flex: 4,
                             child: Text(
                               'Net Price'.tr,
-                              style: kStyleTextTable.copyWith(color: AppColor.blue2),
+                              style: kStyleTextTable.copyWith(fontSize: 18.sp,color: AppColor.blue2),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -161,7 +161,7 @@ class RefundScreen extends GetResponsiveView {
                                 flex: 6,
                                 child: Text(
                                   _controller.refundModel.value!.items[index].name,
-                                  style: kStyleDataTable,
+                                  style: kStyleDataTable.copyWith(fontSize: 18.sp),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -171,7 +171,7 @@ class RefundScreen extends GetResponsiveView {
                                 flex: 3,
                                 child: Text(
                                   'Unit',
-                                  style: kStyleDataTable,
+                                  style: kStyleDataTable.copyWith(fontSize: 18.sp),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -181,7 +181,7 @@ class RefundScreen extends GetResponsiveView {
                                 flex: 3,
                                 child: Text(
                                   _controller.refundModel.value!.items[index].qty.toStringAsFixed(fractionDigits),
-                                  style: kStyleDataTable,
+                                  style: kStyleDataTable.copyWith(fontSize: 18.sp),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -191,7 +191,7 @@ class RefundScreen extends GetResponsiveView {
                                 flex: 3,
                                 child: Text(
                                   _controller.refundModel.value!.items[index].priceChange.toStringAsFixed(fractionDigits),
-                                  style: kStyleDataTable,
+                                  style: kStyleDataTable.copyWith(fontSize: 18.sp),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -201,7 +201,7 @@ class RefundScreen extends GetResponsiveView {
                                 flex: 3,
                                 child: Text(
                                   _controller.refundModel.value!.items[index].lineDiscount.toStringAsFixed(fractionDigits),
-                                  style: kStyleDataTable,
+                                  style: kStyleDataTable.copyWith(fontSize: 18.sp),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -217,7 +217,7 @@ class RefundScreen extends GetResponsiveView {
                                     padding: EdgeInsets.all(4.sp),
                                     child: Text(
                                       _controller.refundModel.value!.items[index].returnedQty.toStringAsFixed(fractionDigits),
-                                      style: kStyleDataTable,
+                                      style: kStyleDataTable.copyWith(fontSize: 18.sp),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -229,7 +229,7 @@ class RefundScreen extends GetResponsiveView {
                                 flex: 4,
                                 child: Text(
                                   _controller.refundModel.value!.items[index].returnedTotal.toStringAsFixed(fractionDigits),
-                                  style: kStyleDataTable,
+                                  style: kStyleDataTable.copyWith(fontSize: 18.sp),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),

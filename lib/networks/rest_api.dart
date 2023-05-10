@@ -233,7 +233,7 @@ class RestApi {
     }
   }
 
-  static Future<void> invoice({required CartModel cart, required EnumInvoiceKind invoiceKind}) async {
+  static Future<bool> invoice({required CartModel cart, required EnumInvoiceKind invoiceKind}) async {
     try {
       List<Map<String, dynamic>> modifiers = [];
       for (var item in cart.items) {
@@ -281,12 +281,13 @@ class RestApi {
         networkModel.uploadedAt = DateTime.now().toIso8601String();
         await NetworkTable.update(networkModel);
       }
+      return true;
     } on dio.DioError catch (e) {
       _traceError(e);
-      //Utils.showSnackbar('Please try again'.tr, '${e.response?.data ?? ''}');
+      return false;
     } catch (e) {
       _traceCatch(e);
-      //Utils.showSnackbar('Please try again'.tr);
+      return false;
     }
   }
 
@@ -777,7 +778,7 @@ class RestApi {
     }
   }
 
-  static Future<void> returnInvoiceQty({required CartModel refundModel, required int invNo}) async {
+  static Future<bool> returnInvoiceQty({required CartModel refundModel, required int invNo}) async {
     try {
       var queryParameters = {
         'orgInvNo': invNo,
@@ -810,12 +811,13 @@ class RestApi {
         networkModel.uploadedAt = DateTime.now().toIso8601String();
         await NetworkTable.update(networkModel);
       }
+      return true;
     } on dio.DioError catch (e) {
       _traceError(e);
-      Utils.showSnackbar('${e.response?.data ?? 'Please try again'.tr}');
+      return false;
     } catch (e) {
       _traceCatch(e);
-      Utils.showSnackbar('Please try again'.tr);
+      return false;
     }
   }
 

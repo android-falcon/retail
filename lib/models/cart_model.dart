@@ -172,14 +172,14 @@ class CartModel extends Equatable {
         tax: 0,
         amountDue: json["InvoiceMaster"]?['InvNetTotal']?.toDouble() ?? 0,
         items: json['InvoiceDetails'] == null ? [] : List<CartItemModel>.from(json['InvoiceDetails'].map((e) => CartItemModel.fromJsonServer(json: json, e: e))),
-        cash: 0,
-        credit: 0,
+        cash: json["InvoiceMaster"]?['CashVal']?.toDouble() ?? 0,
+        credit: json["InvoiceMaster"]?['CardsVal']?.toDouble() ?? 0,
         creditCardNumber: "",
         creditCardType: "",
-        cheque: 0,
-        coupon: 0,
-        gift: 0,
-        point: 0,
+        cheque: json["InvoiceMaster"]?['ChequeVal']?.toDouble() ?? 0,
+        coupon: json["InvoiceMaster"]?['CouponVal']?.toDouble() ?? 0,
+        gift: json["InvoiceMaster"]?['GiftVal']?.toDouble() ?? 0,
+        point: json["InvoiceMaster"]?['PointsVal']?.toDouble() ?? 0,
         tableId: 0,
         note: '',
         payCompanyId: 0,
@@ -291,8 +291,8 @@ class CartModel extends Equatable {
         "InvType": orderType.index, // 0 - Take away , 1 - Dine In
         "InvKind": EnumInvoiceKind.invoiceReturn.index, // 0 - Pay , 1 - Return
         "InvNo": invNo, // الرقم الي بعد منو VocNo
-        "PosNo": posNo, // PosNo
-        "CashNo": cashNo, // CashNo
+        "PosNo": sharedPrefsClient.posNo, // PosNo
+        "CashNo": sharedPrefsClient.cashNo, // CashNo
         "InvDate": sharedPrefsClient.dailyClose.toIso8601String(),
         "TotalService": service, // مجموع سيرفس قبل الضريبة
         "TotalServiceTax": serviceTax, // ضريبة السيرفس فقط
@@ -302,13 +302,13 @@ class CartModel extends Equatable {
         "DeliveryCharge": deliveryCharge, // مجموع توصيل
         "InvNetTotal": amountDue, // المجموع نهائي بعد كل اشي
         "PayType": 0,
-        "CashVal": cash,
+        "CashVal": amountDue,
         "CardsVal": 0,
         "ChequeVal": 0,
         "CouponVal": 0,
         "GiftVal": 0,
         "PointsVal": 0,
-        "UserId": 0,
+        "UserId": sharedPrefsClient.employee.id,
         "ShiftId": 0,
         "WaiterId": 0,
         "TableId": 0,
