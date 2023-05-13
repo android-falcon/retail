@@ -97,6 +97,7 @@ class HomeScreen extends GetResponsiveView {
                               borderColor: AppColor.primaryColor,
                               hintText: 'Search for item'.tr,
                               maxLines: 1,
+                              keyboardType: TextInputType.none,
                               icon: SvgPicture.asset(
                                 Constant.kAssetSearch,
                                 color: AppColor.gray2,

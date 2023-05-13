@@ -60,6 +60,7 @@ class SearchItemScreen extends GetResponsiveView {
         Expanded(
           flex: 3,
           child: CustomDropDown(
+            isExpanded: true,
             width: double.infinity,
             items: items,
             selectItem: dropDownSelect.value,
