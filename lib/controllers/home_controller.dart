@@ -64,30 +64,30 @@ class HomeController extends GetxController {
     if (barcode.isEmpty) {
       Utils.showSnackbar('Please fill search field'.tr, '');
     } else {
-      var indexItem = allDataModel.items.indexWhere((element) => element.itemBarcodes.firstWhereOrNull((element) => element.barcode == barcode) != null);
-      // var indexItem = allDataModel.items.indexWhere((element) => element.itemBarcode == barcode);
+      var indexItem = Constant.allDataModel.items.indexWhere((element) => element.itemBarcodes.firstWhereOrNull((element) => element.barcode == barcode) != null);
+      // var indexItem = Constant.allDataModel.items.indexWhere((element) => element.itemBarcode == barcode);
       if (indexItem == -1) {
         Utils.showSnackbar('Item not found'.tr, '');
         controllerSearch.text = '';
       } else {
-        var indexCartItem = cart.value.items.lastIndexWhere((element) => element.id == allDataModel.items[indexItem].id);
+        var indexCartItem = cart.value.items.lastIndexWhere((element) => element.id == Constant.allDataModel.items[indexItem].id);
         if (indexCartItem == -1) {
           cart.value.items.add(CartItemModel(
             uuid: const Uuid().v1(),
             parentUuid: '',
             orderType: EnumOrderType.takeAway,
-            id: allDataModel.items[indexItem].id,
-            categoryId: allDataModel.items[indexItem].category.id,
-            taxType: allDataModel.items[indexItem].taxTypeId,
-            taxPercent: allDataModel.items[indexItem].taxPercent.percent,
-            name: allDataModel.items[indexItem].menuName,
+            id: Constant.allDataModel.items[indexItem].id,
+            categoryId: Constant.allDataModel.items[indexItem].category.id,
+            taxType: Constant.allDataModel.items[indexItem].taxTypeId,
+            taxPercent: Constant.allDataModel.items[indexItem].taxPercent.percent,
+            name: Constant.allDataModel.items[indexItem].menuName,
             qty: 1,
-            price: cart.value.deliveryCompanyId == 0 ? allDataModel.items[indexItem].price : allDataModel.items[indexItem].companyPrice,
-            priceChange: cart.value.deliveryCompanyId == 0 ? allDataModel.items[indexItem].price : allDataModel.items[indexItem].companyPrice,
-            total: cart.value.deliveryCompanyId == 0 ? allDataModel.items[indexItem].price : allDataModel.items[indexItem].companyPrice,
+            price: cart.value.deliveryCompanyId == 0 ? Constant.allDataModel.items[indexItem].price : Constant.allDataModel.items[indexItem].companyPrice,
+            priceChange: cart.value.deliveryCompanyId == 0 ? Constant.allDataModel.items[indexItem].price : Constant.allDataModel.items[indexItem].companyPrice,
+            total: cart.value.deliveryCompanyId == 0 ? Constant.allDataModel.items[indexItem].price : Constant.allDataModel.items[indexItem].companyPrice,
             tax: 0,
-            discountAvailable: allDataModel.items[indexItem].discountAvailable == 1,
-            openPrice: allDataModel.items[indexItem].openPrice == 1,
+            discountAvailable: Constant.allDataModel.items[indexItem].discountAvailable == 1,
+            openPrice: Constant.allDataModel.items[indexItem].openPrice == 1,
             rowSerial: cart.value.items.length + 1,
           ));
         } else {
@@ -109,9 +109,9 @@ class HomeController extends GetxController {
       if (result['caption'].isNotEmpty) {
         cart.value.parkName = result['caption'];
         cart.value.parkColor = result['color'];
-        var park = sharedPrefsClient.park;
+        var park = Constant.sharedPrefsClient.park;
         park.add(cart.value);
-        sharedPrefsClient.park = park;
+        Constant.sharedPrefsClient.park = park;
         cart.value = CartModel.init(orderType: EnumOrderType.takeAway);
         cart.value = Utils.calculateOrder(cart: cart.value);
         update();
@@ -120,12 +120,12 @@ class HomeController extends GetxController {
   }
 
   voidAllItem() async {
-    if (await Utils.checkPermission(sharedPrefsClient.employee.hasVoidAllPermission)) {
+    if (await Utils.checkPermission(Constant.sharedPrefsClient.employee.hasVoidAllPermission)) {
       if (cart.value.items.isEmpty) {
         Utils.showSnackbar('There must be items'.tr);
       } else {
         VoidReasonModel? result;
-        if (allDataModel.companyConfig[0].useVoidReason) {
+        if (Constant.allDataModel.companyConfig[0].useVoidReason) {
           result = await showVoidReasonDialog();
         } else {
           var areYouSure = await Utils.showAreYouSureDialog(title: 'Void All'.tr);
@@ -147,9 +147,9 @@ class HomeController extends GetxController {
   }
 
   voidItem({required int index}) async {
-    if (await Utils.checkPermission(sharedPrefsClient.employee.hasVoidPermission)) {
+    if (await Utils.checkPermission(Constant.sharedPrefsClient.employee.hasVoidPermission)) {
       VoidReasonModel? result;
-      if (allDataModel.companyConfig[0].useVoidReason) {
+      if (Constant.allDataModel.companyConfig[0].useVoidReason) {
         result = await showVoidReasonDialog();
       } else {
         var areYouSure = await Utils.showAreYouSureDialog(title: 'Void Item'.tr);
@@ -176,9 +176,9 @@ class HomeController extends GetxController {
   editItem({required int indexItem}) async {
     GlobalKey<FormState> keyForm = GlobalKey<FormState>();
     EnumDiscountType type = cart.value.items[indexItem].lineDiscountType;
-    TextEditingController controllerQty = TextEditingController(text: cart.value.items[indexItem].qty.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
-    TextEditingController controllerPrice = TextEditingController(text: cart.value.items[indexItem].priceChange.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
-    TextEditingController controllerLineDiscount = TextEditingController(text: cart.value.items[indexItem].lineDiscount.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
+    TextEditingController controllerQty = TextEditingController(text: cart.value.items[indexItem].qty.toStringAsFixed(Constant.fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
+    TextEditingController controllerPrice = TextEditingController(text: cart.value.items[indexItem].priceChange.toStringAsFixed(Constant.fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
+    TextEditingController controllerLineDiscount = TextEditingController(text: cart.value.items[indexItem].lineDiscount.toStringAsFixed(Constant.fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
     TextEditingController controllerSelected = controllerQty;
     var result = await Get.dialog(
       CustomDialog(
@@ -224,7 +224,7 @@ class HomeController extends GetxController {
                       keyboardType: const TextInputType.numberWithOptions(),
                       borderColor: controllerSelected == controllerPrice ? AppColor.primaryColor : null,
                       onTap: () async {
-                        if (await Utils.checkPermission(sharedPrefsClient.employee.hasPriceChangePermission)) {
+                        if (await Utils.checkPermission(Constant.sharedPrefsClient.employee.hasPriceChangePermission)) {
                           if (cart.value.items[indexItem].openPrice) {
                             FocusScope.of(context).requestFocus(FocusNode());
                             controllerSelected = controllerPrice;
@@ -251,7 +251,7 @@ class HomeController extends GetxController {
                       keyboardType: const TextInputType.numberWithOptions(),
                       borderColor: controllerSelected == controllerLineDiscount ? AppColor.primaryColor : null,
                       onTap: () async {
-                        if (await Utils.checkPermission(sharedPrefsClient.employee.hasLineDiscPermission)) {
+                        if (await Utils.checkPermission(Constant.sharedPrefsClient.employee.hasLineDiscPermission)) {
                           if (cart.value.items[indexItem].discountAvailable) {
                             FocusScope.of(context).requestFocus(FocusNode());
                             controllerSelected = controllerLineDiscount;
@@ -305,7 +305,7 @@ class HomeController extends GetxController {
   discountOrder() async {
     GlobalKey<FormState> keyForm = GlobalKey<FormState>();
     EnumDiscountType type = cart.value.discountType;
-    TextEditingController controllerDiscount = TextEditingController(text: cart.value.discount.toStringAsFixed(fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
+    TextEditingController controllerDiscount = TextEditingController(text: cart.value.discount.toStringAsFixed(Constant.fractionDigits).replaceAll(RegExp(r"([.]*0+)(?!.*\d)"), ''));
     TextEditingController controllerSelected = controllerDiscount;
     var result = await Get.dialog(
       CustomDialog(
@@ -330,7 +330,7 @@ class HomeController extends GetxController {
                       keyboardType: const TextInputType.numberWithOptions(),
                       borderColor: controllerSelected == controllerDiscount ? AppColor.primaryColor : null,
                       onTap: () async {
-                        if (await Utils.checkPermission(sharedPrefsClient.employee.hasLineDiscPermission)) {
+                        if (await Utils.checkPermission(Constant.sharedPrefsClient.employee.hasLineDiscPermission)) {
                           if (cart.value.items.any((element) => element.discountAvailable)) {
                             FocusScope.of(context).requestFocus(FocusNode());
                             controllerSelected = controllerDiscount;
@@ -514,7 +514,7 @@ class HomeController extends GetxController {
   }
 
   showHoldItems() {
-    var holdItems = sharedPrefsClient.park;
+    var holdItems = Constant.sharedPrefsClient.park;
     Get.dialog(
       CustomDialog(
         builder: (context, setState, constraints) => Padding(
@@ -538,7 +538,7 @@ class HomeController extends GetxController {
                             flex: 6,
                             child: Text(
                               'Caption'.tr,
-                              style: kStyleTextTable,
+                              style: Constant.kStyleTextTable,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -547,7 +547,7 @@ class HomeController extends GetxController {
                             flex: 3,
                             child: Text(
                               'Total'.tr,
-                              style: kStyleTextTable,
+                              style: Constant.kStyleTextTable,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -563,7 +563,7 @@ class HomeController extends GetxController {
                           onTap: () {
                             cart.value = holdItems[index];
                             holdItems.removeAt(index);
-                            sharedPrefsClient.park = holdItems;
+                            Constant.sharedPrefsClient.park = holdItems;
                             Get.back();
                             update();
                           },
@@ -576,7 +576,7 @@ class HomeController extends GetxController {
                                   flex: 6,
                                   child: Text(
                                     holdItems[index].parkName,
-                                    style: kStyleDataTable,
+                                    style: Constant.kStyleDataTable,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -584,8 +584,8 @@ class HomeController extends GetxController {
                                 Expanded(
                                   flex: 3,
                                   child: Text(
-                                    holdItems[index].amountDue.toStringAsFixed(fractionDigits),
-                                    style: kStyleDataTable,
+                                    holdItems[index].amountDue.toStringAsFixed(Constant.fractionDigits),
+                                    style: Constant.kStyleDataTable,
                                     maxLines: 1,
                                   ),
                                 ),
@@ -622,7 +622,7 @@ class HomeController extends GetxController {
   }
 
   speedItems() {
-    List<ItemModel> items = allDataModel.items.where((element) => element.isSpeedItem == 1).toList();
+    List<ItemModel> items = Constant.allDataModel.items.where((element) => element.isSpeedItem == 1).toList();
     if (items.isNotEmpty) {
       Get.dialog(
         CustomDialog(
@@ -657,14 +657,14 @@ class HomeController extends GetxController {
                                         children: [
                                           Text(
                                             '${e.menuName}\n',
-                                            style: kStyleTextTitle,
+                                            style: Constant.kStyleTextTitle,
                                             textAlign: TextAlign.center,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
                                           Text(
-                                            '${'Price'} : ${e.price.toStringAsFixed(fractionDigits)}',
-                                            style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                                            '${'Price'} : ${e.price.toStringAsFixed(Constant.fractionDigits)}',
+                                            style: Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
@@ -707,19 +707,19 @@ class HomeController extends GetxController {
             children: [
               Text(
                 'Void Reason'.tr,
-                style: kStyleTextLarge,
+                style: Constant.kStyleTextLarge,
               ),
               const Divider(thickness: 2),
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: allDataModel.voidReason.length,
+                itemCount: Constant.allDataModel.voidReason.length,
                 itemBuilder: (context, index) => RadioListTile(
                   title: Text(
-                    allDataModel.voidReason[index].reasonName,
-                    style: kStyleForceQuestion,
+                    Constant.allDataModel.voidReason[index].reasonName,
+                    style: Constant.kStyleForceQuestion,
                   ),
-                  value: allDataModel.voidReason[index].id,
+                  value: Constant.allDataModel.voidReason[index].id,
                   groupValue: selectedVoidReasonId,
                   onChanged: (value) {
                     selectedVoidReasonId = value as int;
@@ -762,7 +762,7 @@ class HomeController extends GetxController {
       ),
       barrierDismissible: false,
     );
-    return selectedVoidReasonId == null ? null : allDataModel.voidReason.firstWhere((element) => element.id == selectedVoidReasonId);
+    return selectedVoidReasonId == null ? null : Constant.allDataModel.voidReason.firstWhere((element) => element.id == selectedVoidReasonId);
   }
 
   paymentMethodDialog({required EnumPaymentMethodType type}) {
@@ -775,12 +775,12 @@ class HomeController extends GetxController {
             child: Column(
               children: [
                 Text(
-                  '${'Date'.tr} : ${intl.DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
-                  style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                  '${'Date'.tr} : ${intl.DateFormat(Constant.dateFormat).format(Constant.sharedPrefsClient.dailyClose)}',
+                  style: Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  '${'Remaining'.tr} : ${remaining.toStringAsFixed(fractionDigits)}',
-                  style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                  '${'Remaining'.tr} : ${remaining.toStringAsFixed(Constant.fractionDigits)}',
+                  style: Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 35.h),
                 Row(
@@ -801,7 +801,7 @@ class HomeController extends GetxController {
                           //   _showFinishDialog();
                           // }
                         },
-                        child: Text('${'Cash'.tr} : ${cart.value.cash.toStringAsFixed(fractionDigits)}'),
+                        child: Text('${'Cash'.tr} : ${cart.value.cash.toStringAsFixed(Constant.fractionDigits)}'),
                       ),
                     ),
                     if (type == EnumPaymentMethodType.otherPayment)
@@ -826,7 +826,7 @@ class HomeController extends GetxController {
                             //   _showFinishDialog();
                             // }
                           },
-                          child: Text('${'Credit Card'.tr} : ${cart.value.credit.toStringAsFixed(fractionDigits)}'),
+                          child: Text('${'Credit Card'.tr} : ${cart.value.credit.toStringAsFixed(Constant.fractionDigits)}'),
                         ),
                       ),
                   ],
@@ -842,48 +842,48 @@ class HomeController extends GetxController {
                     children: [
                       CustomIconText(
                         bold: true,
-                        label: '${'Total'.tr} : ${cart.value.total.toStringAsFixed(fractionDigits)}',
+                        label: '${'Total'.tr} : ${cart.value.total.toStringAsFixed(Constant.fractionDigits)}',
                       ),
                       // CustomIconText(
                       //   bold: true,
-                      //   label: '${'Delivery charge'.tr} : ${cart.value.deliveryCharge.toStringAsFixed(fractionDigits)}',
+                      //   label: '${'Delivery charge'.tr} : ${cart.value.deliveryCharge.toStringAsFixed(Constant.fractionDigits)}',
                       // ),
                       CustomIconText(
                         bold: true,
-                        label: '${'Line discount'.tr} : ${cart.value.totalLineDiscount.toStringAsFixed(fractionDigits)}',
+                        label: '${'Line discount'.tr} : ${cart.value.totalLineDiscount.toStringAsFixed(Constant.fractionDigits)}',
                       ),
                       CustomIconText(
                         bold: true,
-                        label: '${'Discount'.tr} : ${cart.value.totalDiscount.toStringAsFixed(fractionDigits)}',
+                        label: '${'Discount'.tr} : ${cart.value.totalDiscount.toStringAsFixed(Constant.fractionDigits)}',
                       ),
                       CustomIconText(
                         bold: true,
-                        label: '${'Sub total'.tr} : ${cart.value.subTotal.toStringAsFixed(fractionDigits)}',
+                        label: '${'Sub total'.tr} : ${cart.value.subTotal.toStringAsFixed(Constant.fractionDigits)}',
                       ),
                       // CustomIconText(
                       //   bold: true,
-                      //   label: '${'Service'.tr} : ${cart.value.service.toStringAsFixed(fractionDigits)}',
+                      //   label: '${'Service'.tr} : ${cart.value.service.toStringAsFixed(Constant.fractionDigits)}',
                       // ),
                       CustomIconText(
                         bold: true,
-                        label: '${'Tax'.tr} : ${cart.value.tax.toStringAsFixed(fractionDigits)}',
+                        label: '${'Tax'.tr} : ${cart.value.tax.toStringAsFixed(Constant.fractionDigits)}',
                       ),
                       CustomIconText(
                         bold: true,
-                        label: '${'Amount Due'.tr} : ${cart.value.amountDue.toStringAsFixed(fractionDigits)}',
+                        label: '${'Amount Due'.tr} : ${cart.value.amountDue.toStringAsFixed(Constant.fractionDigits)}',
                       ),
                       const Divider(),
                       CustomIconText(
                         bold: true,
-                        label: '${'Total Due'.tr} : ${cart.value.amountDue.toStringAsFixed(fractionDigits)}',
+                        label: '${'Total Due'.tr} : ${cart.value.amountDue.toStringAsFixed(Constant.fractionDigits)}',
                       ),
                       CustomIconText(
                         bold: true,
-                        label: '${'Total received'.tr} : ${(cart.value.cash + cart.value.credit + cart.value.cheque + cart.value.gift + cart.value.coupon + cart.value.point).toStringAsFixed(fractionDigits)}',
+                        label: '${'Total received'.tr} : ${(cart.value.cash + cart.value.credit + cart.value.cheque + cart.value.gift + cart.value.coupon + cart.value.point).toStringAsFixed(Constant.fractionDigits)}',
                       ),
                       CustomIconText(
                         bold: true,
-                        label: '${'Balance'.tr} : ${remaining.toStringAsFixed(fractionDigits)}',
+                        label: '${'Balance'.tr} : ${remaining.toStringAsFixed(Constant.fractionDigits)}',
                       ),
                       SizedBox(height: 20.h),
                       CustomButton(
@@ -896,10 +896,10 @@ class HomeController extends GetxController {
                               cart.value.items[i].rowSerial = i + 1;
                             }
                             RestApi.invoice(cart: cart.value, invoiceKind: EnumInvoiceKind.invoicePay);
-                            sharedPrefsClient.lastInvoice = LastInvoice(invoiceNo: sharedPrefsClient.inVocNo, total: cart.value.amountDue);
-                            sharedPrefsClient.inVocNo++;
+                            Constant.sharedPrefsClient.lastInvoice = LastInvoice(invoiceNo: Constant.sharedPrefsClient.inVocNo, total: cart.value.amountDue);
+                            Constant.sharedPrefsClient.inVocNo++;
                             Get.back();
-                            Printer.printInvoicesDialog(cart: cart.value, showPrintButton: false, invNo: '${sharedPrefsClient.inVocNo - 1}').then((value) {
+                            Printer.printInvoicesDialog(cart: cart.value, showPrintButton: false, invNo: '${Constant.sharedPrefsClient.inVocNo - 1}').then((value) {
                               cart.value = CartModel.init(orderType: EnumOrderType.takeAway);
                               update();
                             });
@@ -928,9 +928,9 @@ class HomeController extends GetxController {
   paymentDialog({TextEditingController? controllerReceived, required double balance, required double received, bool enableReturnValue = false, TextEditingController? controllerCreditCard, int? paymentCompany}) async {
     GlobalKey<FormState> keyForm = GlobalKey<FormState>();
     if (controllerCreditCard != null && received == 0) {
-      controllerReceived ??= TextEditingController(text: balance.toStringAsFixed(fractionDigits));
+      controllerReceived ??= TextEditingController(text: balance.toStringAsFixed(Constant.fractionDigits));
     } else {
-      controllerReceived ??= TextEditingController(text: received.toStringAsFixed(fractionDigits));
+      controllerReceived ??= TextEditingController(text: received.toStringAsFixed(Constant.fractionDigits));
     }
 
     if (controllerReceived.text.endsWith('.000')) {
@@ -954,13 +954,13 @@ class HomeController extends GetxController {
                   children: [
                     InkWell(
                       onTap: () {
-                        controllerReceived!.text = balance.toStringAsFixed(fractionDigits);
+                        controllerReceived!.text = balance.toStringAsFixed(Constant.fractionDigits);
                       },
                       child: Padding(
                         padding: EdgeInsets.all(8.sp),
                         child: Text(
-                          '${'Balance'.tr} : ${balance.toStringAsFixed(fractionDigits)}',
-                          style: kStyleTextLarge,
+                          '${'Balance'.tr} : ${balance.toStringAsFixed(Constant.fractionDigits)}',
+                          style: Constant.kStyleTextLarge,
                         ),
                       ),
                     ),
@@ -972,7 +972,7 @@ class HomeController extends GetxController {
                             isExpanded: true,
                             margin: const EdgeInsets.symmetric(vertical: 8),
                             hint: 'Payment Company'.tr,
-                            items: allDataModel.paymentCompanyModel
+                            items: Constant.allDataModel.paymentCompanyModel
                                 .map((e) => DropdownMenuItem(
                                       value: e.id,
                                       child: Text(e.coName),
@@ -1038,8 +1038,8 @@ class HomeController extends GetxController {
                             },
                             validator: (value) {
                               if (!enableReturnValue) {
-                                if (double.parse(value!) > double.parse(balance.toStringAsFixed(fractionDigits))) {
-                                  return '${'The entered value cannot be greater than the balance'.tr} (${balance.toStringAsFixed(fractionDigits)})';
+                                if (double.parse(value!) > double.parse(balance.toStringAsFixed(Constant.fractionDigits))) {
+                                  return '${'The entered value cannot be greater than the balance'.tr} (${balance.toStringAsFixed(Constant.fractionDigits)})';
                                 }
                               }
                               return null;
@@ -1109,7 +1109,7 @@ class HomeController extends GetxController {
                   padding: EdgeInsets.symmetric(vertical: 80.h),
                   child: Text(
                     '${'Please return this value'.tr} :    ${(_received - balance).toStringAsFixed(3)}',
-                    style: kStyleTextTitle,
+                    style: Constant.kStyleTextTitle,
                   ),
                 ),
                 CustomButton(
@@ -1117,7 +1117,7 @@ class HomeController extends GetxController {
                   padding: EdgeInsets.symmetric(horizontal: 40.w, vertical: 24.h),
                   child: Text(
                     'Done'.tr,
-                    style: kStyleButtonPayment,
+                    style: Constant.kStyleButtonPayment,
                   ),
                   onPressed: () {
                     Get.back();

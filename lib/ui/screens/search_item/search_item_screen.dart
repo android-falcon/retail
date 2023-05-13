@@ -27,7 +27,7 @@ class SearchItemScreen extends GetResponsiveView {
           flex: 2,
           child: Text(
             label,
-            style: kStyleTextTitle,
+            style: Constant.kStyleTextTitle,
           ),
         ),
         Expanded(
@@ -54,7 +54,7 @@ class SearchItemScreen extends GetResponsiveView {
           flex: 2,
           child: Text(
             label,
-            style: kStyleTextTitle,
+            style: Constant.kStyleTextTitle,
           ),
         ),
         Expanded(
@@ -118,7 +118,7 @@ class SearchItemScreen extends GetResponsiveView {
                       dropDownSelect: _controller.dropDownSelectGroup,
                       valueCheckbox: _controller.checkGroup,
                       label: 'Group'.tr,
-                      items: allDataModel.categories
+                      items: Constant.allDataModel.categories
                           .map((e) => DropdownMenuItem(
                                 value: e.id,
                                 child: Text(e.categoryName),
@@ -162,7 +162,7 @@ class SearchItemScreen extends GetResponsiveView {
                   children: [
                     _controller.resultItems.isEmpty
                         ? CustomIconText(
-                            icon: kAssetPhoto,
+                            icon: Constant.kAssetPhoto,
                             label: 'Item Photo'.tr,
                           )
                         : Container(),
@@ -185,7 +185,7 @@ class SearchItemScreen extends GetResponsiveView {
                           flex: 4,
                           child: Text(
                             'Original No'.tr,
-                            style: kStyleTextTable,
+                            style: Constant.kStyleTextTable,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -195,7 +195,7 @@ class SearchItemScreen extends GetResponsiveView {
                         //   flex: 4,
                         //   child: Text(
                         //     'New No'.tr,
-                        //     style: kStyleTextTable,
+                        //     style: Constant.kStyleTextTable,
                         //     maxLines: 1,
                         //     overflow: TextOverflow.ellipsis,
                         //   ),
@@ -205,7 +205,7 @@ class SearchItemScreen extends GetResponsiveView {
                           flex: 6,
                           child: Text(
                             'Item name'.tr,
-                            style: kStyleTextTable,
+                            style: Constant.kStyleTextTable,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -215,7 +215,7 @@ class SearchItemScreen extends GetResponsiveView {
                           flex: 3,
                           child: Text(
                             'Sale Price'.tr,
-                            style: kStyleTextTable,
+                            style: Constant.kStyleTextTable,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -238,7 +238,7 @@ class SearchItemScreen extends GetResponsiveView {
                                   flex: 4,
                                   child: Text(
                                     _controller.resultItems[index].itemBarcodes.isEmpty ? '' : _controller.resultItems[index].itemBarcodes.first.barcode,
-                                    style: kStyleDataTable,
+                                    style: Constant.kStyleDataTable,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -248,7 +248,7 @@ class SearchItemScreen extends GetResponsiveView {
                                 //   flex: 4,
                                 //   child: Text(
                                 //     _controller.resultItems[index].itemBarcode,
-                                //     style: kStyleDataTable,
+                                //     style: Constant.kStyleDataTable,
                                 //     maxLines: 1,
                                 //     overflow: TextOverflow.ellipsis,
                                 //   ),
@@ -258,7 +258,7 @@ class SearchItemScreen extends GetResponsiveView {
                                   flex: 6,
                                   child: Text(
                                     _controller.resultItems[index].menuName,
-                                    style: kStyleDataTable,
+                                    style: Constant.kStyleDataTable,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -267,8 +267,8 @@ class SearchItemScreen extends GetResponsiveView {
                                 Expanded(
                                   flex: 3,
                                   child: Text(
-                                    _controller.resultItems[index].price.toStringAsFixed(fractionDigits),
-                                    style: kStyleDataTable,
+                                    _controller.resultItems[index].price.toStringAsFixed(Constant.fractionDigits),
+                                    style: Constant.kStyleDataTable,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -292,7 +292,7 @@ class SearchItemScreen extends GetResponsiveView {
                           _controller.searchItems();
                         },
                         label: Text('Search'.tr),
-                        icon: SvgPicture.asset(kAssetSearch),
+                        icon: SvgPicture.asset(Constant.kAssetSearch),
                       ),
                     ),
                     SizedBox(width: 10.w),
@@ -302,7 +302,7 @@ class SearchItemScreen extends GetResponsiveView {
                           Get.back();
                         },
                         label: Text('Exit'.tr),
-                        icon: SvgPicture.asset(kAssetExit),
+                        icon: SvgPicture.asset(Constant.kAssetExit),
                       ),
                     ),
                   ],

@@ -30,7 +30,7 @@ class LoginController extends GetxController {
     if (controllerUsername.text.isEmpty && controllerPassword.text == "Falcons@admin") {
       controllerPassword.text = '';
       Get.to(() => ConfigScreen())!.then((value) {
-        RestApi.restDio.options.baseUrl = sharedPrefsClient.baseUrl;
+        RestApi.restDio.options.baseUrl = Constant.sharedPrefsClient.baseUrl;
         RestApi.getData();
         RestApi.getCashLastSerials();
       });
@@ -38,16 +38,16 @@ class LoginController extends GetxController {
       controllerPassword.text = '';
       Get.to(() => NetworkLogScreen());
     } else if (formKey.currentState!.validate()) {
-      var indexEmployee = allDataModel.employees.indexWhere((element) => element.username == controllerUsername.text && element.password == controllerPassword.text && !element.isKitchenUser);
+      var indexEmployee = Constant.allDataModel.employees.indexWhere((element) => element.username == controllerUsername.text && element.password == controllerPassword.text && !element.isKitchenUser);
       if (indexEmployee != -1) {
-        sharedPrefsClient.employee = allDataModel.employees[indexEmployee];
-        sharedPrefsClient.dailyClose = allDataModel.posClose;
-        if (allDataModel.companyConfig.isEmpty) {
-          allDataModel.companyConfig.add(CompanyConfigModel.fromJson({}));
+        Constant.sharedPrefsClient.employee = Constant.allDataModel.employees[indexEmployee];
+        Constant.sharedPrefsClient.dailyClose = Constant.allDataModel.posClose;
+        if (Constant.allDataModel.companyConfig.isEmpty) {
+          Constant.allDataModel.companyConfig.add(CompanyConfigModel.fromJson({}));
         }
-        var indexPointOfSales = allDataModel.pointOfSalesModel.indexWhere((element) => element.posNo == sharedPrefsClient.posNo);
+        var indexPointOfSales = Constant.allDataModel.pointOfSalesModel.indexWhere((element) => element.posNo == Constant.sharedPrefsClient.posNo);
         if (indexPointOfSales != -1) {
-          sharedPrefsClient.orderNo = allDataModel.pointOfSalesModel[indexPointOfSales].orderNo;
+          Constant.sharedPrefsClient.orderNo = Constant.allDataModel.pointOfSalesModel[indexPointOfSales].orderNo;
         }
         Get.offAll(() => HomeScreen());
       } else {

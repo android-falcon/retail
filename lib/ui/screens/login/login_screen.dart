@@ -23,7 +23,7 @@ class LoginScreen extends GetResponsiveView<LoginController> {
                 alignment: Alignment.center,
                 children: [
                   Image.asset(
-                    kAssetBackgroundLogin,
+                    Constant.kAssetBackgroundLogin,
                     width: Get.width,
                     height: Get.height,
                     fit: BoxFit.cover,
@@ -34,7 +34,7 @@ class LoginScreen extends GetResponsiveView<LoginController> {
                       children: [
                         Text(
                           'Welcome to Falcons Pos'.tr,
-                          style: kStyleTextLarge,
+                          style: Constant.kStyleTextLarge,
                           textAlign: TextAlign.center,
                         ),
                         SizedBox(height: 22.h),

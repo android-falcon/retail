@@ -17,7 +17,7 @@ class MoneyCount {
   });
 
   static init() {
-    moneyCount = allDataModel.currencies
+    moneyCount = Constant.allDataModel.currencies
         .map((e) => MoneyCount(
               name: '${e.currVal} ${e.currName}',
               value: e.currVal,

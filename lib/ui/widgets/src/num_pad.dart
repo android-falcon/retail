@@ -191,7 +191,7 @@ class NumPad extends StatelessWidget {
                     onPressed: onExit,
                     child: Text(
                       'Exit'.tr,
-                      style: kStyleTextButton,
+                      style: Constant.kStyleTextButton,
                     ),
                   ),
                 ),
@@ -205,7 +205,7 @@ class NumPad extends StatelessWidget {
                     onPressed: onClear,
                     child: Text(
                       'Clear'.tr,
-                      style: kStyleTextButton,
+                      style: Constant.kStyleTextButton,
                     ),
                   ),
                 ),
@@ -219,7 +219,7 @@ class NumPad extends StatelessWidget {
                     onPressed: onSubmit,
                     child: Text(
                       'Save'.tr,
-                      style: kStyleTextButton,
+                      style: Constant.kStyleTextButton,
                     ),
                   ),
                 ),

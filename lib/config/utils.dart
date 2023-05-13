@@ -63,7 +63,7 @@ class Utils {
   }
 
   static CartModel calculateOrder({required CartModel cart, EnumInvoiceKind invoiceKind = EnumInvoiceKind.invoicePay}) {
-    if (allDataModel.companyConfig.first.taxCalcMethod == 0) {
+    if (Constant.allDataModel.companyConfig.first.taxCalcMethod == 0) {
       // خاضع
       switch (invoiceKind) {
         case EnumInvoiceKind.invoicePay:
@@ -84,8 +84,8 @@ class Utils {
       cart.totalLineDiscount = cart.items.fold(0.0, (sum, item) => sum + item.totalLineDiscount);
       cart.totalDiscount = cart.discountType == EnumDiscountType.percentage ? (cart.total - cart.totalLineDiscount) * (cart.discount / 100) : cart.discount;
       cart.subTotal = cart.total - cart.totalDiscount - cart.totalLineDiscount;
-      cart.service = cart.orderType == EnumOrderType.takeAway ? 0 : cart.subTotal * (allDataModel.companyConfig.first.servicePerc / 100);
-      cart.serviceTax = cart.orderType == EnumOrderType.takeAway ? 0 : cart.service * (allDataModel.companyConfig.first.serviceTaxPerc / 100);
+      cart.service = cart.orderType == EnumOrderType.takeAway ? 0 : cart.subTotal * (Constant.allDataModel.companyConfig.first.servicePerc / 100);
+      cart.serviceTax = cart.orderType == EnumOrderType.takeAway ? 0 : cart.service * (Constant.allDataModel.companyConfig.first.serviceTaxPerc / 100);
       double totalDiscountAvailableItem = cart.items.fold(0.0, (sum, item) => sum + (item.discountAvailable ? (item.total - item.totalLineDiscount) : 0));
       for (var element in cart.items) {
         if (element.discountAvailable) {
@@ -95,7 +95,7 @@ class Utils {
         }
         element.tax = element.taxType == 2 ? 0 : (element.total - element.totalLineDiscount - element.discount) * (element.taxPercent / 100);
         element.service = cart.service * ((element.total - element.totalLineDiscount - element.discount) / cart.subTotal);
-        element.serviceTax = element.service * (allDataModel.companyConfig.first.serviceTaxPerc / 100);
+        element.serviceTax = element.service * (Constant.allDataModel.companyConfig.first.serviceTaxPerc / 100);
       }
 
       cart.itemsTax = cart.items.fold(0.0, (sum, item) => sum + item.tax);
@@ -123,8 +123,8 @@ class Utils {
       cart.totalLineDiscount = cart.items.fold(0.0, (sum, item) => sum + item.totalLineDiscount);
       cart.totalDiscount = cart.discountType == EnumDiscountType.percentage ? (cart.total - cart.totalLineDiscount) * (cart.discount / 100) : cart.discount;
       cart.subTotal = cart.total - cart.totalDiscount - cart.totalLineDiscount;
-      cart.service = cart.orderType == EnumOrderType.takeAway ? 0 : cart.subTotal * (allDataModel.companyConfig.first.servicePerc / 100);
-      cart.serviceTax = cart.orderType == EnumOrderType.takeAway ? 0 : cart.service * (allDataModel.companyConfig.first.serviceTaxPerc / 100);
+      cart.service = cart.orderType == EnumOrderType.takeAway ? 0 : cart.subTotal * (Constant.allDataModel.companyConfig.first.servicePerc / 100);
+      cart.serviceTax = cart.orderType == EnumOrderType.takeAway ? 0 : cart.service * (Constant.allDataModel.companyConfig.first.serviceTaxPerc / 100);
       double totalDiscountAvailableItem = cart.items.fold(0.0, (sum, item) => sum + (item.discountAvailable ? (item.total - item.totalLineDiscount) : 0));
       for (var element in cart.items) {
         if (element.discountAvailable) {
@@ -134,7 +134,7 @@ class Utils {
         }
         element.tax = element.taxType == 2 ? 0 : (element.total - element.totalLineDiscount - element.discount) * (element.taxPercent / 100);
         element.service = cart.service * ((element.total - element.totalLineDiscount - element.discount) / cart.subTotal);
-        element.serviceTax = element.service * (allDataModel.companyConfig.first.serviceTaxPerc / 100);
+        element.serviceTax = element.service * (Constant.allDataModel.companyConfig.first.serviceTaxPerc / 100);
       }
 
       cart.itemsTax = cart.items.fold(0.0, (sum, item) => sum + item.tax);
@@ -146,26 +146,26 @@ class Utils {
   }
 
   static void loadSorting() {
-    for (var sortItem in sharedPrefsClient.sorting.items) {
-      var oldIndex = allDataModel.items.indexWhere((element) => element.id == sortItem.id);
+    for (var sortItem in Constant.sharedPrefsClient.sorting.items) {
+      var oldIndex = Constant.allDataModel.items.indexWhere((element) => element.id == sortItem.id);
       var newIndex = sortItem.index;
       if (oldIndex != -1) {
         if (newIndex > oldIndex) {
           newIndex -= 1;
         }
-        final ItemModel item = allDataModel.items.removeAt(oldIndex);
-        allDataModel.items.insert(newIndex, item);
+        final ItemModel item = Constant.allDataModel.items.removeAt(oldIndex);
+        Constant.allDataModel.items.insert(newIndex, item);
       }
     }
-    for (var sortCategory in sharedPrefsClient.sorting.categories) {
-      var oldIndex = allDataModel.categories.indexWhere((element) => element.id == sortCategory.id);
+    for (var sortCategory in Constant.sharedPrefsClient.sorting.categories) {
+      var oldIndex = Constant.allDataModel.categories.indexWhere((element) => element.id == sortCategory.id);
       var newIndex = sortCategory.index;
       if (oldIndex != -1) {
         if (newIndex > oldIndex) {
           newIndex -= 1;
         }
-        final CategoryModel item = allDataModel.categories.removeAt(oldIndex);
-        allDataModel.categories.insert(newIndex, item);
+        final CategoryModel item = Constant.allDataModel.categories.removeAt(oldIndex);
+        Constant.allDataModel.categories.insert(newIndex, item);
       }
     }
   }
@@ -312,9 +312,9 @@ class Utils {
                             onPressed: () {
                               FocusScope.of(context).requestFocus(FocusNode());
                               if (keyForm.currentState!.validate()) {
-                                var indexEmployee = allDataModel.employees.indexWhere((element) => element.username == controllerUsername.text && element.password == controllerPassword.text && !element.isKitchenUser);
+                                var indexEmployee = Constant.allDataModel.employees.indexWhere((element) => element.username == controllerUsername.text && element.password == controllerPassword.text && !element.isKitchenUser);
                                 if (indexEmployee != -1) {
-                                  Get.back(result: allDataModel.employees[indexEmployee]);
+                                  Get.back(result: Constant.allDataModel.employees[indexEmployee]);
                                 } else {
                                   Utils.showSnackbar('Incorrect username or password'.tr);
                                 }

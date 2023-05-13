@@ -37,13 +37,13 @@ class CustomIconText extends StatelessWidget {
             ? Expanded(
                 child: Text(
                   label,
-                  style: style ?? (bold ? kStyleTextTitle.copyWith(fontWeight: FontWeight.bold) : kStyleTextTitle),
+                  style: style ?? (bold ? Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold) : Constant.kStyleTextTitle),
                 ),
               )
             : Flexible(
                 child: Text(
                   label,
-                  style: style ?? (bold ? kStyleTextTitle.copyWith(fontWeight: FontWeight.bold) : kStyleTextTitle),
+                  style: style ?? (bold ? Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold) : Constant.kStyleTextTitle),
                 ),
               ),
       ],

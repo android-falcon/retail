@@ -16,18 +16,18 @@ class SplashScreen extends GetResponsiveView {
           children: [
             Text(
               'WELCOME TO\nFalcons Point Of Sale'.tr,
-              style: kStyleTextLarge,
+              style: Constant.kStyleTextLarge,
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 22.h),
             Text(
               'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'.tr,
-              style: kStyleTextDefault,
+              style: Constant.kStyleTextDefault,
               textAlign: TextAlign.center,
             ),
             SizedBox(height: 47.h),
             Image.asset(
-              kAssetSplash,
+              Constant.kAssetSplash,
               width: 378.w,
               height: 232.h,
             ),

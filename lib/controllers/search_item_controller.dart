@@ -24,7 +24,7 @@ class SearchItemController extends GetxController {
   final resultItems = <ItemModel>[].obs;
 
   searchItems() {
-    resultItems.value = allDataModel.items.where((element) {
+    resultItems.value = Constant.allDataModel.items.where((element) {
       if(!checkItemCode.value && !checkItemName.value && !checkItemNameE.value && !checkGroup.value){
         return true;
       }

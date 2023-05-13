@@ -27,14 +27,14 @@ class RefundController extends GetxController {
         Utils.showLoginDialog();
         refundModel.value!.items.removeWhere((element) => element.returnedQty == 0);
         int orgInvNo = refundModel.value!.invNo;
-        refundModel.value!.invNo = sharedPrefsClient.returnVocNo;
+        refundModel.value!.invNo = Constant.sharedPrefsClient.returnVocNo;
         for (var item in refundModel.value!.items) {
-          item.invNo = sharedPrefsClient.returnVocNo;
+          item.invNo = Constant.sharedPrefsClient.returnVocNo;
         }
         var resultRefundInvoice = await RestApi.invoice(cart: refundModel.value!, invoiceKind: EnumInvoiceKind.invoiceReturn);
         var resultReturnInvoiceQty = await RestApi.returnInvoiceQty(invNo: orgInvNo, refundModel: refundModel.value!);
         if(resultRefundInvoice && resultReturnInvoiceQty){
-          sharedPrefsClient.returnVocNo++;
+          Constant.sharedPrefsClient.returnVocNo++;
           Utils.hideLoadingDialog();
           Get.back();
           Utils.showSnackbar('Refund Invoice'.tr, 'Successfully'.tr);

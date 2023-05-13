@@ -35,7 +35,7 @@ class CustomButton extends StatelessWidget {
       width: fixed! ? width : double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          // textStyle: kStyleTextDefault,
+          // textStyle: Constant.kStyleTextDefault,
           onPrimary: Colors.white,
           primary: backgroundColor,
           padding: padding ?? EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),

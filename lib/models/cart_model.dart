@@ -231,13 +231,13 @@ class CartModel extends Equatable {
       };
 
   Map<String, dynamic> toInvoice() => {
-        "CoYear": sharedPrefsClient.dailyClose.year,
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
         "InvType": orderType.index, // 0 - Take away , 1 - Dine In
         "InvKind": EnumInvoiceKind.invoicePay.index, // 0 - Pay , 1 - Return
-        "InvNo": sharedPrefsClient.inVocNo, // الرقم الي بعد منو VocNo
-        "PosNo": sharedPrefsClient.posNo, // PosNo
-        "CashNo": sharedPrefsClient.cashNo, // CashNo
-        "InvDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "InvNo": Constant.sharedPrefsClient.inVocNo, // الرقم الي بعد منو VocNo
+        "PosNo": Constant.sharedPrefsClient.posNo, // PosNo
+        "CashNo": Constant.sharedPrefsClient.cashNo, // CashNo
+        "InvDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
         "TotalService": service, // مجموع سيرفس قبل الضريبة
         "TotalServiceTax": serviceTax, // ضريبة السيرفس فقط
         "TotalTax": itemsTax, // ضريبة بدو ضريبة السيرفس
@@ -252,9 +252,9 @@ class CartModel extends Equatable {
         "CouponVal": coupon, // كم دفع كوبونات
         "GiftVal": gift, //
         "PointsVal": point, //
-        "UserId": orderType == EnumOrderType.takeAway ? sharedPrefsClient.employee.id : 0, // Take away - EmplyeId, Dine In -
+        "UserId": orderType == EnumOrderType.takeAway ? Constant.sharedPrefsClient.employee.id : 0, // Take away - EmplyeId, Dine In -
         "ShiftId": 0, //
-        "WaiterId": orderType == EnumOrderType.takeAway ? sharedPrefsClient.employee.id : 0, //Take away - EmplyeId, Dine In -
+        "WaiterId": orderType == EnumOrderType.takeAway ? Constant.sharedPrefsClient.employee.id : 0, //Take away - EmplyeId, Dine In -
         "TableId": tableId, //
         "NoOfSeats": 0, //
         "SaleInvNo": 0,
@@ -266,34 +266,34 @@ class CartModel extends Equatable {
       };
 
   Map<String, dynamic> toSaveTable() => {
-        "CoYear": sharedPrefsClient.dailyClose.year,
-        "PosNo": sharedPrefsClient.posNo, // PosNo
-        "CashNo": sharedPrefsClient.cashNo, // CashNo
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
+        "PosNo": Constant.sharedPrefsClient.posNo, // PosNo
+        "CashNo": Constant.sharedPrefsClient.cashNo, // CashNo
         "TotalService": service, // مجموع سيرفس قبل الضريبة
         "TotalServiceTax": serviceTax, // ضريبة السيرفس فقط
         "TotalTax": itemsTax, // ضريبة بدو ضريبة السيرفس
         "TotalItemDisc": totalLineDiscount, // مجموع discount line
-        "UserId": orderType == EnumOrderType.takeAway ? sharedPrefsClient.employee.id : 0, // Take away - EmplyeId, Dine In -
+        "UserId": orderType == EnumOrderType.takeAway ? Constant.sharedPrefsClient.employee.id : 0, // Take away - EmplyeId, Dine In -
         "ShiftId": 0, //
-        "WaiterId": orderType == EnumOrderType.takeAway ? sharedPrefsClient.employee.id : 0, //Take away - EmplyeId, Dine In -
+        "WaiterId": orderType == EnumOrderType.takeAway ? Constant.sharedPrefsClient.employee.id : 0, //Take away - EmplyeId, Dine In -
         "TableId": tableId, //
         "Id": 0,
         "NoOfFemal": seatsFemale,
         "NoOfMale": seatsMale,
-        "OrdDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "OrdDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
         "OrdDisc": totalDiscount,
         "OrdNetTotal": amountDue,
         "TotSeats": totalSeats,
       };
 
   Map<String, dynamic> toReturnInvoice() => {
-        "CoYear": sharedPrefsClient.dailyClose.year,
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
         "InvType": orderType.index, // 0 - Take away , 1 - Dine In
         "InvKind": EnumInvoiceKind.invoiceReturn.index, // 0 - Pay , 1 - Return
         "InvNo": invNo, // الرقم الي بعد منو VocNo
-        "PosNo": sharedPrefsClient.posNo, // PosNo
-        "CashNo": sharedPrefsClient.cashNo, // CashNo
-        "InvDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "PosNo": Constant.sharedPrefsClient.posNo, // PosNo
+        "CashNo": Constant.sharedPrefsClient.cashNo, // CashNo
+        "InvDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
         "TotalService": service, // مجموع سيرفس قبل الضريبة
         "TotalServiceTax": serviceTax, // ضريبة السيرفس فقط
         "TotalTax": itemsTax, // ضريبة بدو ضريبة السيرفس
@@ -308,7 +308,7 @@ class CartModel extends Equatable {
         "CouponVal": 0,
         "GiftVal": 0,
         "PointsVal": 0,
-        "UserId": sharedPrefsClient.employee.id,
+        "UserId": Constant.sharedPrefsClient.employee.id,
         "ShiftId": 0,
         "WaiterId": 0,
         "TableId": 0,
@@ -462,7 +462,7 @@ class CartItemModel extends Equatable {
         parentUuid: e["ParentUUID"] ?? '',
         categoryId: 0,
         discountAvailable:  (e["InvDisc"]?.toDouble() ?? 0) == 0 ? false : true, // InvDisc
-        name: allDataModel.items.firstWhereOrNull((element) => element.id == (e["ItemId"] ?? 0))?.menuName ?? "",
+        name: Constant.allDataModel.items.firstWhereOrNull((element) => element.id == (e["ItemId"] ?? 0))?.menuName ?? "",
       );
 
   Map<String, dynamic> toJson() => {
@@ -502,14 +502,14 @@ class CartItemModel extends Equatable {
       };
 
   Map<String, dynamic> toInvoice() => {
-        "CoYear": sharedPrefsClient.dailyClose.year,
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
         "InvType": orderType.index, // 0 - Take away , 1 - Dine In
         "InvKind": EnumInvoiceKind.invoicePay.index, // 0 - Pay , 1 - Return
-        "InvNo": sharedPrefsClient.inVocNo, // الرقم الي بعد منو VocNo
-        "PosNo": sharedPrefsClient.posNo, // PosNo
-        "CashNo": sharedPrefsClient.cashNo, // CashNo
-        "StoreNo": sharedPrefsClient.storeNo, // StoreNo
-        "InvDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "InvNo": Constant.sharedPrefsClient.inVocNo, // الرقم الي بعد منو VocNo
+        "PosNo": Constant.sharedPrefsClient.posNo, // PosNo
+        "CashNo": Constant.sharedPrefsClient.cashNo, // CashNo
+        "StoreNo": Constant.sharedPrefsClient.storeNo, // StoreNo
+        "InvDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
         "RowSerial": rowSerial, // رقم الايتم بناء على ليست في شاشة index + 1
         "ItemId": id,
         "Qty": qty,
@@ -534,10 +534,10 @@ class CartItemModel extends Equatable {
       };
 
   Map<String, dynamic> toSaveTable() => {
-        "CoYear": sharedPrefsClient.dailyClose.year,
-        "PosNo": sharedPrefsClient.posNo, // PosNo
-        "CashNo": sharedPrefsClient.cashNo, // CashNo
-        "StoreNo": sharedPrefsClient.storeNo, // StoreNo
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
+        "PosNo": Constant.sharedPrefsClient.posNo, // PosNo
+        "CashNo": Constant.sharedPrefsClient.cashNo, // CashNo
+        "StoreNo": Constant.sharedPrefsClient.storeNo, // StoreNo
         "RowSerial": rowSerial, // رقم الايتم بناء على ليست في شاشة index + 1
         "ItemId": id,
         "Qty": qty,
@@ -559,20 +559,20 @@ class CartItemModel extends Equatable {
         "ParentUUID": parentUuid,
         "ComboRowNo": 0,
         "Id": 0,
-        "OrdDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "OrdDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
         "OrdDisc": discount,
         "OrderId": 0,
       };
 
   Map<String, dynamic> toReturnInvoice() => {
-        "CoYear": sharedPrefsClient.dailyClose.year,
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
         "InvType": orderType.index, // 0 - Take away , 1 - Dine In
         "InvKind": EnumInvoiceKind.invoiceReturn.index, // 0 - Pay , 1 - Return
         "InvNo": invNo, // الرقم الي بعد منو VocNo
-        "PosNo": sharedPrefsClient.posNo, // PosNo
-        "CashNo": sharedPrefsClient.cashNo, // CashNo
-        "StoreNo": sharedPrefsClient.storeNo, // StoreNo
-        "InvDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "PosNo": Constant.sharedPrefsClient.posNo, // PosNo
+        "CashNo": Constant.sharedPrefsClient.cashNo, // CashNo
+        "StoreNo": Constant.sharedPrefsClient.storeNo, // StoreNo
+        "InvDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
         "RowSerial": rowSerial, // رقم الايتم بناء على ليست في شاشة index + 1
         "ItemId": id,
         "Qty": qty,
@@ -597,11 +597,11 @@ class CartItemModel extends Equatable {
       };
 
   Map<String, dynamic> toReturnInvoiceQty() => {
-        "CoYear": sharedPrefsClient.dailyClose.year,
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
         "InvKind": EnumInvoiceKind.invoiceReturn.index,
         "InvNo": invNo,
-        "PosNo": sharedPrefsClient.posNo, // PosNo
-        "CashNo": sharedPrefsClient.cashNo, // CashNo
+        "PosNo": Constant.sharedPrefsClient.posNo, // PosNo
+        "CashNo": Constant.sharedPrefsClient.cashNo, // CashNo
         "RowSerial": rowSerial,
         "Id": id,
         "RQty": returnedQty,
@@ -642,13 +642,13 @@ class CartItemModifierModel extends Equatable {
       };
 
   Map<String, dynamic> toInvoice({required int itemId, required int rowSerial, required EnumOrderType orderType}) => {
-        "CoYear": sharedPrefsClient.dailyClose.year,
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
         "InvType": orderType.index, // 0 - Take away , 1 - Dine In
         "InvKind": 0, // 0 - Pay , 1 - Return
-        "InvNo": sharedPrefsClient.inVocNo, // الرقم الي بعد منو VocNo
-        "PosNo": sharedPrefsClient.posNo, // PosNo
-        "CashNo": sharedPrefsClient.cashNo, // CashNo
-        "InvDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "InvNo": Constant.sharedPrefsClient.inVocNo, // الرقم الي بعد منو VocNo
+        "PosNo": Constant.sharedPrefsClient.posNo, // PosNo
+        "CashNo": Constant.sharedPrefsClient.cashNo, // CashNo
+        "InvDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
         "RowSerial": rowSerial, // رقم الايتم بناء على ليست في شاشة index + 1
         "ItemId": itemId,
         "ModifireId": id
@@ -657,10 +657,10 @@ class CartItemModifierModel extends Equatable {
   Map<String, dynamic> toSaveTable({required int itemId, required int rowSerial}) => {
         "Id": 0,
         "OrderId": 0,
-        "CoYear": sharedPrefsClient.dailyClose.year,
-        "PosNo": sharedPrefsClient.posNo, // PosNo
-        "CashNo": sharedPrefsClient.cashNo, // CashNo
-        "OrdDate": sharedPrefsClient.dailyClose.toIso8601String(), // CashNo
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
+        "PosNo": Constant.sharedPrefsClient.posNo, // PosNo
+        "CashNo": Constant.sharedPrefsClient.cashNo, // CashNo
+        "OrdDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(), // CashNo
         "RowSerial": rowSerial, // رقم الايتم بناء على ليست في شاشة index + 1
         "ItemId": itemId,
         "ModifireId": id

@@ -91,7 +91,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
         maxLength: widget.maxLength,
         textAlign: widget.textAlign,
 
-        style: kStyleTextTitle,
+        style: Constant.kStyleTextTitle,
         decoration: InputDecoration(
           fillColor: Colors.white,
           filled: true,

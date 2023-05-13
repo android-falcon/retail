@@ -22,7 +22,7 @@ class RestApi {
   };
 
   static final dio.Dio restDio = dio.Dio(dio.BaseOptions(
-    baseUrl: sharedPrefsClient.baseUrl,
+    baseUrl: Constant.sharedPrefsClient.baseUrl,
     connectTimeout: 30000,
     receiveTimeout: 30000,
   ));
@@ -167,10 +167,10 @@ class RestApi {
   //   var body = jsonEncode({
   //     "userName": username,
   //     "password": password,
-  //     "deviceToken": sharedPrefsClient.deviceToken,
+  //     "deviceToken": Constant.Constant.sharedPrefsClient.deviceToken,
   //     "platform": "string",
   //     "version": "string",
-  //     "language": sharedPrefsClient.language,
+  //     "language": Constant.Constant.sharedPrefsClient.language,
   //   });
   //   final request = _post(ApiUrl.LOGIN, data: body);
   //   var response = await _executeRequest<LoginModel>(method: request, fromJsonModel: (Map<String, dynamic> json) => LoginModel.fromJson(json));
@@ -180,7 +180,7 @@ class RestApi {
     try {
       Utils.showLoadingDialog();
       var queryParameters = {
-        'PosNo': sharedPrefsClient.posNo,
+        'PosNo': Constant.sharedPrefsClient.posNo,
       };
       var networkId = await NetworkTable.insert(NetworkTableModel(
         id: 0,
@@ -197,18 +197,18 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.get(ApiUrl.GET_DATA, queryParameters: queryParameters);
       _networkLog(response);
       if (response.statusCode == 200) {
-        allDataModel = AllDataModel.fromJson(response.data);
-        allDataModel.items.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-        allDataModel.categories.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-        sharedPrefsClient.allData = allDataModel;
+        Constant.allDataModel = AllDataModel.fromJson(response.data);
+        Constant.allDataModel.items.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+        Constant.allDataModel.categories.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+        Constant.sharedPrefsClient.allData = Constant.allDataModel;
       } else {
-        allDataModel = sharedPrefsClient.allData;
+        Constant.allDataModel = Constant.sharedPrefsClient.allData;
       }
       Utils.hideLoadingDialog();
       if (networkModel != null) {
@@ -221,13 +221,13 @@ class RestApi {
     } on dio.DioError catch (e) {
       _traceError(e);
       Utils.hideLoadingDialog();
-      allDataModel = sharedPrefsClient.allData;
+      Constant.allDataModel = Constant.sharedPrefsClient.allData;
       Utils.loadSorting();
       // Fluttertoast.showToast(msg: 'Please try again'.tr, timeInSecForIosWeb: 3);
     } catch (e) {
       _traceCatch(e);
       Utils.hideLoadingDialog();
-      allDataModel = sharedPrefsClient.allData;
+      Constant.allDataModel = Constant.sharedPrefsClient.allData;
       Utils.loadSorting();
       // Fluttertoast.showToast(msg: 'Please try again'.tr, timeInSecForIosWeb: 3);
     }
@@ -269,7 +269,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.post(ApiUrl.INVOICE, data: body);
@@ -294,15 +294,15 @@ class RestApi {
   static Future<void> saveVoidItem({required CartItemModel item, required String reason}) async {
     try {
       var body = jsonEncode({
-        "CoYear": sharedPrefsClient.dailyClose.year,
-        "PosNo": sharedPrefsClient.posNo,
-        "CashNo": sharedPrefsClient.cashNo,
-        "VoidDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
+        "PosNo": Constant.sharedPrefsClient.posNo,
+        "CashNo": Constant.sharedPrefsClient.cashNo,
+        "VoidDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
         "RowNo": item.rowSerial,
         "Reason": reason,
         "ItemID": item.id,
         "Qty": item.qty,
-        "UserID": sharedPrefsClient.employee.id,
+        "UserID": Constant.sharedPrefsClient.employee.id,
       });
       var networkId = await NetworkTable.insert(NetworkTableModel(
         id: 0,
@@ -319,7 +319,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.post(ApiUrl.SAVE_VOID_ITEMS, data: body);
@@ -344,15 +344,15 @@ class RestApi {
     try {
       var body = jsonEncode(items
           .map((e) => {
-                "CoYear": sharedPrefsClient.dailyClose.year,
-                "PosNo": sharedPrefsClient.posNo,
-                "CashNo": sharedPrefsClient.cashNo,
-                "VoidDate": sharedPrefsClient.dailyClose.toIso8601String(),
+                "CoYear": Constant.sharedPrefsClient.dailyClose.year,
+                "PosNo": Constant.sharedPrefsClient.posNo,
+                "CashNo": Constant.sharedPrefsClient.cashNo,
+                "VoidDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
                 "RowNo": e.rowSerial,
                 "Reason": reason,
                 "ItemID": e.id,
                 "Qty": e.qty,
-                "UserID": sharedPrefsClient.employee.id,
+                "UserID": Constant.sharedPrefsClient.employee.id,
               })
           .toList());
       var networkId = await NetworkTable.insert(NetworkTableModel(
@@ -370,7 +370,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.post(ApiUrl.SAVE_VOID_ALL_ITEMS, data: body);
@@ -394,11 +394,11 @@ class RestApi {
   static Future<void> posDailyClose({required DateTime closeDate}) async {
     try {
       Utils.showLoadingDialog();
-      closeDate = DateFormat(dateFormat).parse(DateFormat(dateFormat).format(closeDate));
+      closeDate = DateFormat(Constant.dateFormat).parse(DateFormat(Constant.dateFormat).format(closeDate));
       var body = jsonEncode({
-        "CoYear": sharedPrefsClient.dailyClose.year,
-        "PosNo": sharedPrefsClient.posNo,
-        "UserId": sharedPrefsClient.employee.id,
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
+        "PosNo": Constant.sharedPrefsClient.posNo,
+        "UserId": Constant.sharedPrefsClient.employee.id,
         "CloseDate": closeDate.toIso8601String(),
       });
       var networkId = await NetworkTable.insert(NetworkTableModel(
@@ -416,14 +416,14 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.post(ApiUrl.POS_DAILY_CLOSE, data: body);
       _networkLog(response);
-      sharedPrefsClient.dailyClose = closeDate;
-      allDataModel.posClose = closeDate;
-      sharedPrefsClient.allData = allDataModel;
+      Constant.sharedPrefsClient.dailyClose = closeDate;
+      Constant.allDataModel.posClose = closeDate;
+      Constant.sharedPrefsClient.allData = Constant.allDataModel;
 
       Utils.hideLoadingDialog();
       Get.back();
@@ -447,11 +447,11 @@ class RestApi {
     try {
       Utils.showLoadingDialog();
       var queryParameters = {
-        "coYear": sharedPrefsClient.dailyClose.year,
-        "PosNo": sharedPrefsClient.posNo,
-        "CashNo": sharedPrefsClient.cashNo,
-        "UserId": sharedPrefsClient.employee.id,
-        "dayDate": sharedPrefsClient.dailyClose.toIso8601String(),
+        "coYear": Constant.sharedPrefsClient.dailyClose.year,
+        "PosNo": Constant.sharedPrefsClient.posNo,
+        "CashNo": Constant.sharedPrefsClient.cashNo,
+        "UserId": Constant.sharedPrefsClient.employee.id,
+        "dayDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
       };
       var networkId = await NetworkTable.insert(NetworkTableModel(
         id: 0,
@@ -468,7 +468,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.get(ApiUrl.GET_END_CASH, queryParameters: queryParameters);
@@ -502,15 +502,15 @@ class RestApi {
     try {
       Utils.showLoadingDialog();
       var body = jsonEncode({
-        "CoYear": sharedPrefsClient.dailyClose.year,
-        "EndCashDate": sharedPrefsClient.dailyClose.toIso8601String(),
-        "PosNo": sharedPrefsClient.posNo,
-        "CashNo": sharedPrefsClient.cashNo,
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
+        "EndCashDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
+        "PosNo": Constant.sharedPrefsClient.posNo,
+        "CashNo": Constant.sharedPrefsClient.cashNo,
         "TotalCash": totalCash,
         "TotalCreditCard": totalCreditCard,
         "TotalCredit": totalCredit,
         "NetTotal": netTotal,
-        "UserId": sharedPrefsClient.employee.id,
+        "UserId": Constant.sharedPrefsClient.employee.id,
       });
       var networkId = await NetworkTable.insert(NetworkTableModel(
         id: 0,
@@ -527,7 +527,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.post(ApiUrl.END_CASH, data: body);
@@ -560,20 +560,20 @@ class RestApi {
   static Future<void> payInOut({required double value, required int type, String remark = '', required int descId}) async {
     try {
       var body = jsonEncode({
-        "CoYear": sharedPrefsClient.dailyClose.year,
+        "CoYear": Constant.sharedPrefsClient.dailyClose.year,
         "VoucherType": type,
-        "VoucherNo": sharedPrefsClient.payInOutNo,
-        "PosNo": sharedPrefsClient.posNo,
-        "CashNo": sharedPrefsClient.cashNo,
-        "VoucherDate": sharedPrefsClient.dailyClose.toIso8601String(),
-        "VoucherTime": DateFormat('HH:mm:ss').format(sharedPrefsClient.dailyClose),
+        "VoucherNo": Constant.sharedPrefsClient.payInOutNo,
+        "PosNo": Constant.sharedPrefsClient.posNo,
+        "CashNo": Constant.sharedPrefsClient.cashNo,
+        "VoucherDate": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
+        "VoucherTime": DateFormat('HH:mm:ss').format(Constant.sharedPrefsClient.dailyClose),
         "VoucherValue": value,
         "Remark": remark,
-        "UserId": sharedPrefsClient.employee.id,
+        "UserId": Constant.sharedPrefsClient.employee.id,
         "ShiftId": 0,
         "DescId": descId,
       });
-      sharedPrefsClient.payInOutNo++;
+      Constant.sharedPrefsClient.payInOutNo++;
       var networkId = await NetworkTable.insert(NetworkTableModel(
         id: 0,
         type: 'PAY_IN_OUT',
@@ -589,7 +589,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.post(ApiUrl.PAY_IN_OUT, data: body);
@@ -614,10 +614,10 @@ class RestApi {
     try {
       Utils.showLoadingDialog();
       var queryParameters = {
-        "Year": sharedPrefsClient.dailyClose.year,
-        "PosNo": sharedPrefsClient.posNo,
-        "CashNo": sharedPrefsClient.cashNo,
-        "POSDATE": sharedPrefsClient.dailyClose.toIso8601String(),
+        "Year": Constant.sharedPrefsClient.dailyClose.year,
+        "PosNo": Constant.sharedPrefsClient.posNo,
+        "CashNo": Constant.sharedPrefsClient.cashNo,
+        "POSDATE": Constant.sharedPrefsClient.dailyClose.toIso8601String(),
       };
 
       var networkId = await NetworkTable.insert(NetworkTableModel(
@@ -635,7 +635,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.get(ApiUrl.GET_PAY_IN_OUT, queryParameters: queryParameters);
@@ -670,13 +670,13 @@ class RestApi {
   static Future<void> deletePayInOut({required GetPayInOutModel model}) async {
     try {
       var queryParameters = {
-        "Year": sharedPrefsClient.dailyClose.year,
+        "Year": Constant.sharedPrefsClient.dailyClose.year,
         "VoucherType": model.voucherType,
         "VoucherNo": model.voucherNo,
-        "PosNo": sharedPrefsClient.posNo,
-        "CashNo": sharedPrefsClient.cashNo,
+        "PosNo": Constant.sharedPrefsClient.posNo,
+        "CashNo": Constant.sharedPrefsClient.cashNo,
       };
-      sharedPrefsClient.payInOutNo++;
+      Constant.sharedPrefsClient.payInOutNo++;
       var networkId = await NetworkTable.insert(NetworkTableModel(
         id: 0,
         type: 'DELETE_PAY_IN_OUT',
@@ -692,13 +692,13 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       List<NetworkTableModel> data = await NetworkTable.queryRowsReports(types: ['PAY_IN_OUT']);
       var payIn = data.firstWhereOrNull((element) {
         var body = jsonDecode(element.body);
-        if (body['VoucherNo'] == model.voucherNo && body['PosNo'] == sharedPrefsClient.posNo && body['CashNo'] == sharedPrefsClient.cashNo) {
+        if (body['VoucherNo'] == model.voucherNo && body['PosNo'] == Constant.sharedPrefsClient.posNo && body['CashNo'] == Constant.sharedPrefsClient.cashNo) {
           return true;
         }
         return false;
@@ -727,8 +727,8 @@ class RestApi {
     try {
       Utils.showLoadingDialog();
       var queryParameters = {
-        "PosNo": sharedPrefsClient.posNo,
-        "CashNo": sharedPrefsClient.cashNo,
+        "PosNo": Constant.sharedPrefsClient.posNo,
+        "CashNo": Constant.sharedPrefsClient.cashNo,
         "InvNo": invNo,
       };
       var networkId = await NetworkTable.insert(NetworkTableModel(
@@ -746,7 +746,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.get(ApiUrl.REFUND_INVOICE, queryParameters: queryParameters);
@@ -799,7 +799,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.post(ApiUrl.INVOICE_RETURNED_QTY, data: body, queryParameters: queryParameters);
@@ -825,9 +825,9 @@ class RestApi {
     try {
       Utils.showLoadingDialog();
       var queryParameters = {
-        "coYear": sharedPrefsClient.dailyClose.year,
-        "PosNo": sharedPrefsClient.posNo,
-        "CashNo": sharedPrefsClient.cashNo,
+        "coYear": Constant.sharedPrefsClient.dailyClose.year,
+        "PosNo": Constant.sharedPrefsClient.posNo,
+        "CashNo": Constant.sharedPrefsClient.cashNo,
         "InvNo": invNo,
       };
       var networkId = await NetworkTable.insert(NetworkTableModel(
@@ -845,7 +845,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.get(ApiUrl.GET_INVOICE, queryParameters: queryParameters);
@@ -880,8 +880,8 @@ class RestApi {
   static Future<void> getCashLastSerials() async {
     try {
       var queryParameters = {
-        "PosNo": sharedPrefsClient.posNo,
-        "CashNo": sharedPrefsClient.cashNo,
+        "PosNo": Constant.sharedPrefsClient.posNo,
+        "CashNo": Constant.sharedPrefsClient.cashNo,
       };
       var networkId = await NetworkTable.insert(NetworkTableModel(
         id: 0,
@@ -898,7 +898,7 @@ class RestApi {
         response: '',
         createdAt: DateTime.now().toIso8601String(),
         uploadedAt: DateTime.now().toIso8601String(),
-        dailyClose: sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
+        dailyClose: Constant.sharedPrefsClient.dailyClose.millisecondsSinceEpoch,
       ));
       var networkModel = await NetworkTable.queryById(id: networkId);
       final response = await restDio.get(ApiUrl.GET_CASH_LAST_SERIALS, queryParameters: queryParameters);
@@ -912,11 +912,11 @@ class RestApi {
       }
       if (response.statusCode == 200) {
         var model = CashLastSerialsModel.fromJson(response.data);
-        if (sharedPrefsClient.inVocNo <= model.invNo) {
-          sharedPrefsClient.inVocNo = model.invNo + 1;
+        if (Constant.sharedPrefsClient.inVocNo <= model.invNo) {
+          Constant.sharedPrefsClient.inVocNo = model.invNo + 1;
         }
-        if (sharedPrefsClient.payInOutNo <= model.cashInOutNo) {
-          sharedPrefsClient.payInOutNo = model.cashInOutNo + 1;
+        if (Constant.sharedPrefsClient.payInOutNo <= model.cashInOutNo) {
+          Constant.sharedPrefsClient.payInOutNo = model.cashInOutNo + 1;
         }
       }
     } on dio.DioError catch (e) {

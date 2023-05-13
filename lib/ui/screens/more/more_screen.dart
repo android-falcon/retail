@@ -17,7 +17,7 @@ class MoreScreen extends GetResponsiveView {
       appBar: CustomAppBar(
         title: Text(
           '${'Action Number'.tr} : ',
-          style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+          style: Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
         ),
         backgroundColor: AppColor.accentColor,
       ),
@@ -29,7 +29,7 @@ class MoreScreen extends GetResponsiveView {
               padding: EdgeInsets.only(left: 24.w, right: 24.w, top: 40.h),
               color: AppColor.accentColor,
               child: CustomIconText(
-                icon: kAssetSettings,
+                icon: Constant.kAssetSettings,
                 bold: true,
                 label: '${'Transactions on the invoice'.tr} :',
               ),

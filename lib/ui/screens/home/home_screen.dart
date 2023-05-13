@@ -22,7 +22,7 @@ class HomeScreen extends GetResponsiveView {
       child: CustomWidget(
         appBar: CustomAppBar(
           title: Image.asset(
-            kAssetLogo,
+            Constant.kAssetLogo,
             width: 50,
           ),
           actions: [
@@ -36,7 +36,7 @@ class HomeScreen extends GetResponsiveView {
                     },
                   );
                 },
-                icon: SvgPicture.asset(kAssetMore),
+                icon: SvgPicture.asset(Constant.kAssetMore),
               ),
             ),
           ],
@@ -55,29 +55,29 @@ class HomeScreen extends GetResponsiveView {
                         children: [
                           Flexible(
                             child: CustomIconText(
-                              icon: kAssetArrow,
+                              icon: Constant.kAssetArrow,
                               bold: true,
                               expanded: false,
-                              label: '${'Voucher No'.tr} : ${sharedPrefsClient.inVocNo}',
+                              label: '${'Voucher No'.tr} : ${Constant.sharedPrefsClient.inVocNo}',
                             ),
                           ),
                           Flexible(
                             child: CustomIconText(
-                              icon: kAssetArrow,
+                              icon: Constant.kAssetArrow,
                               bold: true,
                               expanded: false,
-                              label: sharedPrefsClient.employee.empName,
+                              label: Constant.sharedPrefsClient.employee.empName,
                             ),
                           ),
                         ],
                       ),
                       CustomIconText(
-                        icon: kAssetDate,
-                        label: '${'Date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
+                        icon: Constant.kAssetDate,
+                        label: '${'Date'.tr} : ${DateFormat(Constant.dateFormat).format(Constant.sharedPrefsClient.dailyClose)}',
                       ),
                       CustomIconText(
-                        icon: kAssetTime,
-                        label: '${'Time'.tr} : ${DateFormat(timeFormat).format(DateTime.now())}',
+                        icon: Constant.kAssetTime,
+                        label: '${'Time'.tr} : ${DateFormat(Constant.timeFormat).format(DateTime.now())}',
                       ),
                       Row(
                         children: [
@@ -98,7 +98,7 @@ class HomeScreen extends GetResponsiveView {
                               hintText: 'Search for item'.tr,
                               maxLines: 1,
                               icon: SvgPicture.asset(
-                                kAssetSearch,
+                                Constant.kAssetSearch,
                                 color: AppColor.gray2,
                               ),
                               suffixIcon: CustomButton(
@@ -137,7 +137,7 @@ class HomeScreen extends GetResponsiveView {
                             flex: 6,
                             child: Text(
                               'Item Name'.tr,
-                              style: kStyleTextTable,
+                              style: Constant.kStyleTextTable,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -147,7 +147,7 @@ class HomeScreen extends GetResponsiveView {
                             flex: 3,
                             child: Text(
                               'Unit'.tr,
-                              style: kStyleTextTable,
+                              style: Constant.kStyleTextTable,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -157,7 +157,7 @@ class HomeScreen extends GetResponsiveView {
                             flex: 3,
                             child: Text(
                               'Qty'.tr,
-                              style: kStyleTextTable,
+                              style: Constant.kStyleTextTable,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -167,7 +167,7 @@ class HomeScreen extends GetResponsiveView {
                             flex: 3,
                             child: Text(
                               'Price'.tr,
-                              style: kStyleTextTable,
+                              style: Constant.kStyleTextTable,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -177,7 +177,7 @@ class HomeScreen extends GetResponsiveView {
                             flex: 3,
                             child: Text(
                               'Disc'.tr,
-                              style: kStyleTextTable,
+                              style: Constant.kStyleTextTable,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -187,7 +187,7 @@ class HomeScreen extends GetResponsiveView {
                             flex: 4,
                             child: Text(
                               'Net Price'.tr,
-                              style: kStyleTextTable,
+                              style: Constant.kStyleTextTable,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -209,7 +209,7 @@ class HomeScreen extends GetResponsiveView {
                                 flex: 6,
                                 child: Text(
                                   _controller.cart.value.items[index].name,
-                                  style: kStyleDataTable,
+                                  style: Constant.kStyleDataTable,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -219,7 +219,7 @@ class HomeScreen extends GetResponsiveView {
                                 flex: 3,
                                 child: Text(
                                   'Unit',
-                                  style: kStyleDataTable,
+                                  style: Constant.kStyleDataTable,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -228,8 +228,8 @@ class HomeScreen extends GetResponsiveView {
                               Expanded(
                                 flex: 3,
                                 child: Text(
-                                  _controller.cart.value.items[index].qty.toStringAsFixed(fractionDigits),
-                                  style: kStyleDataTable,
+                                  _controller.cart.value.items[index].qty.toStringAsFixed(Constant.fractionDigits),
+                                  style: Constant.kStyleDataTable,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -238,8 +238,8 @@ class HomeScreen extends GetResponsiveView {
                               Expanded(
                                 flex: 3,
                                 child: Text(
-                                  _controller.cart.value.items[index].priceChange.toStringAsFixed(fractionDigits),
-                                  style: kStyleDataTable,
+                                  _controller.cart.value.items[index].priceChange.toStringAsFixed(Constant.fractionDigits),
+                                  style: Constant.kStyleDataTable,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -248,8 +248,8 @@ class HomeScreen extends GetResponsiveView {
                               Expanded(
                                 flex: 3,
                                 child: Text(
-                                  _controller.cart.value.items[index].totalLineDiscount.toStringAsFixed(fractionDigits),
-                                  style: kStyleDataTable,
+                                  _controller.cart.value.items[index].totalLineDiscount.toStringAsFixed(Constant.fractionDigits),
+                                  style: Constant.kStyleDataTable,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -258,8 +258,8 @@ class HomeScreen extends GetResponsiveView {
                               Expanded(
                                 flex: 4,
                                 child: Text(
-                                  _controller.cart.value.items[index].total.toStringAsFixed(fractionDigits),
-                                  style: kStyleDataTable,
+                                  _controller.cart.value.items[index].total.toStringAsFixed(Constant.fractionDigits),
+                                  style: Constant.kStyleDataTable,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -276,7 +276,7 @@ class HomeScreen extends GetResponsiveView {
                                           _controller.voidItem(index: index);
                                         },
                                         padding: EdgeInsets.zero,
-                                        icon: SvgPicture.asset(kAssetDelete, height: 20.h),
+                                        icon: SvgPicture.asset(Constant.kAssetDelete, height: 20.h),
                                         splashRadius: 25.r,
                                       ),
                                     ),
@@ -286,7 +286,7 @@ class HomeScreen extends GetResponsiveView {
                                           _controller.editItem(indexItem: index);
                                         },
                                         padding: EdgeInsets.zero,
-                                        icon: SvgPicture.asset(kAssetEdit, height: 20.h),
+                                        icon: SvgPicture.asset(Constant.kAssetEdit, height: 20.h),
                                         splashRadius: 25.r,
                                       ),
                                     ),
@@ -310,7 +310,7 @@ class HomeScreen extends GetResponsiveView {
                             _controller.holdItems();
                           },
                           label: Text('Hold Items'.tr),
-                          icon: SvgPicture.asset(kAssetHoldItems),
+                          icon: SvgPicture.asset(Constant.kAssetHoldItems),
                         ),
                       ),
                       SizedBox(width: 10.w),
@@ -320,7 +320,7 @@ class HomeScreen extends GetResponsiveView {
                             _controller.voidAllItem();
                           },
                           label: Text('Void All'.tr),
-                          icon: SvgPicture.asset(kAssetVoidAll),
+                          icon: SvgPicture.asset(Constant.kAssetVoidAll),
                         ),
                       ),
                       SizedBox(width: 10.w),
@@ -330,7 +330,7 @@ class HomeScreen extends GetResponsiveView {
                             _controller.speedItems();
                           },
                           label: Text('Speed Items'.tr),
-                          icon: SvgPicture.asset(kAssetSpeedItems),
+                          icon: SvgPicture.asset(Constant.kAssetSpeedItems),
                         ),
                       ),
                     ],
@@ -349,27 +349,27 @@ class HomeScreen extends GetResponsiveView {
                         children: [
                           Text(
                             '${'Current bill'.tr} : ',
-                            style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                            style: Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
                           ),
                           Row(
                             children: [
                               Expanded(
                                 child: CustomIconText(
-                                  icon: kAssetArrow,
+                                  icon: Constant.kAssetArrow,
                                   label: '${'No of Items'.tr} : ${_controller.cart.value.items.length}',
                                 ),
                               ),
                               Expanded(
                                 child: CustomIconText(
-                                  icon: kAssetArrow,
-                                  label: '${'Line Disc'.tr} : ${_controller.cart.value.totalLineDiscount.toStringAsFixed(fractionDigits)}',
+                                  icon: Constant.kAssetArrow,
+                                  label: '${'Line Disc'.tr} : ${_controller.cart.value.totalLineDiscount.toStringAsFixed(Constant.fractionDigits)}',
                                 ),
                               ),
                               Expanded(
                                 child: CustomIconText(
-                                  icon: kAssetArrow,
+                                  icon: Constant.kAssetArrow,
                                   bold: true,
-                                  label: '${'Total'.tr} : ${_controller.cart.value.total.toStringAsFixed(fractionDigits)}',
+                                  label: '${'Total'.tr} : ${_controller.cart.value.total.toStringAsFixed(Constant.fractionDigits)}',
                                 ),
                               ),
                             ],
@@ -382,23 +382,23 @@ class HomeScreen extends GetResponsiveView {
                                     _controller.discountOrder();
                                   },
                                   child: CustomIconText(
-                                    icon: kAssetArrow,
-                                    label: '${'Disc'.tr} : ${_controller.cart.value.totalDiscount.toStringAsFixed(fractionDigits)}',
+                                    icon: Constant.kAssetArrow,
+                                    label: '${'Disc'.tr} : ${_controller.cart.value.totalDiscount.toStringAsFixed(Constant.fractionDigits)}',
                                   ),
                                 ),
                               ),
                               Expanded(
                                 child: CustomIconText(
-                                  icon: kAssetArrow,
-                                  label: '${'Tax'.tr} : ${_controller.cart.value.tax.toStringAsFixed(fractionDigits)}',
+                                  icon: Constant.kAssetArrow,
+                                  label: '${'Tax'.tr} : ${_controller.cart.value.tax.toStringAsFixed(Constant.fractionDigits)}',
                                 ),
                               ),
                               Expanded(
                                 child: CustomIconText(
-                                  icon: kAssetArrow,
+                                  icon: Constant.kAssetArrow,
                                   bold: true,
-                                  style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold, fontSize: 23.sp, color: AppColor.blue2),
-                                  label: '${'Net Total'.tr} : ${_controller.cart.value.amountDue.toStringAsFixed(fractionDigits)}',
+                                  style: Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold, fontSize: 23.sp, color: AppColor.blue2),
+                                  label: '${'Net Total'.tr} : ${_controller.cart.value.amountDue.toStringAsFixed(Constant.fractionDigits)}',
                                 ),
                               ),
                             ],
@@ -414,7 +414,7 @@ class HomeScreen extends GetResponsiveView {
                             _controller.showLastInvoice.value = !_controller.showLastInvoice.value;
                             _controller.update();
                           },
-                          child: SvgPicture.asset(kAssetArrowBottom),
+                          child: SvgPicture.asset(Constant.kAssetArrowBottom),
                         ),
                       ),
                     )
@@ -432,7 +432,7 @@ class HomeScreen extends GetResponsiveView {
                       children: [
                         Text(
                           '${'Last Invoice'.tr} : ',
-                          style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                          style: Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 6.h),
                         Row(
@@ -441,15 +441,15 @@ class HomeScreen extends GetResponsiveView {
                             Flexible(
                               child: CustomIconText(
                                 expanded: false,
-                                icon: kAssetArrow,
-                                label: '${'Invoice No'.tr} : ${sharedPrefsClient.lastInvoice.invoiceNo}',
+                                icon: Constant.kAssetArrow,
+                                label: '${'Invoice No'.tr} : ${Constant.sharedPrefsClient.lastInvoice.invoiceNo}',
                               ),
                             ),
                             Flexible(
                               child: CustomIconText(
                                 expanded: false,
-                                icon: kAssetArrow,
-                                label: '${'Total'.tr} : ${sharedPrefsClient.lastInvoice.total.toStringAsFixed(fractionDigits)}',
+                                icon: Constant.kAssetArrow,
+                                label: '${'Total'.tr} : ${Constant.sharedPrefsClient.lastInvoice.total.toStringAsFixed(Constant.fractionDigits)}',
                               ),
                             ),
                           ],
@@ -468,7 +468,7 @@ class HomeScreen extends GetResponsiveView {
                     children: [
                       Text(
                         '${'Payment Methods'.tr} : ',
-                        style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+                        style: Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
                       ),
                       SizedBox(height: 6.h),
                       Row(
@@ -477,7 +477,7 @@ class HomeScreen extends GetResponsiveView {
                             child: CustomButtonIcon(
                               margin: EdgeInsets.symmetric(horizontal: 40.w),
                               backgroundColor: Colors.white,
-                              icon: SvgPicture.asset(kAssetCreditCard),
+                              icon: SvgPicture.asset(Constant.kAssetCreditCard),
                               label: Text(
                                 'Other Payment Methods'.tr,
                                 textAlign: TextAlign.center,
@@ -491,7 +491,7 @@ class HomeScreen extends GetResponsiveView {
                             child: CustomButtonIcon(
                               margin: EdgeInsets.symmetric(horizontal: 40.w),
                               backgroundColor: Colors.white,
-                              icon: SvgPicture.asset(kAssetCash),
+                              icon: SvgPicture.asset(Constant.kAssetCash),
                               label: Text('Cash'.tr),
                               onPressed: () {
                                 _controller.paymentMethodDialog(type: EnumPaymentMethodType.cash);

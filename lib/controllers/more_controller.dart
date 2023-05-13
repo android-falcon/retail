@@ -36,70 +36,70 @@ class MoreController extends GetxController {
     options = [
       {
         'label': 'Pay In'.tr,
-        'icon': kAssetCloseCash,
+        'icon': Constant.kAssetCloseCash,
         'onTap': () async {
           _showInOutDialog(type: EnumInOutType.payIn);
         },
       },
       {
         'label': 'Pay Out'.tr,
-        'icon': kAssetCloseCash,
+        'icon': Constant.kAssetCloseCash,
         'onTap': () async {
           _showInOutDialog(type: EnumInOutType.payOut);
         },
       },
       {
         'label': 'History pay In / Out'.tr,
-        'icon': kAssetCloseCash,
+        'icon': Constant.kAssetCloseCash,
         'onTap': () async {
           Get.to(() => HistoryPayInOutScreen());
         },
       },
       {
         'label': 'End cash'.tr,
-        'icon': kAssetCloseCash,
+        'icon': Constant.kAssetCloseCash,
         'onTap': () async {
           endCash();
         },
       },
       {
         'label': 'Daily close'.tr,
-        'icon': kAssetCloseCash,
+        'icon': Constant.kAssetCloseCash,
         'onTap': () async {
           dailyClose();
         },
       },
       {
         'label': 'Refund'.tr,
-        'icon': kAssetReprintInvoice,
+        'icon': Constant.kAssetReprintInvoice,
         'onTap': () {
           refund();
         },
       },
       {
         'label': 'Reprint an invoice'.tr,
-        'icon': kAssetReprintInvoice,
+        'icon': Constant.kAssetReprintInvoice,
         'onTap': () {
           _showReprintInvoiceDialog();
         },
       },
       {
         'label': 'Reports'.tr,
-        'icon': kAssetReprintInvoice,
+        'icon': Constant.kAssetReprintInvoice,
         'onTap': () {
           reports();
         },
       },
       {
         'label': 'Refresh data'.tr,
-        'icon': kAssetReprintInvoice,
+        'icon': Constant.kAssetReprintInvoice,
         'onTap': () {
           refreshData();
         },
       },
       {
         'label': 'Logout'.tr,
-        'icon': kAssetLogout,
+        'icon': Constant.kAssetLogout,
         'onTap': () {
           logout();
         },
@@ -108,13 +108,13 @@ class MoreController extends GetxController {
   }
 
   reports() async {
-    if (await Utils.checkPermission(sharedPrefsClient.employee.isMaster)) {
+    if (await Utils.checkPermission(Constant.sharedPrefsClient.employee.isMaster)) {
       Get.to(() => ReportsScreen());
     }
   }
 
   dailyClose() async {
-    if (await Utils.checkPermission(sharedPrefsClient.employee.hasReportsPermission)) {
+    if (await Utils.checkPermission(Constant.sharedPrefsClient.employee.hasReportsPermission)) {
       _showDailyCloseDialog();
     }
   }
@@ -125,13 +125,13 @@ class MoreController extends GetxController {
   }
 
   refund() async {
-    if (await Utils.checkPermission(sharedPrefsClient.employee.hasRefundPermission)) {
+    if (await Utils.checkPermission(Constant.sharedPrefsClient.employee.hasRefundPermission)) {
       Get.to(() => RefundScreen());
     }
   }
 
   endCash() async {
-    if (await Utils.checkPermission(sharedPrefsClient.employee.hasSeeEndCashPermission)) {
+    if (await Utils.checkPermission(Constant.sharedPrefsClient.employee.hasSeeEndCashPermission)) {
       EndCashModel? model = await RestApi.getEndCash();
       if (model != null) {
         _showEndCashDialog(endCash: model);
@@ -155,7 +155,7 @@ class MoreController extends GetxController {
             Text(
               'Reprint Invoice'.tr,
               textAlign: TextAlign.end,
-              style: kStyleTextLarge,
+              style: Constant.kStyleTextLarge,
             ),
             SizedBox(height: 30.h),
             Row(
@@ -193,13 +193,13 @@ class MoreController extends GetxController {
                   child: Text(
                     '${'Original Data'.tr} : ',
                     textAlign: TextAlign.center,
-                    style: kStyleTextDefault,
+                    style: Constant.kStyleTextDefault,
                   ),
                 ),
                 Expanded(
                   child: Text(
                     reprintModel == null ? '' : DateFormat('yyyy-MM-dd').format(DateTime.parse(reprintModel!.invDate)),
-                    style: kStyleTextDefault,
+                    style: Constant.kStyleTextDefault,
                   ),
                 ),
               ],
@@ -211,13 +211,13 @@ class MoreController extends GetxController {
                   child: Text(
                     '${'Original Time'.tr} : ',
                     textAlign: TextAlign.center,
-                    style: kStyleTextDefault,
+                    style: Constant.kStyleTextDefault,
                   ),
                 ),
                 Expanded(
                   child: Text(
                     reprintModel == null ? '' : DateFormat('hh:mm:ss a').format(DateTime.parse(reprintModel!.invDate)),
-                    style: kStyleTextDefault,
+                    style: Constant.kStyleTextDefault,
                   ),
                 ),
               ],
@@ -234,7 +234,7 @@ class MoreController extends GetxController {
                       },
                 child: Text(
                   'Print'.tr,
-                  style: kStyleTextButton,
+                  style: Constant.kStyleTextButton,
                 ),
               ),
             ),
@@ -250,10 +250,10 @@ class MoreController extends GetxController {
   }
 
   _showInOutDialog({required EnumInOutType type}) async {
-    var indexPrinter = allDataModel.printers.indexWhere((element) => element.cashNo == sharedPrefsClient.cashNo);
+    var indexPrinter = Constant.allDataModel.printers.indexWhere((element) => element.cashNo == Constant.sharedPrefsClient.cashNo);
     PrinterImageModel? printer;
     if (indexPrinter != -1) {
-      printer = PrinterImageModel(ipAddress: allDataModel.printers[indexPrinter].ipAddress, port: allDataModel.printers[indexPrinter].port);
+      printer = PrinterImageModel(ipAddress: Constant.allDataModel.printers[indexPrinter].ipAddress, port: Constant.allDataModel.printers[indexPrinter].port);
     }
 
     GlobalKey<FormState> keyForm = GlobalKey<FormState>();
@@ -289,12 +289,12 @@ class MoreController extends GetxController {
                                     : type == EnumInOutType.cashOut
                                         ? 'Cash Out'
                                         : '',
-                        style: kStyleTextLarge,
+                        style: Constant.kStyleTextLarge,
                       ),
                       SizedBox(height: 8.h),
                       Text(
-                        '${'Date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
-                        style: kStyleTextTitle,
+                        '${'Date'.tr} : ${DateFormat(Constant.dateFormat).format(Constant.sharedPrefsClient.dailyClose)}',
+                        style: Constant.kStyleTextTitle,
                       ),
                       SizedBox(height: 8.h),
                       Row(
@@ -313,7 +313,7 @@ class MoreController extends GetxController {
                               contentPadding: EdgeInsets.zero,
                               title: Text(
                                 'Manual'.tr,
-                                style: kStyleTextDefault,
+                                style: Constant.kStyleTextDefault,
                               ),
                             ),
                           ),
@@ -332,7 +332,7 @@ class MoreController extends GetxController {
                               contentPadding: EdgeInsets.zero,
                               title: Text(
                                 'Money Count'.tr,
-                                style: kStyleTextDefault,
+                                style: Constant.kStyleTextDefault,
                               ),
                             ),
                           ),
@@ -388,12 +388,12 @@ class MoreController extends GetxController {
                             Text(
                               'Total'.tr,
                               textAlign: TextAlign.center,
-                              style: kStyleTextDefault,
+                              style: Constant.kStyleTextDefault,
                             ),
                             Text(
                               moneyCount.toStringAsFixed(3),
                               textAlign: TextAlign.center,
-                              style: kStyleTextDefault.copyWith(color: AppColor.red),
+                              style: Constant.kStyleTextDefault.copyWith(color: AppColor.red),
                             ),
                           ],
                         ),
@@ -411,14 +411,14 @@ class MoreController extends GetxController {
                               child: Text(
                                 'Qty'.tr,
                                 textAlign: TextAlign.center,
-                                style: kStyleTextDefault,
+                                style: Constant.kStyleTextDefault,
                               ),
                             ),
                             Expanded(
                               child: Text(
                                 'Total'.tr,
                                 textAlign: TextAlign.center,
-                                style: kStyleTextDefault,
+                                style: Constant.kStyleTextDefault,
                               ),
                             ),
                           ],
@@ -446,7 +446,7 @@ class MoreController extends GetxController {
                                       child: Row(
                                         children: [
                                           CachedNetworkImage(
-                                            imageUrl: '${sharedPrefsClient.baseUrl}${allDataModel.imagePaths.firstWhereOrNull((element) => element.description == 'Currencies')?.imgPath ?? ''}${MoneyCount.moneyCount[index].icon}',
+                                            imageUrl: '${Constant.sharedPrefsClient.baseUrl}${Constant.allDataModel.imagePaths.firstWhereOrNull((element) => element.description == 'Currencies')?.imgPath ?? ''}${MoneyCount.moneyCount[index].icon}',
                                             height: 20.h,
                                             fit: BoxFit.contain,
                                             placeholder: (context, url) => Container(),
@@ -456,7 +456,7 @@ class MoreController extends GetxController {
                                             child: Text(
                                               MoneyCount.moneyCount[index].name,
                                               textAlign: TextAlign.center,
-                                              style: kStyleTextDefault,
+                                              style: Constant.kStyleTextDefault,
                                             ),
                                           ),
                                         ],
@@ -480,7 +480,7 @@ class MoreController extends GetxController {
                                   child: Text(
                                     ((MoneyCount.moneyCount[index].value * MoneyCount.moneyCount[index].rate) * double.parse(MoneyCount.moneyCount[index].qty.text)).toStringAsFixed(3),
                                     textAlign: TextAlign.center,
-                                    style: kStyleTextDefault,
+                                    style: Constant.kStyleTextDefault,
                                   ),
                                 ),
                               ],
@@ -601,7 +601,7 @@ class MoreController extends GetxController {
                                             : type == EnumInOutType.cashOut
                                                 ? 'Cash Out'
                                                 : '',
-                                style: kStyleLargePrinter,
+                                style: Constant.kStyleLargePrinter,
                               ),
                             ],
                           ),
@@ -617,23 +617,23 @@ class MoreController extends GetxController {
                                 children: [
                                   Text(
                                     '${'Value'.tr} : ${typeInputCash == 1 ? double.parse(controllerManual.text).toStringAsFixed(3) : moneyCount.toStringAsFixed(3)}',
-                                    style: kStyleDataPrinter,
+                                    style: Constant.kStyleDataPrinter,
                                   ),
                                   Text(
                                     '${'Remark'.tr} : ${controllerRemark.text}',
-                                    style: kStyleDataPrinter,
+                                    style: Constant.kStyleDataPrinter,
                                   ),
                                   Text(
-                                    '${'Type'.tr} : ${selectDescId == null ? '' : allDataModel.cashInOutTypesModel.firstWhereOrNull((element) => element.id == selectDescId)?.description ?? ''}',
-                                    style: kStyleDataPrinter,
+                                    '${'Type'.tr} : ${selectDescId == null ? '' : Constant.allDataModel.cashInOutTypesModel.firstWhereOrNull((element) => element.id == selectDescId)?.description ?? ''}',
+                                    style: Constant.kStyleDataPrinter,
                                   ),
                                   Text(
-                                    '${'Date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
-                                    style: kStyleDataPrinter,
+                                    '${'Date'.tr} : ${DateFormat(Constant.dateFormat).format(Constant.sharedPrefsClient.dailyClose)}',
+                                    style: Constant.kStyleDataPrinter,
                                   ),
                                   Text(
                                     '${'Time'.tr} : ${DateFormat('HH:mm:ss a').format(DateTime.now())}',
-                                    style: kStyleDataPrinter,
+                                    style: Constant.kStyleDataPrinter,
                                   ),
                                 ],
                               ),
@@ -672,21 +672,21 @@ class MoreController extends GetxController {
               children: [
                 Text(
                   'Cash In / Out Types'.tr,
-                  style: kStyleTextTitle,
+                  style: Constant.kStyleTextTitle,
                 ),
                 const Divider(thickness: 2),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemCount: allDataModel.cashInOutTypesModel.length,
-                  itemBuilder: (context, index) => kind != allDataModel.cashInOutTypesModel[index].kind
+                  itemCount: Constant.allDataModel.cashInOutTypesModel.length,
+                  itemBuilder: (context, index) => kind != Constant.allDataModel.cashInOutTypesModel[index].kind
                       ? Container()
                       : RadioListTile(
                           title: Text(
-                            allDataModel.cashInOutTypesModel[index].description,
-                            style: kStyleForceQuestion,
+                            Constant.allDataModel.cashInOutTypesModel[index].description,
+                            style: Constant.kStyleForceQuestion,
                           ),
-                          value: allDataModel.cashInOutTypesModel[index].id,
+                          value: Constant.allDataModel.cashInOutTypesModel[index].id,
                           groupValue: selectedTypeId,
                           onChanged: (value) {
                             selectedTypeId = value as int;
@@ -735,11 +735,11 @@ class MoreController extends GetxController {
   }
 
   _showEndCashDialog({required EndCashModel endCash}) async {
-    var indexPrinter = allDataModel.printers.indexWhere((element) => element.cashNo == sharedPrefsClient.cashNo);
+    var indexPrinter = Constant.allDataModel.printers.indexWhere((element) => element.cashNo == Constant.sharedPrefsClient.cashNo);
     PrinterImageModel? printer;
 
     if (indexPrinter != -1) {
-      printer = PrinterImageModel(ipAddress: allDataModel.printers[indexPrinter].ipAddress, port: allDataModel.printers[indexPrinter].port);
+      printer = PrinterImageModel(ipAddress: Constant.allDataModel.printers[indexPrinter].ipAddress, port: Constant.allDataModel.printers[indexPrinter].port);
     }
     GlobalKey<FormState> keyForm = GlobalKey<FormState>();
     TextEditingController controllerTotalCash = TextEditingController(text: '0');
@@ -762,11 +762,11 @@ class MoreController extends GetxController {
               children: [
                 Text(
                   'End Cash'.tr,
-                  style: kStyleTextLarge,
+                  style: Constant.kStyleTextLarge,
                 ),
                 Text(
-                  '${'Date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
-                  style: kStyleTextLarge,
+                  '${'Date'.tr} : ${DateFormat(Constant.dateFormat).format(Constant.sharedPrefsClient.dailyClose)}',
+                  style: Constant.kStyleTextLarge,
                 ),
                 SizedBox(height: 8.h),
                 const Divider(
@@ -931,7 +931,7 @@ class MoreController extends GetxController {
                             children: [
                               Text(
                                 'End Cash'.tr,
-                                style: kStyleLargePrinter,
+                                style: Constant.kStyleLargePrinter,
                               ),
                             ],
                           ),
@@ -948,7 +948,7 @@ class MoreController extends GetxController {
                                   Center(
                                     child: Text(
                                       'Total Cash'.tr,
-                                      style: kStyleTitlePrinter,
+                                      style: Constant.kStyleTitlePrinter,
                                     ),
                                   ),
                                   Row(
@@ -956,18 +956,18 @@ class MoreController extends GetxController {
                                     children: [
                                       Text(
                                         '${'Input'.tr} : ${double.parse(controllerTotalCash.text).toStringAsFixed(3)}',
-                                        style: kStyleDataPrinter,
+                                        style: Constant.kStyleDataPrinter,
                                       ),
                                       Text(
                                         '${'Actual Value'.tr} : ${endCash.totalCash.toStringAsFixed(3)}',
-                                        style: kStyleDataPrinter,
+                                        style: Constant.kStyleDataPrinter,
                                       ),
                                     ],
                                   ),
                                   Center(
                                     child: Text(
                                       '${'Different'.tr} : ${(double.parse(controllerTotalCash.text) - double.parse(endCash.totalCash.toString())).toStringAsFixed(3)}',
-                                      style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                      style: Constant.kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                   const SizedBox(height: 15),
@@ -975,7 +975,7 @@ class MoreController extends GetxController {
                                   Center(
                                     child: Text(
                                       'Total Credit Card'.tr,
-                                      style: kStyleTitlePrinter,
+                                      style: Constant.kStyleTitlePrinter,
                                     ),
                                   ),
                                   Row(
@@ -983,18 +983,18 @@ class MoreController extends GetxController {
                                     children: [
                                       Text(
                                         '${'Input'.tr} : ${double.parse(controllerTotalCreditCard.text).toStringAsFixed(3)}',
-                                        style: kStyleDataPrinter,
+                                        style: Constant.kStyleDataPrinter,
                                       ),
                                       Text(
                                         '${'Actual Value'.tr} : ${endCash.totalCreditCard.toStringAsFixed(3)}',
-                                        style: kStyleDataPrinter,
+                                        style: Constant.kStyleDataPrinter,
                                       ),
                                     ],
                                   ),
                                   Center(
                                     child: Text(
                                       '${'Different'.tr} : ${double.parse(double.parse(controllerTotalCreditCard.text).toStringAsFixed(3)) - double.parse(endCash.totalCreditCard.toStringAsFixed(3))}',
-                                      style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                      style: Constant.kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                   const SizedBox(height: 15),
@@ -1002,7 +1002,7 @@ class MoreController extends GetxController {
                                   Center(
                                     child: Text(
                                       'Net Total'.tr,
-                                      style: kStyleTitlePrinter,
+                                      style: Constant.kStyleTitlePrinter,
                                     ),
                                   ),
                                   Row(
@@ -1010,29 +1010,29 @@ class MoreController extends GetxController {
                                     children: [
                                       Text(
                                         '${'Input'.tr} : ${double.parse(controllerNetTotal.text).toStringAsFixed(3)}',
-                                        style: kStyleDataPrinter,
+                                        style: Constant.kStyleDataPrinter,
                                       ),
                                       Text(
                                         '${'Actual Value'.tr} : ${endCash.netTotal.toStringAsFixed(3)}',
-                                        style: kStyleDataPrinter,
+                                        style: Constant.kStyleDataPrinter,
                                       ),
                                     ],
                                   ),
                                   Center(
                                     child: Text(
                                       '${'Different'.tr} : ${double.parse(double.parse(controllerNetTotal.text).toStringAsFixed(3)) - double.parse(endCash.netTotal.toStringAsFixed(3))}',
-                                      style: kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
+                                      style: Constant.kStyleDataPrinter.copyWith(fontWeight: FontWeight.bold),
                                     ),
                                   ),
                                   const SizedBox(height: 15),
                                   const Divider(color: Colors.black, thickness: 2),
                                   Text(
-                                    '${'Date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
-                                    style: kStyleDataPrinter,
+                                    '${'Date'.tr} : ${DateFormat(Constant.dateFormat).format(Constant.sharedPrefsClient.dailyClose)}',
+                                    style: Constant.kStyleDataPrinter,
                                   ),
                                   Text(
                                     '${'Time'.tr} : ${DateFormat('HH:mm:ss a').format(DateTime.now())}',
-                                    style: kStyleDataPrinter,
+                                    style: Constant.kStyleDataPrinter,
                                   ),
                                 ],
                               ),
@@ -1056,16 +1056,16 @@ class MoreController extends GetxController {
   _showDailyCloseDialog() {
     Get.defaultDialog(
       title: 'Are you sure?'.tr,
-      titleStyle: kStyleTextLarge,
+      titleStyle: Constant.kStyleTextLarge,
       content: Column(
         children: [
           Text(
-            '${'Daily close date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose)}',
-            style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+            '${'Daily close date'.tr} : ${DateFormat(Constant.dateFormat).format(Constant.sharedPrefsClient.dailyClose)}',
+            style: Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
           ),
           Text(
-            '${'New daily close date'.tr} : ${DateFormat(dateFormat).format(sharedPrefsClient.dailyClose.add(const Duration(days: 1)))}',
-            style: kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
+            '${'New daily close date'.tr} : ${DateFormat(Constant.dateFormat).format(Constant.sharedPrefsClient.dailyClose.add(const Duration(days: 1)))}',
+            style: Constant.kStyleTextTitle.copyWith(fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10.h),
         ],
@@ -1074,10 +1074,10 @@ class MoreController extends GetxController {
       textConfirm: 'Confirm'.tr,
       confirmTextColor: Colors.white,
       onConfirm: () async {
-        if (sharedPrefsClient.park.isNotEmpty) {
+        if (Constant.sharedPrefsClient.park.isNotEmpty) {
           Utils.showSnackbar('Daily closing cannot be done due to order park'.tr);
         } else {
-          await RestApi.posDailyClose(closeDate: sharedPrefsClient.dailyClose.add(const Duration(days: 1)));
+          await RestApi.posDailyClose(closeDate: Constant.sharedPrefsClient.dailyClose.add(const Duration(days: 1)));
         }
       },
     );

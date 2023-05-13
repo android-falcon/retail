@@ -15,7 +15,7 @@ import 'package:wakelock/wakelock.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await sharedPrefsClient.init();
+  await Constant.sharedPrefsClient.init();
   HttpOverrides.global = AppHttpOverrides();
   runApp(const RetailSystem());
 }
@@ -33,21 +33,21 @@ class _RetailSystemState extends State<RetailSystem> {
   @override
   void initState() {
     super.initState();
-    loadAssets();
-    loadColor();
+    Constant.loadAssets();
+    Constant.loadColor();
     Utils.packageInfo().then((value) {
-      packageInfo = value;
+      Constant.packageInfo = value;
     });
     Wakelock.enable();
-    if (sharedPrefsClient.language == "") {
+    if (Constant.sharedPrefsClient.language == "") {
       if (Get.deviceLocale == null) {
-        sharedPrefsClient.language = 'ar';
+        Constant.sharedPrefsClient.language = 'ar';
       } else {
         String language = Get.deviceLocale!.languageCode;
         if (language != 'en' && language != 'ar') {
-          sharedPrefsClient.language = 'ar';
+          Constant.sharedPrefsClient.language = 'ar';
         } else {
-          sharedPrefsClient.language = language;
+          Constant.sharedPrefsClient.language = language;
         }
       }
     }
@@ -63,7 +63,7 @@ class _RetailSystemState extends State<RetailSystem> {
         debugShowCheckedModeBanner: false,
         initialBinding: Binding(),
         translations: Translation(),
-        locale: Locale(sharedPrefsClient.language),
+        locale: Locale(Constant.sharedPrefsClient.language),
         fallbackLocale: const Locale('en'),
         theme: AppThemes(context).appThemeData[AppTheme.lightTheme],
         darkTheme: AppThemes(context).appThemeData[AppTheme.darkTheme],

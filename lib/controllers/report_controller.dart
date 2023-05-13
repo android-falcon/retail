@@ -22,20 +22,20 @@ class ReportController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     super.onInit();
-    controllerFromDate.text = intl.DateFormat(dateFormat).format(sharedPrefsClient.dailyClose);
-    controllerToDate.text = intl.DateFormat(dateFormat).format(sharedPrefsClient.dailyClose);
+    controllerFromDate.text = intl.DateFormat(Constant.dateFormat).format(Constant.sharedPrefsClient.dailyClose);
+    controllerToDate.text = intl.DateFormat(Constant.dateFormat).format(Constant.sharedPrefsClient.dailyClose);
   }
 
   selectToDate() async {
     DateTime? pickedDate = await showDatePicker(
       context: Get.context!,
-      initialDate: controllerToDate.text.isNotEmpty ? intl.DateFormat(dateFormat).parse(controllerToDate.text) : DateTime.now(),
+      initialDate: controllerToDate.text.isNotEmpty ? intl.DateFormat(Constant.dateFormat).parse(controllerToDate.text) : DateTime.now(),
       firstDate: DateTime(2000),
       //DateTime.now() - not to allow to choose before today.
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
-      String formattedDate = intl.DateFormat(dateFormat).format(pickedDate);
+      String formattedDate = intl.DateFormat(Constant.dateFormat).format(pickedDate);
       controllerToDate.text = formattedDate; //set output date to TextField value.
     }
   }
@@ -43,13 +43,13 @@ class ReportController extends GetxController {
   selectFromDate() async {
     DateTime? pickedDate = await showDatePicker(
       context: Get.context!,
-      initialDate: controllerFromDate.text.isNotEmpty ? intl.DateFormat(dateFormat).parse(controllerFromDate.text) : DateTime.now(),
+      initialDate: controllerFromDate.text.isNotEmpty ? intl.DateFormat(Constant.dateFormat).parse(controllerFromDate.text) : DateTime.now(),
       firstDate: DateTime(2000),
       //DateTime.now() - not to allow to choose before today.
       lastDate: DateTime(2101),
     );
     if (pickedDate != null) {
-      String formattedDate = intl.DateFormat(dateFormat).format(pickedDate);
+      String formattedDate = intl.DateFormat(Constant.dateFormat).format(pickedDate);
       controllerFromDate.text = formattedDate; //set output date to TextField value.
     }
   }
@@ -59,8 +59,8 @@ class ReportController extends GetxController {
       case EnumReportType.cashReport:
         List<NetworkTableModel> data = await NetworkTable.queryRowsReports(
           types: ['INVOICE', 'PAY_IN_OUT'],
-          fromDate: intl.DateFormat(dateFormat).parse(controllerFromDate.text).millisecondsSinceEpoch,
-          toDate: intl.DateFormat(dateFormat).parse(controllerToDate.text).millisecondsSinceEpoch,
+          fromDate: intl.DateFormat(Constant.dateFormat).parse(controllerFromDate.text).millisecondsSinceEpoch,
+          toDate: intl.DateFormat(Constant.dateFormat).parse(controllerToDate.text).millisecondsSinceEpoch,
         );
         double cash = 0;
         double creditCard = 0;
@@ -70,7 +70,7 @@ class ReportController extends GetxController {
         for (var element in data) {
           if (element.type == 'PAY_IN_OUT') {
             var body = jsonDecode(element.body);
-            if (body['PosNo'] == sharedPrefsClient.posNo && body['CashNo'] == sharedPrefsClient.cashNo) {
+            if (body['PosNo'] == Constant.sharedPrefsClient.posNo && body['CashNo'] == Constant.sharedPrefsClient.cashNo) {
               if (body['VoucherType'] == 1) {
                 payIn += body['VoucherValue'];
               } else if (body['VoucherType'] == 2) {
@@ -79,7 +79,7 @@ class ReportController extends GetxController {
             }
           } else if (element.type == 'INVOICE') {
             var body = jsonDecode(element.body);
-            if (body['InvoiceMaster']['PosNo'] == sharedPrefsClient.posNo && body['InvoiceMaster']['CashNo'] == sharedPrefsClient.cashNo) {
+            if (body['InvoiceMaster']['PosNo'] == Constant.sharedPrefsClient.posNo && body['InvoiceMaster']['CashNo'] == Constant.sharedPrefsClient.cashNo) {
               if (body['InvoiceMaster']['InvKind'] == 0) {
                 cash += body['InvoiceMaster']['CashVal'];
                 creditCard += body['InvoiceMaster']['CardsVal'];
@@ -145,8 +145,8 @@ class ReportController extends GetxController {
       case EnumReportType.cashInOutReport:
         List<NetworkTableModel> data = await NetworkTable.queryRowsReports(
           types: ['PAY_IN_OUT'],
-          fromDate: intl.DateFormat(dateFormat).parse(controllerFromDate.text).millisecondsSinceEpoch,
-          toDate: intl.DateFormat(dateFormat).parse(controllerToDate.text).millisecondsSinceEpoch,
+          fromDate: intl.DateFormat(Constant.dateFormat).parse(controllerFromDate.text).millisecondsSinceEpoch,
+          toDate: intl.DateFormat(Constant.dateFormat).parse(controllerToDate.text).millisecondsSinceEpoch,
         );
         buildWidget = Padding(
           padding: EdgeInsets.symmetric(vertical: 4.h, horizontal: 8.w),
@@ -160,11 +160,11 @@ class ReportController extends GetxController {
                   cells: [
                     DataCell(Text(body['VoucherDate'].split('T').first)),
                     DataCell(Text(body['VoucherType'] == 1 ? 'Cash In'.tr : 'Cash Out'.tr)),
-                    DataCell(Text(allDataModel.cashInOutTypesModel.firstWhereOrNull((element) => element.id == body['DescId'])?.description ?? '')),
+                    DataCell(Text(Constant.allDataModel.cashInOutTypesModel.firstWhereOrNull((element) => element.id == body['DescId'])?.description ?? '')),
                     DataCell(Text('${body['PosNo']}')),
                     DataCell(Text('${body['CashNo']}')),
                     DataCell(Text(body['VoucherTime'])),
-                    DataCell(Text(allDataModel.employees.firstWhereOrNull((element) => element.id == body['UserId'])?.empName ?? '')),
+                    DataCell(Text(Constant.allDataModel.employees.firstWhereOrNull((element) => element.id == body['UserId'])?.empName ?? '')),
                     DataCell(Text(body['VoucherValue'].toStringAsFixed(3))),
                     DataCell(Text(body['Remark'])),
                   ],
@@ -188,13 +188,13 @@ class ReportController extends GetxController {
       case EnumReportType.soldQtyReport:
         List<NetworkTableModel> data = await NetworkTable.queryRowsReports(
           types: ['INVOICE'],
-          fromDate: intl.DateFormat(dateFormat).parse(controllerFromDate.text).millisecondsSinceEpoch,
-          toDate: intl.DateFormat(dateFormat).parse(controllerToDate.text).millisecondsSinceEpoch,
+          fromDate: intl.DateFormat(Constant.dateFormat).parse(controllerFromDate.text).millisecondsSinceEpoch,
+          toDate: intl.DateFormat(Constant.dateFormat).parse(controllerToDate.text).millisecondsSinceEpoch,
         );
         List<ReportSoldQtyModel> items = [];
         for (var element in data) {
           var body = jsonDecode(element.body);
-          if (body['InvoiceMaster']['PosNo'] == sharedPrefsClient.posNo && body['InvoiceMaster']['CashNo'] == sharedPrefsClient.cashNo) {
+          if (body['InvoiceMaster']['PosNo'] == Constant.sharedPrefsClient.posNo && body['InvoiceMaster']['CashNo'] == Constant.sharedPrefsClient.cashNo) {
             for (var invoiceDetails in body['InvoiceDetails']) {
               var indexItem = items.indexWhere((e) => e.itemId == invoiceDetails['ItemId']);
               if (indexItem != -1) {
@@ -218,7 +218,7 @@ class ReportController extends GetxController {
                   items[indexItem].netTotal -= invoiceDetails['NetTotal'];
                 }
               } else {
-                var itemInAllData = allDataModel.items.firstWhereOrNull((e) => e.id == invoiceDetails['ItemId']);
+                var itemInAllData = Constant.allDataModel.items.firstWhereOrNull((e) => e.id == invoiceDetails['ItemId']);
                 if (body['InvoiceMaster']['InvKind'] == 0) {
                   items.add(ReportSoldQtyModel(
                     itemId: invoiceDetails['ItemId'],
@@ -294,7 +294,7 @@ class ReportController extends GetxController {
                     const DataCell(Text('')),
                     DataCell(Text(
                       'Totals'.tr,
-                      style: kStyleHeaderTable,
+                      style: Constant.kStyleHeaderTable,
                     )),
                     DataCell(Text(soldQty.toStringAsFixed(3))),
                     DataCell(Text(disc.toStringAsFixed(3))),

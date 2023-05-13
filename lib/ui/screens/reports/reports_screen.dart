@@ -46,7 +46,7 @@ class ReportsScreen extends GetResponsiveView {
                         Center(
                           child: Text(
                             'Cash Report'.tr,
-                            style: kStyleTextTitle,
+                            style: Constant.kStyleTextTitle,
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -81,7 +81,7 @@ class ReportsScreen extends GetResponsiveView {
                         Center(
                           child: Text(
                             'Cash In / Out Report'.tr,
-                            style: kStyleTextTitle,
+                            style: Constant.kStyleTextTitle,
                             textAlign: TextAlign.center,
                           ),
                         ),
@@ -116,7 +116,7 @@ class ReportsScreen extends GetResponsiveView {
                         Center(
                           child: Text(
                             'Sold Qty Report'.tr,
-                            style: kStyleTextTitle,
+                            style: Constant.kStyleTextTitle,
                             textAlign: TextAlign.center,
                           ),
                         ),

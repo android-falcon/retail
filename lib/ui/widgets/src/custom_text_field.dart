@@ -97,7 +97,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         maxLength: widget.maxLength,
         textAlign: widget.textAlign,
 
-        style: kStyleTextTextField,
+        style: Constant.kStyleTextTextField,
         decoration: InputDecoration(
           fillColor: widget.fillColor ?? Colors.transparent,
           filled: true,
@@ -105,7 +105,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           label: widget.label,
           helperText: widget.helperText,
           contentPadding: widget.contentPadding ?? (widget.icon != null ? EdgeInsets.zero : EdgeInsetsDirectional.only(start: 8.w, end: 20.w)),
-          hintStyle: kStyleTextTitle.copyWith(color: AppColor.gray2),
+          hintStyle: Constant.kStyleTextTitle.copyWith(color: AppColor.gray2),
           prefixIcon: widget.icon != null
               ? Padding(
                   padding: EdgeInsets.symmetric(vertical: 8.0.h),

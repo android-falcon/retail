@@ -40,7 +40,7 @@ class CustomTextFieldNum extends StatelessWidget {
       height: 30,
       child: TextFormField(
         enableInteractiveSelection: enableInteractiveSelection,
-        style: kStyleTextDefault.copyWith(color: textColor),
+        style: Constant.kStyleTextDefault.copyWith(color: textColor),
         controller: controller,
         keyboardType: keyboardType ?? const TextInputType.numberWithOptions(),
         maxLines: 1,

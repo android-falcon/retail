@@ -1,6 +1,6 @@
 // To parse this JSON data, do
 //
-//     final allDataModel = allDataModelFromJson(jsonString);
+//     final Constant.allDataModel = allDataModelFromJson(jsonString);
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:retail_system/models/all_data/cash_in_out_types_model.dart';
