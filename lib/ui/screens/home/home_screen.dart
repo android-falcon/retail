@@ -92,6 +92,8 @@ class HomeScreen extends GetResponsiveView {
                           Expanded(
                             child: CustomTextField(
                               controller: _controller.controllerSearch,
+                              focusNode: _controller.focusNodeSearch,
+                              autofocus: true,
                               borderColor: AppColor.primaryColor,
                               hintText: 'Search for item'.tr,
                               maxLines: 1,

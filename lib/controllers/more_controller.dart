@@ -694,9 +694,9 @@ class MoreController extends GetxController {
                           },
                         ),
                 ),
+                SizedBox(height: 15.h),
                 Row(
                   children: [
-                    Expanded(child: Container()),
                     Expanded(
                       child: CustomButton(
                         margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -722,7 +722,6 @@ class MoreController extends GetxController {
                         child: Text('Save'.tr),
                       ),
                     ),
-                    Expanded(child: Container()),
                   ],
                 ),
               ],

@@ -32,6 +32,7 @@ class CustomTextField extends StatefulWidget {
   final Color? textColor;
   final List<TextInputFormatter>? inputFormatters;
   final FocusNode? focusNode;
+  final bool? autofocus;
   final Color? borderColor;
   final double? borderRaduis;
   final double? borderWidth;
@@ -43,6 +44,7 @@ class CustomTextField extends StatefulWidget {
     this.controller,
     this.suffixIcon,
     this.focusNode,
+    this.autofocus,
     this.borderColor,
     this.borderRaduis,
     this.borderWidth,
@@ -153,6 +155,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         readOnly: widget.readOnly,
         enableInteractiveSelection: widget.enableInteractiveSelection,
         focusNode: widget.focusNode ?? (widget.enableInteractiveSelection ? null : AlwaysDisabledFocusNode()),
+        autofocus: widget.autofocus ?? false,
         inputFormatters: widget.inputFormatters,
         obscureText: widget.obscureText,
         textDirection: widget.textDirection,

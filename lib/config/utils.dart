@@ -50,7 +50,7 @@ class Utils {
     Get.snackbar(
       title ?? '',
       message ?? '',
-      duration: const Duration(seconds: 4),
+      duration: const Duration(seconds: 2),
       backgroundColor: AppColor.gray.withOpacity(0.5),
       margin: EdgeInsets.only(top: 20.h, left: 10.w, right: 10.w),
     );

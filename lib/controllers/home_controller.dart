@@ -33,6 +33,7 @@ class HomeController extends GetxController {
 
   final cart = CartModel.init(orderType: EnumOrderType.takeAway).obs;
   final TextEditingController controllerSearch = TextEditingController();
+  final FocusNode focusNodeSearch = FocusNode();
   final showLastInvoice = false.obs;
 
   refreshTime() {
@@ -97,6 +98,7 @@ class HomeController extends GetxController {
         update();
       }
     }
+    FocusScope.of(Get.context!).requestFocus(focusNodeSearch);
   }
 
   holdItems() async {

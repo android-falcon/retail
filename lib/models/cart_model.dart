@@ -530,6 +530,7 @@ class CartItemModel extends Equatable {
         "IsSubItem": parentUuid != "" ? 1 : 0,
         "UUID": uuid,
         "ParentUUID": parentUuid,
+        "QtyFlag": 1,
       };
 
   Map<String, dynamic> toSaveTable() => {
@@ -568,9 +569,9 @@ class CartItemModel extends Equatable {
         "InvType": orderType.index, // 0 - Take away , 1 - Dine In
         "InvKind": EnumInvoiceKind.invoiceReturn.index, // 0 - Pay , 1 - Return
         "InvNo": invNo, // الرقم الي بعد منو VocNo
-        "PosNo": posNo, // PosNo
-        "CashNo": cashNo, // CashNo
-        "StoreNo": storeNo, // StoreNo
+        "PosNo": sharedPrefsClient.posNo, // PosNo
+        "CashNo": sharedPrefsClient.cashNo, // CashNo
+        "StoreNo": sharedPrefsClient.storeNo, // StoreNo
         "InvDate": sharedPrefsClient.dailyClose.toIso8601String(),
         "RowSerial": rowSerial, // رقم الايتم بناء على ليست في شاشة index + 1
         "ItemId": id,
@@ -592,14 +593,15 @@ class CartItemModel extends Equatable {
         "IsSubItem": parentUuid != "" ? 1 : 0,
         "UUID": uuid,
         "ParentUUID": parentUuid,
+        "QtyFlag": -1,
       };
 
   Map<String, dynamic> toReturnInvoiceQty() => {
         "CoYear": sharedPrefsClient.dailyClose.year,
         "InvKind": EnumInvoiceKind.invoiceReturn.index,
         "InvNo": invNo,
-        "PosNo": posNo,
-        "CashNo": cashNo,
+        "PosNo": sharedPrefsClient.posNo, // PosNo
+        "CashNo": sharedPrefsClient.cashNo, // CashNo
         "RowSerial": rowSerial,
         "Id": id,
         "RQty": returnedQty,
